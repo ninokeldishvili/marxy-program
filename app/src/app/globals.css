@@ -1,18 +1,31 @@
 @import "tailwindcss";
 
+/* Brand: Vault Arc. Dark Navy #101827, Tactical Lime #D0F26A, Off-white #F5F7F2 (see marxy/styles.css). */
 @theme {
-  --color-bg: #0b0d0a;
-  --color-surface: #14170f;
-  --color-surface-2: #1b1f15;
-  --color-line: #2a3021;
-  --color-ink: #eef0e6;
-  --color-muted: #9aa08c;
-  --color-accent: #d9e179;
-  --color-accent-2: #94c24f;
-  --color-danger: #f07167;
-  --color-warn: #f4b860;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-bg: #050605;
+  --color-surface: #101827;
+  --color-surface-deep: #0b111d;
+  --color-surface-2: #151c2a;
+  --color-line: #1f2836;
+  --color-ink: #f5f7f2;
+  --color-muted: #8d95a3;
+  --color-accent: #d0f26a;
+  --color-accent-2: #b8ff3c;
+  --color-accent-ink: #071000;
+  --color-danger: #ff6b6b;
+  --color-warn: #ffc43d;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+:root {
+  /* Used by the landing stylesheet. */
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -24,18 +37,70 @@ body {
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
+/* Site-wide interactive glyph grid (MeshBackground). */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Lime glow on primary actions, as on the landing buttons. */
+.glow {
+  box-shadow: 0 0 30px rgb(184 255 60 / 0.35);
+}
+.glow:hover:not(:disabled) {
+  box-shadow: 0 0 50px rgb(184 255 60 / 0.6);
+}
+.glow:disabled {
+  box-shadow: none;
+}
+
+.text-glow {
+  text-shadow: 0 0 30px rgb(184 255 60 / 0.4);
+}
+
+.panel {
+  background: linear-gradient(180deg, var(--color-surface), var(--color-surface-deep));
+}
+
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgb(217 225 121 / 0.45); }
-  70% { box-shadow: 0 0 0 14px rgb(217 225 121 / 0); }
-  100% { box-shadow: 0 0 0 0 rgb(217 225 121 / 0); }
+  0% { box-shadow: 0 0 0 0 rgb(208 242 106 / 0.5), 0 0 30px rgb(184 255 60 / 0.35); }
+  70% { box-shadow: 0 0 0 16px rgb(208 242 106 / 0), 0 0 30px rgb(184 255 60 / 0.35); }
+  100% { box-shadow: 0 0 0 0 rgb(208 242 106 / 0), 0 0 30px rgb(184 255 60 / 0.35); }
 }
 
 .bid-pulse:not(:disabled) {
   animation: pulse-ring 1.6s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.55; }
+}
+
+.blink {
+  animation: blink 1.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bid-pulse:not(:disabled),
+  .blink {
+    animation: none;
+  }
 }

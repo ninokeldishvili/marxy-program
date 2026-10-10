@@ -44,11 +44,11 @@ export function ConnectModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider value={{ open }}>
       {children}
       {show && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setVisible(false)}>
-          <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setVisible(false)}>
+          <div className="panel w-full max-w-sm rounded-[26px] border border-accent/20 p-6 shadow-[0_30px_80px_rgb(0_0_0/0.5),0_0_60px_rgb(208_242_106/0.06)]" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Connect a wallet</h2>
-              <button className="text-muted hover:text-ink" onClick={() => setVisible(false)} aria-label="Close">
+              <h2 className="text-xl font-semibold">Connect a wallet</h2>
+              <button className="cursor-pointer text-2xl leading-none text-muted hover:text-accent" onClick={() => setVisible(false)} aria-label="Close">
                 ×
               </button>
             </div>
@@ -59,13 +59,13 @@ export function ConnectModalProvider({ children }: { children: ReactNode }) {
                 return (
                   <li key={adapter.name}>
                     <button
-                      className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition hover:border-accent/60 ${
-                        phantom ? "border-accent/40 bg-surface-2" : "border-line"
+                      className={`flex w-full cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-left transition hover:border-accent hover:shadow-[0_0_24px_rgb(208_242_106/0.14)] ${
+                        phantom ? "border-accent/30 bg-surface-2" : "border-white/[0.06]"
                       }`}
                       onClick={() => pick(adapter.name, readyState)}
                     >
                       <WalletIcon wallet={{ adapter }} className="h-7 w-7" />
-                      <span className="flex-1 font-medium">{adapter.name}</span>
+                      <span className="flex-1 font-display font-medium">{adapter.name}</span>
                       <span className={`text-xs ${installed ? "text-accent" : "text-muted"}`}>
                         {installed ? (phantom ? "Recommended" : "Detected") : "Install ↗"}
                       </span>

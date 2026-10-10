@@ -1,13 +1,7 @@
-"use client";
-
-import { useState } from "react";
-
-/** The logo from /public/marxy_logo.svg, or the text "Marxy" if it's missing. */
+/** The MARXY wordmark from the brand kit (public/assets/logo.png). */
 export function Logo() {
-  const [failed, setFailed] = useState(false);
-  if (failed) return <span className="text-xl font-extrabold tracking-tight text-accent">Marxy</span>;
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/marxy_logo.svg" alt="Marxy" className="h-9 w-auto" onError={() => setFailed(true)} />
+    <img src="/assets/logo.png" alt="MARXY" width={143} height={32} className="h-7 w-auto" />
   );
 }

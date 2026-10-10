@@ -4,7 +4,7 @@
     "name": "0.001 Test BTC",
     "token": "testBtc",
     "amount": "0.001",
-    "image": "/lots/btc.svg",
+    "image": "/assets/img/lot-btc.jpg",
     "liveAuctions": 1,
     "priceMint": "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
     "fallbackUsdPrice": 80000
@@ -14,7 +14,7 @@
     "name": "0.5 Test SOL",
     "token": "testSol",
     "amount": "0.5",
-    "image": "/lots/sol.svg",
+    "image": "/assets/img/lot-sol.jpg",
     "liveAuctions": 1,
     "priceMint": "So11111111111111111111111111111111111111112",
     "fallbackUsdPrice": 150

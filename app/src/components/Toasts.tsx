@@ -67,16 +67,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2">
+      <div className="pointer-events-none fixed bottom-4 right-4 z-[110] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto rounded-xl border px-4 py-3 shadow-xl backdrop-blur ${
+            className={`pointer-events-auto rounded-2xl border px-4 py-3 shadow-xl backdrop-blur ${
               t.kind === "error"
                 ? "border-danger/40 bg-[#2a1614]/95"
                 : t.kind === "success"
-                  ? "border-accent/40 bg-surface/95"
-                  : "border-line bg-surface/95"
+                  ? "border-accent/30 bg-surface/95 shadow-[0_0_30px_rgb(208_242_106/0.1)]"
+                  : "border-white/[0.08] bg-surface/95"
             }`}
           >
             <div className="flex items-start justify-between gap-3">

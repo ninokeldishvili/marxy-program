@@ -91,7 +91,7 @@ function AdminConsole() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold tracking-tight">Admin</h1>
+      <h1 className="text-4xl font-semibold">Admin</h1>
       <Card>
         <label className="block text-sm text-muted">
           ADMIN_API_SECRET
@@ -99,7 +99,7 @@ function AdminConsole() {
             type="password"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-line bg-surface-2 px-3 py-2 text-ink outline-none focus:border-accent"
+            className="mt-1.5 w-full rounded-full border border-white/10 bg-surface-2 px-4 py-2.5 text-ink outline-none focus:border-accent"
           />
         </label>
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
@@ -118,7 +118,7 @@ function AdminConsole() {
               {data.catalog.map((lot) => {
                 const t = data.state.lotTypes[lot.key];
                 return (
-                  <div key={lot.key} className="rounded-xl bg-surface-2 p-4">
+                  <div key={lot.key} className="rounded-2xl bg-surface-2 p-4">
                     <p className="font-semibold">{lot.name}</p>
                     <p className="text-sm text-muted">
                       margin {((t?.marginBps ?? 2300) / 100).toFixed(0)}% · ladder shift {t?.ladderShift ?? 0} · {t?.completed ?? 0} done · keep {lot.liveAuctions} live

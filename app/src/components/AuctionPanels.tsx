@@ -15,7 +15,7 @@ import { ata, buyCreditsIxs, placeBidIx, refundDue, settleIx, withdrawIxs } from
 import type { StageInfo } from "@/lib/stage";
 import type { AuctionView, ParticipantView } from "@/lib/types";
 import { useConnectModal } from "./ConnectModal";
-import { Address, Button, Card, Countdown, ProgressBar, useLot } from "./ui";
+import { Address, Button, Card, Countdown, CountdownRing, ProgressBar, useLot } from "./ui";
 
 interface PanelProps {
   auction: AuctionView;
@@ -70,7 +70,7 @@ export function BuyPanel({ auction, participant, stage, reload }: PanelProps) {
   return (
     <Card>
       <div className="flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-bold">Buy credits</h2>
+        <h2 className="text-xl font-semibold">Buy credits</h2>
         <p className="text-sm text-muted">
           Sales close in <Countdown seconds={stage.remaining} className="font-semibold text-ink" />
         </p>
@@ -79,9 +79,9 @@ export function BuyPanel({ auction, participant, stage, reload }: PanelProps) {
         <ProgressBar value={sold} label={`${sold.toFixed(1)}% of the sales minimum sold`} />
       </div>
       {platformWallet ? (
-        <p className="mt-5 rounded-xl bg-surface-2 px-4 py-3 text-sm text-muted">Platform wallets (admin / treasury) can&apos;t take part.</p>
+        <p className="mt-5 rounded-2xl bg-surface-2 px-4 py-3 text-sm text-muted">Platform wallets (admin / treasury) can&apos;t take part.</p>
       ) : room <= 0n ? (
-        <p className="mt-5 rounded-xl bg-surface-2 px-4 py-3 text-sm">
+        <p className="mt-5 rounded-2xl bg-surface-2 px-4 py-3 text-sm">
           You hold the maximum of <b>{owned.toString()}</b> credits for this auction. Get ready for the battle!
         </p>
       ) : (
@@ -97,9 +97,9 @@ export function BuyPanel({ auction, participant, stage, reload }: PanelProps) {
                 max={Number(room)}
                 value={credits}
                 onChange={(e) => setCredits(e.target.value)}
-                className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-lg font-semibold tabular outline-none focus:border-accent"
+                className="w-full rounded-full border border-white/10 bg-surface-2 px-5 py-2.5 font-display text-lg font-semibold tabular outline-none transition focus:border-accent focus:shadow-[0_0_24px_rgb(208_242_106/0.14)]"
               />
-              <button className="rounded-lg border border-line px-3 py-2.5 text-sm text-muted hover:text-ink" onClick={() => setCredits(room.toString())}>
+              <button className="cursor-pointer rounded-full border border-accent/20 px-4 py-2.5 font-display text-sm font-semibold text-muted transition hover:border-accent hover:text-accent" onClick={() => setCredits(room.toString())}>
                 Max
               </button>
             </div>
@@ -189,12 +189,16 @@ export function BattlePanel({ auction, participant, stage, reload, bids }: Panel
   return (
     <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
       <Card className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-muted">
-          {firstBid ? "Opening window: first bid within" : "Countdown"}
-        </p>
-        <p className={`mt-2 text-7xl font-black tabular sm:text-8xl ${ended ? "text-muted" : urgent ? "text-danger" : "text-accent"}`}>
-          {ended ? "Settling…" : <Countdown seconds={remaining} />}
-        </p>
+        <div className="mb-4 flex items-center justify-between text-[13px] text-muted">
+          <span className="blink font-semibold text-danger">● LIVE</span>
+          <span>{firstBid ? "Opening window: first bid within" : "Every bid resets the clock"}</span>
+        </div>
+        <CountdownRing seconds={remaining} total={firstBid ? auction.openingWindow : auction.countdown}>
+          <span className={`font-display text-6xl font-bold leading-none tabular ${ended ? "text-3xl text-muted" : urgent ? "text-danger" : "text-ink"}`}>
+            {ended ? "Settling…" : <Countdown seconds={remaining} />}
+          </span>
+          {!ended && <small className="mt-2 text-xs uppercase tracking-[0.2em] text-muted">{firstBid ? "to open" : "countdown"}</small>}
+        </CountdownRing>
         <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
           <div className="rounded-xl bg-surface-2 p-3">
             <p className="text-muted">Last bidder</p>
@@ -212,20 +216,20 @@ export function BattlePanel({ auction, participant, stage, reload, bids }: Panel
         <Button
           onClick={bid}
           disabled={Boolean(publicKey) && (busy || Boolean(disabledReason))}
-          className={`bid-pulse mt-6 w-full py-5 text-2xl ${youLead ? "" : ""}`}
+          className="bid-pulse mt-6 w-full py-5 text-2xl"
         >
           {publicKey ? (youLead ? "You're leading" : "BID (1 credit)") : "Connect to bid"}
         </Button>
         {disabledReason && <p className="mt-2 text-sm text-muted">{disabledReason}</p>}
       </Card>
       <Card>
-        <h3 className="font-bold">Live bids</h3>
+        <h3 className="text-lg font-semibold">Live bids</h3>
         {bids.length === 0 ? (
           <p className="mt-3 text-sm text-muted">No bids yet. Be the first!</p>
         ) : (
           <ul className="mt-3 space-y-1.5 text-sm">
             {bids.slice(0, 12).map((b, i) => (
-              <li key={b.bidCount.toString()} className={`flex items-center justify-between rounded-lg px-3 py-2 ${i === 0 ? "bg-accent/10" : "bg-surface-2"}`}>
+              <li key={b.bidCount.toString()} className={`flex items-center justify-between rounded-xl px-3 py-2.5 ${i === 0 ? "bg-[#26301f] text-ink" : "bg-surface-2"}`}>
                 <span className="text-muted tabular">#{b.bidCount.toString()}</span>
                 <Address address={b.bidder} />
                 {b.signature ? (
@@ -273,7 +277,7 @@ export function SettlingPanel({ auction, stage, reload }: PanelProps) {
 
   return (
     <Card className="text-center">
-      <p className="text-5xl font-black text-muted">Settling…</p>
+      <p className="font-display text-5xl font-semibold text-muted">Settling…</p>
       <p className="mt-3 text-muted">The result will appear here in a moment.</p>
       {late && publicKey && (
         <Button variant="ghost" onClick={settle} disabled={busy} className="mt-5">
@@ -291,12 +295,13 @@ export function WonBanner({ auction, participant, reload, settleSignature }: Omi
   const lot = useLot(auction);
   const you = publicKey?.toBase58() === auction.lastBidder;
   return (
-    <Card className={`text-center ${you ? "border-accent" : ""}`}>
-      <p className="text-5xl">{you ? "🏆" : "🏁"}</p>
-      <h2 className="mt-3 text-3xl font-black">
+    <Card className={`text-center ${you ? "border-accent/40 shadow-[0_0_60px_rgb(208_242_106/0.12)]" : ""}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/assets/img/winner.jpg" alt="" className="mx-auto h-40 w-40 object-contain [mask-image:radial-gradient(closest-side,#000_72%,transparent_100%)]" />
+      <h2 className="mt-2 text-3xl font-semibold">
         {you ? (
           <>
-            You won <span className="text-accent">{lot.amount}</span>!
+            You won <span className="text-glow text-accent">{lot.amount}</span>!
           </>
         ) : (
           <>
@@ -333,7 +338,7 @@ export function WonBanner({ auction, participant, reload, settleSignature }: Omi
 export function CancelledBanner({ auction, participant, reload }: Omit<PanelProps, "stage">) {
   return (
     <Card className="text-center">
-      <h2 className="text-2xl font-bold">This auction was cancelled.</h2>
+      <h2 className="text-2xl font-semibold">This auction was cancelled.</h2>
       <p className="mt-2 text-muted">Your credits are fully refundable.</p>
       {participant ? (
         <div className="mt-5">
@@ -367,7 +372,7 @@ export function AuctionFacts({ auction }: { auction: AuctionView }) {
         {items.map(([k, v]) => (
           <div key={k}>
             <dt className="text-muted">{k}</dt>
-            <dd className="font-semibold tabular">{v}</dd>
+            <dd className="font-display font-semibold tabular">{v}</dd>
           </div>
         ))}
       </dl>

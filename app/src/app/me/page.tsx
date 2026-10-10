@@ -73,7 +73,7 @@ export default function MyAuctions() {
   if (!publicKey)
     return (
       <Card className="text-center">
-        <p className="text-lg font-semibold">Connect your wallet to see your auctions.</p>
+        <p className="font-display text-lg font-semibold">Connect your wallet to see your auctions.</p>
         <Button className="mt-4" onClick={open}>
           Connect wallet
         </Button>
@@ -82,7 +82,9 @@ export default function MyAuctions() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-3xl font-extrabold tracking-tight">My auctions</h1>
+      <h1 className="text-4xl font-semibold">
+        My <span className="text-glow text-accent">auctions</span>
+      </h1>
       {rows === null && <p className="text-muted">Loading…</p>}
       {rows?.length === 0 && (
         <p className="text-muted">
@@ -106,7 +108,7 @@ function MyRow({ row, reload }: { row: Row; reload: () => void }) {
     <Card className="flex flex-wrap items-center gap-4">
       <LotImage src={lot.image} size={44} />
       <div className="min-w-0 flex-1">
-        <Link href={`/auction/${row.auction.id}`} className="font-bold hover:text-accent">
+        <Link href={`/auction/${row.auction.id}`} className="font-display text-lg font-semibold transition hover:text-accent">
           {lot.name} <span className="font-normal text-muted">#{row.auction.id.toString()}</span>
         </Link>
         <p className="text-sm text-muted">

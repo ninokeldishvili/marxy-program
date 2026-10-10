@@ -12,7 +12,7 @@ import {
   WithdrawButton,
   WonBanner,
 } from "@/components/AuctionPanels";
-import { Card, Countdown, LotImage, useLot } from "@/components/ui";
+import { Card, Countdown, Eyebrow, LotImage, useLot } from "@/components/ui";
 import { useAuction } from "@/hooks/useAuction";
 import { useChainClock } from "@/hooks/useChainClock";
 import { formatDate } from "@/lib/format";
@@ -64,19 +64,21 @@ function AuctionScreen({ id }: { id: bigint }) {
 
       {stage.stage === "short" && (
         <Card className="text-center">
-          <p className="text-2xl font-bold">Not enough credits were sold.</p>
+          <p className="font-display text-2xl font-semibold">Not enough credits were sold.</p>
           <p className="mt-2 text-muted">Hang tight: the auction will be moved or refunded.</p>
         </Card>
       )}
 
       {stage.stage === "getReady" && (
         <Card className="text-center">
-          <p className="text-2xl font-bold sm:text-3xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/img/get-ready.jpg" alt="" className="mx-auto mb-2 h-36 w-36 object-contain [mask-image:radial-gradient(closest-side,#000_72%,transparent_100%)]" />
+          <p className="font-display text-2xl font-semibold sm:text-3xl">
             Credit purchases are locked. Auction is ready to start in {Math.max(1, Math.ceil((stage.remaining ?? 0) / 60))}{" "}
             min{Math.ceil((stage.remaining ?? 0) / 60) === 1 ? "" : "s"}. Get ready!
           </p>
-          <p className="mt-6 text-sm uppercase tracking-widest text-muted">Battle starts in</p>
-          <p className="mt-1 text-6xl font-black text-accent">
+          <Eyebrow className="mt-6">Battle starts in</Eyebrow>
+          <p className="text-glow mt-2 font-display text-6xl font-bold text-accent">
             <Countdown seconds={stage.remaining} />
           </p>
           <p className="mt-4 text-muted">
@@ -104,13 +106,13 @@ function AuctionScreen({ id }: { id: bigint }) {
 function Title({ auction }: { auction: AuctionView }) {
   const lot = useLot(auction);
   return (
-    <div className="flex items-center gap-4">
-      <LotImage src={lot.image} size={64} />
+    <div className="flex items-center gap-5">
+      <LotImage src={lot.image} size={80} />
       <div>
-        <Link href="/" className="text-sm text-muted hover:text-ink">
+        <Link href="/" className="text-sm text-muted transition hover:text-accent">
           ← Lobby
         </Link>
-        <h1 className="text-3xl font-extrabold tracking-tight">{lot.name}</h1>
+        <h1 className="mt-1 text-4xl font-semibold">{lot.name}</h1>
         <p className="text-sm text-muted">Auction #{auction.id.toString()}</p>
       </div>
     </div>
