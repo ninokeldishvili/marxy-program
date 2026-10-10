@@ -68,20 +68,32 @@ export function useAuction(id: bigint): LiveAuction {
     };
   }, [program, id, publicKey, version]);
 
-  // Bid history once.
+  // Bid history: on load and whenever the polled bid count or status changes,
+  // so the feed stays current even when websocket events are dropped. Retries
+  // a few times if the transaction history lags behind the account.
+  const bidCount = auction?.bidCount;
+  const status = auction?.status;
   useEffect(() => {
     let cancelled = false;
-    fetchHistory(connection, program, addressStr)
-      .then((h) => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    async function load(attempt: number) {
+      try {
+        const h = await fetchHistory(connection, program, addressStr);
         if (cancelled) return;
         setBids((live) => mergeBids(live, h.bids));
         if (h.settleSignature) setSettleSignature(h.settleSignature);
-      })
-      .catch(() => {});
+        const newest = h.bids[0]?.bidCount ?? 0n;
+        if (bidCount !== undefined && newest < bidCount && attempt < 3) timer = setTimeout(() => load(attempt + 1), 1_500);
+      } catch {
+        if (!cancelled && attempt < 3) timer = setTimeout(() => load(attempt + 1), 1_500);
+      }
+    }
+    load(0);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, [connection, program, addressStr]);
+  }, [connection, program, addressStr, bidCount, status]);
 
   // Live: account changes and program events.
   useEffect(() => {
