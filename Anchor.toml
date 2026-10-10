@@ -9,6 +9,9 @@ skip-lint = false
 [programs.localnet]
 marxy = "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA"
 
+[programs.devnet]
+marxy = "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA"
+
 [provider]
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"
