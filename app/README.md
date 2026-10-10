@@ -24,16 +24,16 @@ lists     buy      clock   the lot       bid       settles  withdraw
   - The admin wallet needs about 2 SOL: program deploy (around 3 SOL, once), auction rent and bot funding.
   - Each player needs about 0.01 SOL for fees and account rent.
 
-## 1. Deploy the program (with demo timers)
+## 1. Deploy the program
 
-The real get-ready period is 15 minutes. For demos, build with the `demo-timers` feature, which makes it **2 minutes**. Run this from the repo root:
+Run this from the repo root, then go straight on to the setup in step 3: the first wallet to call `initialize_config` becomes the admin.
 
 ```bash
-anchor build -- --features demo-timers
+anchor build
 anchor deploy --provider.cluster devnet
 ```
 
-> The default build (`anchor build`, 15 minutes) is the verified production binary. A `demo-timers` build has a different hash. Redeploy the default build when you're done demoing if you want the verified program back.
+The get-ready period (sales close to battle start) isn't part of the build. It lives in the program config and is set in step 3 from `GET_READY_SECS`.
 
 ## 2. Copy the IDL into the app
 
@@ -43,7 +43,7 @@ npm install
 npm run sync-idl
 ```
 
-This copies `../target/idl/marxy.json` and `../target/types/marxy.ts` into `src/idl/`. The app reads the program ID and the timers (`GET_READY_SECS`) from that IDL, so **sync after every build**. The script prints whether it copied a demo build.
+This copies `../target/idl/marxy.json` and `../target/types/marxy.ts` into `src/idl/`. The app reads the program ID and the rule constants from that IDL, so **sync after every build**. Each auction carries its own get-ready period, which the app reads from the auction account.
 
 ## 3. One-time devnet setup
 
@@ -56,7 +56,7 @@ The script:
 
 - loads the admin keypair, which must be the wallet that will own the config;
 - creates a treasury keypair and the mock mints (**USDC** 6 decimals, **Test BTC** 8, **Test SOL** 9) in `.keys/`;
-- calls `initialize_config` with a 2,300 bps (23%) minimum margin;
+- calls `initialize_config` with a 2,300 bps (23%) minimum margin and the get-ready period from `GET_READY_SECS` (default 300 s; use 120 for quick demos);
 - writes every address to `src/config/devnet.json`;
 - prints the env vars for `.env.local`.
 
@@ -122,7 +122,7 @@ npm run build
 npm run smoke     # devnet: one full auction with bots, then checks final balances
 ```
 
-`npm run smoke` needs a `demo-timers` deployment and a completed setup. It runs about four minutes: create, bots buy to the minimum, fund, three bids, settle, everyone withdraws. It then checks:
+`npm run smoke` needs a completed setup with a get-ready period of at most 5 minutes (`GET_READY_SECS=120` is quickest). It runs about four minutes: create, bots buy to the minimum, fund, three bids, settle, everyone withdraws. It then checks:
 
 - the winner holds the lot;
 - the treasury received exactly the revenue;
@@ -137,7 +137,7 @@ Before you start:
 1. **Lobby (0:00).** Point out the stages: Open for sales, Get ready, Live now, Ended. Each card shows the credit price, your cap, sales progress against the minimum, and a countdown.
 2. **Faucet (0:30).** Connect Phantom (listed first), then click **Get 100 test USDC**. The balance updates in the header.
 3. **Buy (1:00).** Open an auction in *Open for sales* and buy a few credits. The total cost updates as you type, the cap is enforced, and the toast links to the explorer. Mention the 23% margin built into the sales minimum.
-4. **Lock (≈1:30).** One minute before close, the bots fill the minimum and the progress bar hits 100%. At sales close the page switches to *"Credit purchases are locked. Auction is ready to start in 2 mins. Get ready!"* (The platform buys the lot during this period, but the UI never says so.)
+4. **Lock (≈1:30).** One minute before close, the bots fill the minimum and the progress bar hits 100%. At sales close the page switches to *"Credit purchases are locked. Auction is ready to start in 2 mins. Get ready!"* (with `GET_READY_SECS=120`) (The platform buys the lot during this period, but the UI never says so.)
 5. **Battle (≈3:30).** The countdown starts with the 40 s opening window, and bots trade bids in its last seconds; each bid resets it to 25 s. Watch the live feed for a round or two, then bid. You become the last bidder ("You") and your Bid button disables. Because you lead with more than 10 s left, the bots back off.
 6. **Win (≈4:30).** At zero the page shows "Settling…", then **You won 0.5 Test SOL!** with explorer links. Phantom shows the Test SOL.
 7. **Close out (≈5:00).** Go to **My auctions** and click **Close out** to get your account rent back (unused credits burn). Optionally show `/admin` from the admin wallet: the worker log, the learned margins and **Create auction now**.

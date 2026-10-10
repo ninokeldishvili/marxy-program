@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/marxy.json`.
  */
 export type Marxy = {
-  "address": "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA",
+  "address": "eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF",
   "metadata": {
     "name": "marxy",
     "version": "0.1.0",
@@ -667,6 +667,10 @@ export type Marxy = {
         {
           "name": "minMarginBps",
           "type": "u16"
+        },
+        {
+          "name": "getReadySecs",
+          "type": "i64"
         }
       ]
     },
@@ -1050,6 +1054,12 @@ export type Marxy = {
           "name": "newMinMarginBps",
           "type": {
             "option": "u16"
+          }
+        },
+        {
+          "name": "newGetReadySecs",
+          "type": {
+            "option": "i64"
           }
         }
       ]
@@ -1561,6 +1571,11 @@ export type Marxy = {
       "code": 6037,
       "name": "auctionStillActive",
       "msg": "Withdrawals are not possible while the auction is active"
+    },
+    {
+      "code": 6038,
+      "name": "invalidGetReadySecs",
+      "msg": "Get-ready period must be between 1 minute and 1 hour"
     }
   ],
   "types": [
@@ -1620,7 +1635,7 @@ export type Marxy = {
             "name": "salesClose",
             "docs": [
               "Current sales close (moves once if postponed). Battle start is",
-              "`sales_close + GET_READY_SECS`."
+              "`sales_close + get_ready_secs`."
             ],
             "type": "i64"
           },
@@ -1628,6 +1643,14 @@ export type Marxy = {
             "name": "originalSalesClose",
             "docs": [
               "Sales close as created; the postpone window is measured from it."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "getReadySecs",
+            "docs": [
+              "Get-ready period copied from the config at creation, so later config",
+              "changes never move the battle start of an existing auction."
             ],
             "type": "i64"
           },
@@ -1916,6 +1939,14 @@ export type Marxy = {
             "type": "u16"
           },
           {
+            "name": "getReadySecs",
+            "docs": [
+              "Get-ready period for new auctions, in seconds: battle start is",
+              "`sales_close + get_ready_secs`. Each auction keeps the value it was created with."
+            ],
+            "type": "i64"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }
@@ -2123,12 +2154,9 @@ export type Marxy = {
       "value": "[99, 111, 110, 102, 105, 103]"
     },
     {
-      "name": "getReadySecs",
-      "docs": [
-        "Demo builds (`--features demo-timers`): a 2-minute get-ready period."
-      ],
+      "name": "maxGetReadySecs",
       "type": "i64",
-      "value": "120"
+      "value": "3600"
     },
     {
       "name": "maxPlayerShareBps",
@@ -2145,6 +2173,16 @@ export type Marxy = {
       ],
       "type": "i64",
       "value": "2592000"
+    },
+    {
+      "name": "minGetReadySecs",
+      "docs": [
+        "Bounds for the get-ready period between sales close and battle start",
+        "(`Config::get_ready_secs`): 1 minute to 1 hour. The backend buys and funds",
+        "the lot during it, so it can't be shorter than a funding round trip."
+      ],
+      "type": "i64",
+      "value": "60"
     },
     {
       "name": "participantSeed",

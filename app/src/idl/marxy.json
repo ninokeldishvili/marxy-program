@@ -1,5 +1,5 @@
 {
-  "address": "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA",
+  "address": "eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF",
   "metadata": {
     "name": "marxy",
     "version": "0.1.0",
@@ -661,6 +661,10 @@
         {
           "name": "min_margin_bps",
           "type": "u16"
+        },
+        {
+          "name": "get_ready_secs",
+          "type": "i64"
         }
       ]
     },
@@ -1044,6 +1048,12 @@
           "name": "new_min_margin_bps",
           "type": {
             "option": "u16"
+          }
+        },
+        {
+          "name": "new_get_ready_secs",
+          "type": {
+            "option": "i64"
           }
         }
       ]
@@ -1555,6 +1565,11 @@
       "code": 6037,
       "name": "AuctionStillActive",
       "msg": "Withdrawals are not possible while the auction is active"
+    },
+    {
+      "code": 6038,
+      "name": "InvalidGetReadySecs",
+      "msg": "Get-ready period must be between 1 minute and 1 hour"
     }
   ],
   "types": [
@@ -1614,7 +1629,7 @@
             "name": "sales_close",
             "docs": [
               "Current sales close (moves once if postponed). Battle start is",
-              "`sales_close + GET_READY_SECS`."
+              "`sales_close + get_ready_secs`."
             ],
             "type": "i64"
           },
@@ -1622,6 +1637,14 @@
             "name": "original_sales_close",
             "docs": [
               "Sales close as created; the postpone window is measured from it."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "get_ready_secs",
+            "docs": [
+              "Get-ready period copied from the config at creation, so later config",
+              "changes never move the battle start of an existing auction."
             ],
             "type": "i64"
           },
@@ -1910,6 +1933,14 @@
             "type": "u16"
           },
           {
+            "name": "get_ready_secs",
+            "docs": [
+              "Get-ready period for new auctions, in seconds: battle start is",
+              "`sales_close + get_ready_secs`. Each auction keeps the value it was created with."
+            ],
+            "type": "i64"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }
@@ -2117,12 +2148,9 @@
       "value": "[99, 111, 110, 102, 105, 103]"
     },
     {
-      "name": "GET_READY_SECS",
-      "docs": [
-        "Demo builds (`--features demo-timers`): a 2-minute get-ready period."
-      ],
+      "name": "MAX_GET_READY_SECS",
       "type": "i64",
-      "value": "120"
+      "value": "3600"
     },
     {
       "name": "MAX_PLAYER_SHARE_BPS",
@@ -2139,6 +2167,16 @@
       ],
       "type": "i64",
       "value": "2592000"
+    },
+    {
+      "name": "MIN_GET_READY_SECS",
+      "docs": [
+        "Bounds for the get-ready period between sales close and battle start",
+        "(`Config::get_ready_secs`): 1 minute to 1 hour. The backend buys and funds",
+        "the lot during it, so it can't be shorter than a funding round trip."
+      ],
+      "type": "i64",
+      "value": "60"
     },
     {
       "name": "PARTICIPANT_SEED",

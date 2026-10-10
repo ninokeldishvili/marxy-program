@@ -6,8 +6,8 @@ use {
     anchor_lang::error::ErrorCode as AnchorError,
     common::*,
     marxy::{
-        error::MarxyError, AuctionStatus, GET_READY_SECS, MAX_POSTPONE_SECONDS,
-        POSTPONE_GRACE_SECONDS,
+        error::MarxyError, AuctionStatus, MAX_GET_READY_SECS, MAX_POSTPONE_SECONDS,
+        MIN_GET_READY_SECS, POSTPONE_GRACE_SECONDS,
     },
     solana_keypair::Keypair,
     solana_signer::Signer,
@@ -659,6 +659,7 @@ fn config_management() {
     assert_eq!(c.treasury, env.treasury.pubkey());
     assert_eq!(c.usdc_mint, env.usdc_mint);
     assert_eq!(c.min_margin_bps, MIN_MARGIN_BPS);
+    assert_eq!(c.get_ready_secs, GET_READY_SECS);
 
     let admin = env.admin.insecure_clone();
     let ix = env.initialize_config_ix(&admin.pubkey());
@@ -669,17 +670,17 @@ fn config_management() {
 
     let mallory = env.new_player(0);
     assert_err(
-        env.update_config(&mallory, Some(mallory.pubkey()), None, None, None),
+        env.update_config(&mallory, Some(mallory.pubkey()), None, None, None, None),
         MarxyError::Unauthorized,
     );
     assert_err(
-        env.update_config(&mallory, None, None, None, Some(0)),
+        env.update_config(&mallory, None, None, None, Some(0), None),
         MarxyError::Unauthorized,
     );
 
     // Raising the margin to 30% only affects auctions created afterwards.
     env.create_default(13);
-    assert_ok(env.update_config(&admin, None, None, None, Some(3_000)));
+    assert_ok(env.update_config(&admin, None, None, None, Some(3_000), None));
     assert_eq!(env.config().min_margin_bps, 3_000);
     assert_eq!(env.auction(13).sales_minimum, SALES_MINIMUM);
     let mut p = env.default_params(14);
@@ -690,7 +691,7 @@ fn config_management() {
     p.sales_minimum = 130 * USDC;
     assert_ok(env.create_auction(p));
     // A zero margin allows a sales minimum equal to the lot value.
-    assert_ok(env.update_config(&admin, None, None, None, Some(0)));
+    assert_ok(env.update_config(&admin, None, None, None, Some(0), None));
     let mut p = env.default_params(15);
     p.sales_minimum = LOT_VALUE;
     assert_ok(env.create_auction(p));
@@ -705,6 +706,7 @@ fn config_management() {
         &admin,
         Some(new_admin.pubkey()),
         Some(new_treasury.pubkey()),
+        None,
         None,
         None,
     ));
@@ -839,4 +841,55 @@ fn settle_rejects_wrong_treasury() {
     );
     env.treasury = real;
     assert_ok(env.settle(id, &players[1], Some(players[0].pubkey())));
+}
+
+/// The get-ready period lives in the config: bounded, admin-only, and only
+/// applies to auctions created after a change.
+#[test]
+fn get_ready_period_from_config() {
+    // Out-of-range values are rejected at initialization.
+    let mut env = Env::bare(SPL_TOKEN);
+    let admin = env.admin.insecure_clone();
+    for bad in [0, MIN_GET_READY_SECS - 1, MAX_GET_READY_SECS + 1, -60] {
+        let ix = env.initialize_config_ix_with(&admin.pubkey(), bad);
+        assert_err(env.send(&[ix], &admin, &[]), MarxyError::InvalidGetReadySecs);
+    }
+    let ix = env.initialize_config_ix_with(&admin.pubkey(), MIN_GET_READY_SECS);
+    assert_ok(env.send(&[ix], &admin, &[]));
+    assert_eq!(env.config().get_ready_secs, MIN_GET_READY_SECS);
+
+    // ...and on update; only the admin may change it.
+    let mallory = env.new_player(0);
+    assert_err(
+        env.update_config(&mallory, None, None, None, None, Some(300)),
+        MarxyError::Unauthorized,
+    );
+    assert_err(
+        env.update_config(&admin, None, None, None, None, Some(MAX_GET_READY_SECS + 1)),
+        MarxyError::InvalidGetReadySecs,
+    );
+
+    // Auction 1 keeps the 1-minute period it was created with.
+    let close1 = env.create_default(1);
+    let players = env.fill(1, 13);
+    assert_ok(env.update_config(&admin, None, None, None, None, Some(MAX_GET_READY_SECS)));
+    assert_eq!(env.config().get_ready_secs, MAX_GET_READY_SECS);
+    assert_eq!(env.config().min_margin_bps, MIN_MARGIN_BPS, "unchanged when None");
+    assert_eq!(env.auction(1).get_ready_secs, MIN_GET_READY_SECS);
+    assert_eq!(env.battle_start(1), close1 + MIN_GET_READY_SECS);
+
+    // Auction 2, created after the change, gets the 1-hour period.
+    let close2 = env.create_default(2);
+    assert_eq!(env.auction(2).get_ready_secs, MAX_GET_READY_SECS);
+    assert_eq!(env.battle_start(2), close2 + MAX_GET_READY_SECS);
+
+    // The windows follow each auction's own period.
+    env.set_time(close1 + MIN_GET_READY_SECS);
+    assert_err(env.buy_lot_and_fund(1), MarxyError::FundingClosed);
+    env.set_time(close1 + MIN_GET_READY_SECS - 1);
+    assert_ok(env.buy_lot_and_fund(1));
+    assert_eq!(env.auction(1).end_time, close1 + MIN_GET_READY_SECS + OPENING_WINDOW);
+    assert_err(env.bid(1, &players[0]), MarxyError::BattleNotStarted);
+    env.set_time(close1 + MIN_GET_READY_SECS);
+    assert_ok(env.bid(1, &players[0]));
 }

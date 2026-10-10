@@ -88,7 +88,8 @@ pub fn handle_create_auction(
         params.sales_minimum as u128 >= required_minimum,
         MarxyError::ThresholdBelowMargin
     );
-    let battle_start = battle_start(params.sales_close)?;
+    let get_ready_secs = ctx.accounts.config.get_ready_secs;
+    let battle_start = battle_start(params.sales_close, get_ready_secs)?;
 
     // floor(lot value * 10% / credit price), computed in u128 to avoid overflow.
     let max_credits_per_player = (params.lot_value as u128)
@@ -112,6 +113,7 @@ pub fn handle_create_auction(
         sales_minimum: params.sales_minimum,
         sales_close: params.sales_close,
         original_sales_close: params.sales_close,
+        get_ready_secs,
         opening_window: params.opening_window,
         countdown: params.countdown,
         end_time: 0,

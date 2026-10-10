@@ -41,6 +41,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   WrongRecipient: "Wrong recipient for this auction's outcome.",
   MissingAccount: "A required account is missing.",
   AuctionStillActive: "You can withdraw once the auction has ended.",
+  InvalidGetReadySecs: "The get-ready period must be between 1 minute and 1 hour.",
 };
 
 /** Custom error code (6000 + index) → error name, from the IDL. */

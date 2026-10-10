@@ -1,5 +1,5 @@
 // Copies the Anchor build output (IDL + TS types) into the app.
-// Run after `anchor build` (or `anchor build -- --features demo-timers`).
+// Run after every `anchor build`.
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,5 +22,4 @@ for (const [from, to] of [
 }
 
 const idl = (await import(join(out, "marxy.json"), { with: { type: "json" } })).default;
-const getReady = idl.constants.find((c) => c.name === "GET_READY_SECS")?.value;
-console.log(`program ${idl.address}, GET_READY_SECS = ${getReady}${getReady === "120" ? " (demo-timers build)" : ""}`);
+console.log(`program ${idl.address}`);

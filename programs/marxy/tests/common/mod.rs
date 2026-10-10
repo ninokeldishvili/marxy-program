@@ -15,7 +15,7 @@ use {
     litesvm::{types::FailedTransactionMetadata, LiteSVM},
     marxy::{
         error::MarxyError, instructions::CreateAuctionParams, Auction, Config, Participant,
-        AUCTION_SEED, CONFIG_SEED, GET_READY_SECS, PARTICIPANT_SEED,
+        AUCTION_SEED, CONFIG_SEED, PARTICIPANT_SEED,
     },
     solana_instruction::error::InstructionError,
     solana_keypair::Keypair,
@@ -42,6 +42,8 @@ pub const LOT_AMOUNT: u64 = 50_000_000;
 pub const LOT_VALUE: u64 = 100 * USDC;
 /// Platform minimum margin: 23%.
 pub const MIN_MARGIN_BPS: u16 = 2_300;
+/// Get-ready period the test config starts with: 15 minutes.
+pub const GET_READY_SECS: i64 = 15 * 60;
 /// Lot value * (1 + 23%): 123 credits, so at least 13 capped players.
 pub const SALES_MINIMUM: u64 = 123 * USDC;
 pub const CREDIT_PRICE: u64 = USDC;
@@ -274,10 +276,15 @@ impl Env {
     // ---------------------------------------------------------- instructions
 
     pub fn initialize_config_ix(&self, admin: &Pubkey) -> Instruction {
+        self.initialize_config_ix_with(admin, GET_READY_SECS)
+    }
+
+    pub fn initialize_config_ix_with(&self, admin: &Pubkey, get_ready_secs: i64) -> Instruction {
         Instruction::new_with_bytes(
             marxy::id(),
             &marxy::instruction::InitializeConfig {
                 min_margin_bps: MIN_MARGIN_BPS,
+                get_ready_secs,
             }
             .data(),
             marxy::accounts::InitializeConfig {
@@ -298,6 +305,7 @@ impl Env {
         new_treasury: Option<Pubkey>,
         new_usdc_mint: Option<Pubkey>,
         new_min_margin_bps: Option<u16>,
+        new_get_ready_secs: Option<i64>,
     ) -> TxResult {
         let ix = Instruction::new_with_bytes(
             marxy::id(),
@@ -306,6 +314,7 @@ impl Env {
                 new_treasury,
                 new_usdc_mint,
                 new_min_margin_bps,
+                new_get_ready_secs,
             }
             .data(),
             marxy::accounts::UpdateConfig {
@@ -367,7 +376,8 @@ impl Env {
 
     /// Sales close + the 15-minute get-ready period.
     pub fn battle_start(&self, id: u64) -> i64 {
-        self.auction(id).sales_close + GET_READY_SECS
+        let a = self.auction(id);
+        a.sales_close + a.get_ready_secs
     }
 
     pub fn buy(&mut self, id: u64, player: &Keypair, credits: u64) -> TxResult {

@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::GET_READY_SECS, error::MarxyError};
+use crate::{
+    constants::{MAX_GET_READY_SECS, MIN_GET_READY_SECS},
+    error::MarxyError,
+};
 
 #[account]
 #[derive(InitSpace)]
@@ -14,6 +17,9 @@ pub struct Config {
     /// Minimum margin over the lot value that every sales minimum must cover,
     /// in basis points (2300 = 23%).
     pub min_margin_bps: u16,
+    /// Get-ready period for new auctions, in seconds: battle start is
+    /// `sales_close + get_ready_secs`. Each auction keeps the value it was created with.
+    pub get_ready_secs: i64,
     pub bump: u8,
 }
 
@@ -49,10 +55,13 @@ pub struct Auction {
     /// USDC that must be sold for the auction to run.
     pub sales_minimum: u64,
     /// Current sales close (moves once if postponed). Battle start is
-    /// `sales_close + GET_READY_SECS`.
+    /// `sales_close + get_ready_secs`.
     pub sales_close: i64,
     /// Sales close as created; the postpone window is measured from it.
     pub original_sales_close: i64,
+    /// Get-ready period copied from the config at creation, so later config
+    /// changes never move the battle start of an existing auction.
+    pub get_ready_secs: i64,
     /// Seconds after battle start in which the first bid must land.
     pub opening_window: i64,
     /// Seconds each bid adds from "now".
@@ -81,14 +90,22 @@ impl Auction {
 
     /// When bidding opens: the end of the get-ready period.
     pub fn battle_start(&self) -> Result<i64> {
-        battle_start(self.sales_close)
+        battle_start(self.sales_close, self.get_ready_secs)
     }
 }
 
-pub fn battle_start(sales_close: i64) -> Result<i64> {
+pub fn battle_start(sales_close: i64, get_ready_secs: i64) -> Result<i64> {
     sales_close
-        .checked_add(GET_READY_SECS)
+        .checked_add(get_ready_secs)
         .ok_or_else(|| error!(MarxyError::MathOverflow))
+}
+
+pub fn validate_get_ready_secs(secs: i64) -> Result<()> {
+    require!(
+        (MIN_GET_READY_SECS..=MAX_GET_READY_SECS).contains(&secs),
+        MarxyError::InvalidGetReadySecs
+    );
+    Ok(())
 }
 
 #[account]

@@ -2,21 +2,21 @@
 
 A Solana-based auction platform that transforms traditional penny/last-bid auctions into a fixed-resource strategy game.
 
-Marxy is the only seller. It lists crypto **lots** (e.g. 0.5 BTC as cbBTC, or 10 SOL) that it doesn't own yet. Players buy **bid credits** in USDC for one specific auction until its **sales close**. If enough credits are sold, the backend buys the lot through Jupiter during a fixed 15-minute **get-ready** period and deposits it into the auction's on-chain vault. Bidding opens at **battle start** (sales close + 15 minutes). Players only see "Credit purchases are locked. Auction is ready to start in 15 mins. Get ready!"; the purchase itself isn't shown. Each bid costs one credit and resets a short countdown. When the countdown reaches zero, the last bidder wins the lot.
+Marxy is the only seller. It lists crypto **lots** (e.g. 0.5 BTC as cbBTC, or 10 SOL) that it doesn't own yet. Players buy **bid credits** in USDC for one specific auction until its **sales close**. If enough credits are sold, the backend buys the lot through Jupiter during the **get-ready** period and deposits it into the auction's on-chain vault. The period is set in the config (1 minute to 1 hour; 5 minutes recommended) and each auction keeps the value it was created with. Bidding opens at **battle start** (sales close + get-ready period). Players only see "Credit purchases are locked. Auction is ready to start in 5 mins. Get ready!"; the purchase itself isn't shown. Each bid costs one credit and resets a short countdown. When the countdown reaches zero, the last bidder wins the lot.
 
 ```
 CREATE  ->  SELL  ->  LOCK  ->  GET READY (funding)  ->  BATTLE  ->  WIN
-                  sales close           battle start = sales close + 15 min
+                  sales close           battle start = sales close + get_ready_secs
 ```
 
-Built with Anchor 1.1.2 / Solana CLI 3.1.10. Program ID (localnet keypair in `target/deploy/`): `Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA`.
+Built with Anchor 1.1.2 / Solana CLI 3.1.10. Program ID (keypair in `target/deploy/`): `eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF`. The earlier program `Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA` used a compile-time get-ready period and an older account layout; it stays on devnet but the app no longer uses it.
 
 ## Layout
 
 ```
 programs/marxy/src/
   lib.rs              instruction entrypoints
-  constants.rs        seeds and rule constants (10% cap, 1 h, 30 days, GET_READY_SECS = 15 min)
+  constants.rs        seeds and rule constants (10% cap, 1 h, 30 days, get-ready bounds 1 min to 1 h)
   state.rs            Config, Auction, Participant, AuctionStatus, RefundReason
   events.rs           events for the UI and backend
   error.rs            MarxyError
@@ -31,7 +31,7 @@ app/                  demo app: Next.js + Phantom, worker, devnet setup and smok
 
 `app/` is a Next.js app (Phantom, devnet) plus a backend worker that plays the platform's role: it lists lots, funds them, postpones, settles and runs optional demo bots. See [app/README.md](app/README.md).
 
-For demos, build the program with `anchor build -- --features demo-timers`. That shortens the get-ready period from 15 to 2 minutes (`GET_READY_SECS = 120`); nothing else changes. The default build is unaffected and stays byte-identical to the verified devnet deployment.
+The get-ready period is a config value, not a build option: set it with `initialize_config` and change it with `update_config` (demos typically use 2 minutes, production 5).
 
 ## Rules enforced on-chain
 
@@ -44,7 +44,7 @@ For demos, build the program with `anchor build -- --features demo-timers`. That
 | 5 | **Sales minimum (guaranteed profit)** ≥ `ceil(lot_value × (10_000 + min_margin_bps) / 10_000)`, using the config's minimum margin at creation time (checked math). Below it at sales close, the auction can't be funded or bid on, so every auction that runs is profitable. | `ThresholdBelowMargin`, `ThresholdNotMet` |
 | 6 | **Postpone once** if below the minimum, any time before sales close until 1 h after the *original* sales close. New sales close: in the future, later than the current one, at most 30 days ahead; battle start moves with it. While postponed (before the new sales close), sales reopen and buyers may withdraw a full refund. If nobody postpones within the hour, or the postponed sales close also misses the minimum, anyone can settle into refunds. | `postpone`, `POSTPONE_GRACE_SECONDS`, `MAX_POSTPONE_SECONDS` |
 | 7 | **Lock.** From sales close on (on-chain clock), buying fails. | `SalesLocked` |
-| 8 | **Funding (get-ready period).** `battle_start = sales_close + GET_READY_SECS`. With `sales_close <= now < battle_start` and the minimum met, the admin transfers exactly `lot_amount` into the lot vault. The program checks the vault received the full lot and records the funding time. `end_time = battle_start + opening_window`, however early the lot arrived. If not funded by battle start, anyone can settle into refunds. | `fund_lot`, `SalesStillOpen`, `FundingClosed`, `LotNotDeposited` |
+| 8 | **Funding (get-ready period).** `battle_start = sales_close + auction.get_ready_secs`, copied from the config when the auction is created. With `sales_close <= now < battle_start` and the minimum met, the admin transfers exactly `lot_amount` into the lot vault. The program checks the vault received the full lot and records the funding time. `end_time = battle_start + opening_window`, however early the lot arrived. If not funded by battle start, anyone can settle into refunds. | `fund_lot`, `SalesStillOpen`, `FundingClosed`, `LotNotDeposited` |
 | 9 | **Bidding** needs an active, funded auction, `now >= battle_start`, an unexpired countdown and ≥ 1 credit. It consumes one credit. The last bidder can't bid again. | `place_bid`, `NotFunded`, `BattleNotStarted`, `BiddingEnded`, `NoCreditsLeft`, `AlreadyLastBidder` |
 | 10 | **Countdown.** The opening window applies to the first bid. Every bid sets `end_time = now + countdown`. Credits are fixed, so the auction always ends. | `place_bid` |
 | 11 | **Settle** (anyone): see below. | `settle` |
@@ -80,8 +80,8 @@ The lot recipient is checked on-chain: it must be the last bidder when there's a
 
 | Instruction | Signer | Notes |
 |-------------|--------|-------|
-| `initialize_config(min_margin_bps)` | first admin | Creates the `["config"]` singleton with admin = signer, treasury, USDC mint and minimum margin (e.g. 2300 = 23%). Run it right after deploying (see "Deploy to devnet"). |
-| `update_config(new_admin?, new_treasury?, new_usdc_mint?, new_min_margin_bps?)` | admin | `None` leaves a field unchanged. Each auction stores its own USDC mint and sales minimum, so changing the mint or the margin only affects new auctions. |
+| `initialize_config(min_margin_bps, get_ready_secs)` | first admin | Creates the `["config"]` singleton with admin = signer, treasury, USDC mint, minimum margin (e.g. 2300 = 23%) and get-ready period (60 to 3600 s, else `InvalidGetReadySecs`). Run it right after deploying (see "Deploy to devnet"). |
+| `update_config(new_admin?, new_treasury?, new_usdc_mint?, new_min_margin_bps?, new_get_ready_secs?)` | admin | `None` leaves a field unchanged. Each auction stores its own USDC mint, sales minimum and get-ready period, so changing the mint, the margin or the period only affects new auctions. |
 | `create_auction(params)` | admin | `params = { auction_id, lot_amount, lot_value, credit_price, sales_minimum, sales_close, opening_window, countdown }`. Creates the auction PDA and its USDC vault (rent paid by the admin). |
 | `buy_credits(credits)` | player | Creates the participant account on first purchase (`init_if_needed`). |
 | `postpone(new_sales_close)` | admin | Once, only below the minimum (see rule 6). |
@@ -101,8 +101,8 @@ SPL Token and Token-2022 mints are both supported through the token interface (U
 
 | Account | Address | Contents |
 |---------|---------|----------|
-| Config | PDA `["config"]` | `admin`, `treasury`, `usdc_mint`, `min_margin_bps`, `bump` |
-| Auction | PDA `["auction", auction_id (u64 LE)]` | id, lot mint/amount/value, USDC mint, credit price, max credits per player, sales minimum, sales close (current and original; battle start = sales close + 15 min), opening window, countdown, end time, funded flag/time, total credits sold, revenue, participant count, bid count, last bidder, status, postponed flag, bump |
+| Config | PDA `["config"]` | `admin`, `treasury`, `usdc_mint`, `min_margin_bps`, `get_ready_secs`, `bump` |
+| Auction | PDA `["auction", auction_id (u64 LE)]` | id, lot mint/amount/value, USDC mint, credit price, max credits per player, sales minimum, sales close (current and original), get-ready period (battle start = sales close + get-ready period), opening window, countdown, end time, funded flag/time, total credits sold, revenue, participant count, bid count, last bidder, status, postponed flag, bump |
 | Participant | PDA `["participant", auction, player]` | auction, player, credits bought, credits left, bump |
 | USDC vault | ATA(USDC mint, auction PDA) | created in `create_auction` |
 | Lot vault | ATA(lot mint, auction PDA) | created in `fund_lot` |
@@ -112,7 +112,7 @@ SPL Token and Token-2022 mints are both supported through the token interface (U
 ## How the backend funds a lot
 
 1. Listen for `AuctionCreated` / `CreditsBought` / `AuctionPostponed` (or poll the auction account) to track `sales_close`, `revenue` and `sales_minimum`.
-2. At `sales_close`, if `revenue >= sales_minimum`, buy the lot and call `fund_lot` before battle start (`sales_close + 15 min`):
+2. At `sales_close`, if `revenue >= sales_minimum`, buy the lot and call `fund_lot` before battle start (`sales_close + get_ready_secs`):
 
    ```bash
    # mainnet: Jupiter quote (USDC -> lot, ExactOut), swap from the admin wallet, then fund_lot
@@ -172,7 +172,7 @@ spl-token create-token --decimals 6    # mock USDC
 spl-token create-token --decimals 8    # mock lot (e.g. cbBTC)
 ```
 
-Then call `initialize_config(min_margin_bps)` with the admin wallet, the treasury and the mock USDC mint, from a small client using `target/idl/marxy.json`, **in the same session as the deploy**. The first caller becomes admin, so don't leave a fresh deployment uninitialized. After that, `create_auction`, and use `yarn fund-lot --mock` between sales close and battle start. Optionally publish the IDL with `anchor idl init --filepath target/idl/marxy.json`.
+Then call `initialize_config(min_margin_bps, get_ready_secs)` with the admin wallet, the treasury and the mock USDC mint, from a small client using `target/idl/marxy.json`, **in the same session as the deploy**. The first caller becomes admin, so don't leave a fresh deployment uninitialized. After that, `create_auction`, and use `yarn fund-lot --mock` between sales close and battle start. Optionally publish the IDL with `anchor idl init --filepath target/idl/marxy.json`.
 
 ## Design notes and caveats
 

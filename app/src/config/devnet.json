@@ -1,9 +1,9 @@
 {
   "cluster": "devnet",
-  "programId": "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA",
+  "programId": "eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF",
   "admin": "AmpNzrk2vGjNxZ1wpuRS2UAtsu9tpRBfpfHjyt9Z6bZ",
   "treasury": "CG6AM5RM8cKNwP3CmYk6zErSJERpctZx9sVWPTyZeg2b",
-  "configPda": "ESo6jtpP6aBmZiU4WLRRL78aaY414gpGP1hbw5QGFSGi",
+  "configPda": "7vHpBsxW7X5n3UCFHDSEohRBmn4xRjurTCrC3wBMLRgG",
   "usdcMint": "DuE6oMh2MG1xfCYBCP3982dJPa2fENvaukjErAtZHCD3",
   "usdcTokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
   "lotMints": {

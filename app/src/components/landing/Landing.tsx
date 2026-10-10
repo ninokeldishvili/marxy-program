@@ -195,7 +195,7 @@ export function Landing() {
             <Art name="vault" label="Vault" seed={2} />
             <b>02</b>
             <h3>Lock</h3>
-            <p>Gates close. No more credits. The battle starts 15 minutes later, so get ready.</p>
+            <p>Gates close. No more credits. The battle starts a few minutes later, so get ready.</p>
           </li>
           <li className="flow__step reveal">
             <Art name="battle" label="Battle" seed={3} />

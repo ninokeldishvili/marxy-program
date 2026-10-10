@@ -22,6 +22,8 @@ export interface OnChainConfig {
   treasury: PublicKey;
   usdcMint: PublicKey;
   minMarginBps: number;
+  /** Get-ready period (seconds) given to new auctions. */
+  getReadySecs: number;
 }
 
 export class Platform {
@@ -52,7 +54,13 @@ export class Platform {
 
   async config(): Promise<OnChainConfig> {
     const c = await this.program.account.config.fetch(configPda());
-    return { admin: c.admin, treasury: c.treasury, usdcMint: c.usdcMint, minMarginBps: c.minMarginBps };
+    return {
+      admin: c.admin,
+      treasury: c.treasury,
+      usdcMint: c.usdcMint,
+      minMarginBps: c.minMarginBps,
+      getReadySecs: c.getReadySecs.toNumber(),
+    };
   }
 
   /** The token program owning a lot mint (from the setup file, else from the chain). */

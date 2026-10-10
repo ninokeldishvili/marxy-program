@@ -13,6 +13,8 @@ export interface AuctionView {
   salesMinimum: bigint;
   salesClose: number;
   originalSalesClose: number;
+  /** Seconds from sales close to battle start, fixed when the auction was created. */
+  getReadySecs: number;
   openingWindow: number;
   countdown: number;
   endTime: number;

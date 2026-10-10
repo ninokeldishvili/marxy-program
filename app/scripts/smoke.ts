@@ -13,7 +13,6 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 
 import { CONFIG, IS_CONFIGURED } from "../src/config";
 import { parseAmount } from "../src/lib/catalog";
-import { GET_READY_SECS } from "../src/lib/idl";
 import { ata, placeBidIx, refundDue, withdrawIxs } from "../src/lib/instructions";
 import { lotCostFromPrice, priceLot } from "../src/lib/pricing";
 import { fetchParticipant } from "../src/lib/program";
@@ -65,16 +64,17 @@ async function txFee(signature: string): Promise<number> {
 
 async function main() {
   if (!IS_CONFIGURED) throw new Error("run `npm run devnet:setup` first");
-  if (GET_READY_SECS > 300) {
-    throw new Error(
-      `the synced IDL has GET_READY_SECS = ${GET_READY_SECS}: deploy a \`anchor build -- --features demo-timers\` build and run \`npm run sync-idl\``,
-    );
-  }
   const token = CONFIG.lotMints.testSol;
   if (!token) throw new Error("Test SOL mint missing from src/config/devnet.json");
-  console.log(`smoke test on ${rpcUrl()} (get-ready ${GET_READY_SECS}s)`);
-
   const chain = await platform.config();
+  const getReadySecs = chain.getReadySecs;
+  if (getReadySecs > 300) {
+    throw new Error(
+      `the config's get-ready period is ${getReadySecs}s: set GET_READY_SECS=120 and run \`npm run devnet:setup -- --update-config\``,
+    );
+  }
+  console.log(`smoke test on ${rpcUrl()} (get-ready ${getReadySecs}s)`);
+
   const treasury = chain.treasury;
   const usdcMint = new PublicKey(CONFIG.usdcMint);
   const usdcProgram = platform.usdcTokenProgram;
@@ -124,7 +124,7 @@ async function main() {
   const fundSig = await platform.mockFund(a);
   a = await refreshed(id);
   check(a.funded, `lot funded (${fundSig})`);
-  const battleStart = a.salesClose + GET_READY_SECS;
+  const battleStart = a.salesClose + a.getReadySecs;
   check(a.endTime === battleStart + a.openingWindow, "end time = battle start + opening window");
 
   step("Battle: three bids");

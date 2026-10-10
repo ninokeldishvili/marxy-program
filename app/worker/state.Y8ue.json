@@ -1,0 +1,1724 @@
+{
+  "version": 1,
+  "nextAuctionId": 25,
+  "updatedAt": 1791668174766,
+  "lotTypes": {
+    "btc-mini": {
+      "marginBps": 2300,
+      "ladderShift": 0,
+      "completed": 12
+    },
+    "sol-half": {
+      "marginBps": 2300,
+      "ladderShift": 1,
+      "completed": 10
+    }
+  },
+  "auctions": {
+    "1": {
+      "id": 1,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791650551,
+      "originalSalesClose": 1791650731,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82810.29834340843
+      },
+      "filledAt": 1791651084,
+      "minimumMetAtClose": false,
+      "learned": true,
+      "postponedByWorker": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "2": {
+      "id": 2,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791650551,
+      "originalSalesClose": 1791650731,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "100000",
+        "marginBps": 2300,
+        "usdPrice": 110.11731142190747
+      },
+      "filledAt": null,
+      "minimumMetAtClose": false,
+      "learned": true,
+      "outcome": "lowSales",
+      "botsClosedOut": true
+    },
+    "3": {
+      "id": 3,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791652189,
+      "originalSalesClose": 1791652369,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82973.22156670773
+      },
+      "filledAt": 1791652322,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "4": {
+      "id": 4,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791653377,
+      "originalSalesClose": 1791653557,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82962.33373519154
+      },
+      "filledAt": 1791653507,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "5": {
+      "id": 5,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791654333,
+      "originalSalesClose": 1791654513,
+      "pricing": {
+        "lotValue": "55000000",
+        "salesMinimum": "67650000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 109.91554522706032
+      },
+      "filledAt": 1791654462,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 7,
+      "outcome": "noBids",
+      "botsClosedOut": true
+    },
+    "6": {
+      "id": 6,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791654558,
+      "originalSalesClose": 1791654738,
+      "pricing": {
+        "lotValue": "84000000",
+        "salesMinimum": "103320000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 83085.97581675119
+      },
+      "filledAt": 1791654689,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 8,
+      "outcome": "noBids",
+      "botsClosedOut": true
+    },
+    "7": {
+      "id": 7,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791662812,
+      "originalSalesClose": 1791662992,
+      "pricing": {
+        "lotValue": "84000000",
+        "salesMinimum": "103320000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 83068.70704707112
+      },
+      "filledAt": 1791662950,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "8": {
+      "id": 8,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791662812,
+      "originalSalesClose": 1791662992,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.32932818560944
+      },
+      "filledAt": 1791662950,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "9": {
+      "id": 9,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791663987,
+      "originalSalesClose": 1791664167,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.20577371546119
+      },
+      "filledAt": 1791664119,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 4,
+      "botsStopped": true,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "10": {
+      "id": 10,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791664013,
+      "originalSalesClose": 1791664193,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82973.93722714744
+      },
+      "filledAt": 1791664141,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "11": {
+      "id": 11,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791665114,
+      "originalSalesClose": 1791665294,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.29734693372383
+      },
+      "filledAt": 1791665252,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "12": {
+      "id": 12,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791665193,
+      "originalSalesClose": 1791665373,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82958.75183366332
+      },
+      "filledAt": 1791665326,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 5,
+      "botsStopped": true,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "13": {
+      "id": 13,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791665511,
+      "originalSalesClose": 1791665691,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.3212323148265
+      },
+      "filledAt": 1791665641,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "14": {
+      "id": 14,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791665534,
+      "originalSalesClose": 1791665714,
+      "pricing": {
+        "lotValue": "84000000",
+        "salesMinimum": "103320000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 83011.64352390244
+      },
+      "filledAt": 1791665665,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "15": {
+      "id": 15,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791665965,
+      "originalSalesClose": 1791666145,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.23393705674567
+      },
+      "filledAt": 1791666093,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "16": {
+      "id": 16,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791665995,
+      "originalSalesClose": 1791666175,
+      "pricing": {
+        "lotValue": "84000000",
+        "salesMinimum": "103320000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 83043.22855652134
+      },
+      "filledAt": 1791666126,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "17": {
+      "id": 17,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791666391,
+      "originalSalesClose": 1791666571,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82988.81590639503
+      },
+      "filledAt": 1791666530,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "18": {
+      "id": 18,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791666391,
+      "originalSalesClose": 1791666571,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.31864816459755
+      },
+      "filledAt": 1791666530,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 1,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "19": {
+      "id": 19,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/lots/btc.svg",
+      "createdAt": 1791666790,
+      "originalSalesClose": 1791666970,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82930.03765550205
+      },
+      "filledAt": 1791666920,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "outcome": "noBids",
+      "botsClosedOut": true
+    },
+    "20": {
+      "id": 20,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/lots/sol.svg",
+      "createdAt": 1791666811,
+      "originalSalesClose": 1791666991,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.20100873185078
+      },
+      "filledAt": 1791666938,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "outcome": "noBids",
+      "botsClosedOut": true
+    },
+    "21": {
+      "id": 21,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/assets/img/lot-btc.jpg",
+      "createdAt": 1791667360,
+      "originalSalesClose": 1791667540,
+      "pricing": {
+        "lotValue": "84000000",
+        "salesMinimum": "103320000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 83073.24755298947
+      },
+      "filledAt": 1791667498,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "22": {
+      "id": 22,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/assets/img/lot-sol.jpg",
+      "createdAt": 1791667360,
+      "originalSalesClose": 1791667540,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.16754886380737
+      },
+      "filledAt": 1791667498,
+      "minimumMetAtClose": true,
+      "learned": true,
+      "botBidBudget": 0,
+      "outcome": "won",
+      "botsClosedOut": true
+    },
+    "23": {
+      "id": 23,
+      "lotType": "sol-half",
+      "name": "0.5 Test SOL",
+      "image": "/assets/img/lot-sol.jpg",
+      "createdAt": 1791667819,
+      "originalSalesClose": 1791667999,
+      "pricing": {
+        "lotValue": "56000000",
+        "salesMinimum": "68880000",
+        "creditPrice": "50000",
+        "marginBps": 2300,
+        "usdPrice": 110.17813749816187
+      },
+      "filledAt": 1791667948,
+      "minimumMetAtClose": true,
+      "learned": false,
+      "botBidBudget": 2
+    },
+    "24": {
+      "id": 24,
+      "lotType": "btc-mini",
+      "name": "0.001 Test BTC",
+      "image": "/assets/img/lot-btc.jpg",
+      "createdAt": 1791667835,
+      "originalSalesClose": 1791668015,
+      "pricing": {
+        "lotValue": "83000000",
+        "salesMinimum": "102090000",
+        "creditPrice": "250000",
+        "marginBps": 2300,
+        "usdPrice": 82975.07108545915
+      },
+      "filledAt": 1791667966,
+      "minimumMetAtClose": true,
+      "learned": false,
+      "botBidBudget": 7
+    }
+  },
+  "bots": [
+    "AeeujYMDCtKuTzwjehNDjyqJ8VG5RPCVDmuQXmNqYiWQ",
+    "8Fc6ueG1Rr5dWCBqQ3eNrxu9vJYSyBM2PLxhZjB3B4bS",
+    "3SMGHPtunpPX9qgN54fU6NH8zpYuM4R2NGJxLTBMDZZv",
+    "F5KZ4PAm4WhTsFxTTSMJZts9EqqL4RdCGJxkz1DfaScF",
+    "6ngACKrAsSLFsqkuCoCWxtwWmGc4H6JFneAQfeDdwrKw",
+    "5UTN8fjD9XqXQJWtpn72eRFvVsngEs2bsbUMoccmZshK",
+    "5zhyaDSE7zMK68BbdSkbDhAuF6ApKtj82tSwmtUsB7Rc",
+    "8FvNYzbuZYs28vMPxGRUrVgGH2GJwRPWmTtAuQKPBJ59",
+    "5CTSyoL1YHegjsPgrXeESV3AQfbvuj5DrecXUiEe1zHW",
+    "2gPNuvheDK9rxsNxqf9aaq9TbaV5j4eZzhevuuc5MzRu",
+    "5sDRZSjC4ra9oLUDAH5wWknJdFbKXDPHRNTs2rivQ2Yk",
+    "8YJzudTfjF8AZj7J1EC7YqqFnvGSTAce7rn8jkXGc1vb",
+    "7D82GdPPT4a59ybMsn3AN3Y9aTsKMukxmK3m9JubKrVM",
+    "3DAtMaFpZUR8txkdWjtvh535u6Ps7Wa3gseRE1sFJh2f",
+    "C693TJg9E1aixLJsCwfkHyYD6YiFjWTzrPkfsqqeVfkD",
+    "647iFxLnZaB2iKUNveHsPXJQSPBtNhGoY4PgnWzce8sa",
+    "DdeFMoTBfMzgPpCmr1VWShkMMjYAmueD6rxsSy7D99YH",
+    "2QhxtUQZQz5b9ZP3UxYcBtF8NDSxLzA7JK7t2piUnzpG",
+    "Gu257r5ReLUfLXqGajdmEq5AZpm1qYzGj4DUQvdoXotj",
+    "FvDPj5LuYacQXk6rLfD9JwAjNrxmwoNAofSnTvzGDBgR"
+  ],
+  "log": [
+    {
+      "at": "2026-10-10T21:01:33.937Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 15,
+      "signature": "5P6H5BSCQbci5212wNNMVdLGVAnzjqJCmTMLepcMrHg5UrHe8o1j8Go1FQHM1raCEDB2p96TdKLRkkwoPWBENBqi"
+    },
+    {
+      "at": "2026-10-10T21:01:33.937Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 15,
+      "signature": "m8EMyFQB8V3j9bU8CHtSGE9bJSQsdHiBhJzxntXe6Sc3VNJWqiSFoS75gQh1UFR5sftMmwXiA58DeSpRB2Jkind"
+    },
+    {
+      "at": "2026-10-10T21:01:33.937Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 15,
+      "signature": "ZZrjmsi3Uwvht8r81RdhtCHL2Bv9niQKAXgKGKHN4xYvUgzfLERG6FWkpmaV3ft7yF87SkfnDxLEZnQyu6pqn5z"
+    },
+    {
+      "at": "2026-10-10T21:01:33.937Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 15,
+      "signature": "5haw3ELCGPmRx6SgBawpvJFETz3FCtF4kc6ek6G92DxKg9EdcKkGHN6oyxghG2sA6vQYi8nE7ptQrTfxCuosxrPs"
+    },
+    {
+      "at": "2026-10-10T21:01:33.937Z",
+      "action": "bots: bought 34 credits",
+      "auctionId": 15,
+      "signature": "2Tf5QHpoGMh89wTp9vaYGukqHEQrnToDQFSiutQCpU1UqTqhREE6kdCyrDXydQeq1AVJwoMcYTpBeeVKgVHDdsU2"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "2SpzioPAh8mWtj2Lpn8JMV5Sq7xRo56NH9fvPiwgf9pYFBdUMxXTEeiRM6MJrjdZ9DXCV4YQsPx6WBbBknwgCHrA"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "4GCTmLsXsmE3awbF7zACdQG3bQ2F9cxyUww3MKch84CpvNmFz3iLxsTQV5kmmeXnvomQtaHkFMrfBRVKeEUgij8R"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "3HLuEzD5yev9dHiSjGKMehZWd6RBDiuF45zpkkV8yLr269DXcHUFzKmh1LyLGgPVuisigQLkH9nuWfzC5H6LtDch"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "3kdm4sY4yji6fXSDV13AEQXvzN7C81vAdWNJvJh9DAD3jHTGb23G28MetgXTpd6rr26JWaFg4nvdqJsZrcAyyz4w"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "3v2JUc4UiNn3sdUS6tPTuWriqDeo7qLvzNYuEP1j5tp1AJweR5muFHgWmome52ktXYC5QVeiz6NEGCTRtFtycpt7"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "4VwtbYGh1MZfdQZ7pQJzNFyCtNwjNkwJ4G8Aw129F11Vw6TDJF9YrvVP9Xqt5kd9Cnt8thAomBkWEh78RMv8tYcy"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "3wUthMdMVxbYtFAwEe8tZ3F9WqjnGnoMgA1QGXAu11bviYvJPCHNSoBfdhZmrN9c7F9jH8ZHnJyXXEQ2ZPRmTRiF"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "N5m2Gy2EjzbU1mogoGN7ZHQh52tQjt3XgDgqb3kbPLjQbLiQaTXbU6R4kGXHr5frHoTpsX1zC2sZ5Fu8tsyQZNt"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "52FVdnC8t3qbec9qxWdiGC1yXMR28AEAChktkwQQgYacJtC1e41XSSPtFLtNkETHgUMLR5cHCqVEpeAGJmu1mPTo"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "2bkqEPWLfiy2QnQd9CgFA3tLFbmyoqdcBqx1bAHSAbSvMPnRcEAWTAvRyyaUVNJaabr82KRMHRYuov84xKwYozAZ"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "5GnR4Hcy8vnAUKPGMJJrvJFwvk3wnDywa7ErZZqpDfPFupeyH3YWPYVMqFewdnHuWGZz87jtxjSQe9hECCrDN3XJ"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 16,
+      "signature": "MNjWv3JB63r4QJsDVa9ez15BeZqusTP7969smV5JftjgHoZAL7kMCUjG3eUjRmFtf2nfZt6GaBFAocZR6eo1kSP"
+    },
+    {
+      "at": "2026-10-10T21:02:06.866Z",
+      "action": "bots: bought 18 credits",
+      "auctionId": 16,
+      "signature": "66bMtbp4yzQwUT1TiZvUfGiLCYfeHEBirhkxrPo2im8Lt88Qz5M4uPjQiBoL7EhQYD7ETCZN8ZuLw1BjEK8QY3zf"
+    },
+    {
+      "at": "2026-10-10T21:02:29.398Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 15,
+      "signature": "4EFmh8dpERXCtRoXHFyjFhcNtssP4yfiJhW4yjwdsErAKxhrPbYNnwvCgbN2X2Z1mysvbrr4LX4AEGEkP6o3JJXP"
+    },
+    {
+      "at": "2026-10-10T21:02:59.238Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 16,
+      "signature": "27Tq14q7mLQ433pE5DRhF7SejEt2ovcmJ8QCsQ2HCpyGCvbq24ZvWp7dMbSa8aqv34eb3nUeEs5RUZ8Y9kG5KMgu"
+    },
+    {
+      "at": "2026-10-10T21:05:00.641Z",
+      "action": "bots: 8YJz… bid (4 bot bids left)",
+      "auctionId": 15,
+      "signature": "51SBzgWTJHFipSSmHaEWU1b5yHcHdM33332v5UjBWL29KkekeWuGGGux7k6YqQsv7VE3AKkYRZr2DtKHTWDugjEV"
+    },
+    {
+      "at": "2026-10-10T21:05:14.263Z",
+      "action": "bots: 8Fc6… bid (3 bot bids left)",
+      "auctionId": 15,
+      "signature": "4ctgHz8zNbyxongTKcnWzP8tXdszZP9YJbTYgJBAaLshid5CoVSb25Gu7v8U53CrVCM7hchSHQDdSiTrJSogqMDC"
+    },
+    {
+      "at": "2026-10-10T21:05:34.337Z",
+      "action": "bots: 5CTS… bid (2 bot bids left)",
+      "auctionId": 15,
+      "signature": "39Dn1EgnR4FbAApzRgxj5pGij8QnX9D94Mk4cnXPpwaW5C9CYzAzUpiB3oGBx83vej4obzFHZRdH3mUUd57hcHcU"
+    },
+    {
+      "at": "2026-10-10T21:05:36.382Z",
+      "action": "bots: 5sDR… bid (2 bot bids left)",
+      "auctionId": 16,
+      "signature": "3dvq11vEkTJN1tShYK3YQLDT9tQ7GfFMQstbLW117B6U3uL9BNR8dJt28WCeCye9oyW8rzdcUebo324LesJ6NxTq"
+    },
+    {
+      "at": "2026-10-10T21:05:49.793Z",
+      "action": "bots: DdeF… bid (1 bot bids left)",
+      "auctionId": 15,
+      "signature": "25KaTiHFE1JGXk6B2JeniieAgLXTTizHwcH8hAx5HKpCow2zEyEHR9x8tsNifmbEoBrqnMU5kvcsKnvcm5XgzTUn"
+    },
+    {
+      "at": "2026-10-10T21:05:51.738Z",
+      "action": "bots: 5CTS… bid (1 bot bids left)",
+      "auctionId": 16,
+      "signature": "2TwUxcjG5onZT9zkBSLMZRfTvxnCmBNdA4xewKx1KqZ7sJCUiDz1xH53oWVArTBfzXfJPPDkrPeWDmzuftEu7HCx"
+    },
+    {
+      "at": "2026-10-10T21:06:04.438Z",
+      "action": "bots: 3SMG… bid (0 bot bids left)",
+      "auctionId": 15,
+      "signature": "4hmK5pybtQHKLJ3qNq2YdAXzoUrXn2bQh8BgF214D33wxYXva3WL2TioF467jrz7Tt4kQXVMrf9h1VJ8uRpk78vG"
+    },
+    {
+      "at": "2026-10-10T21:06:06.487Z",
+      "action": "bots: 8YJz… bid (0 bot bids left)",
+      "auctionId": 16,
+      "signature": "4PgbZbhmgHn2BGEbpUyKpxFRmuZMmKGehXvkRWKv2stiWuUU9vmjcEEYUSoHHMr1rkQm9F3y75sma9i3DvcLuQw"
+    },
+    {
+      "at": "2026-10-10T21:06:36.943Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 15,
+      "signature": "39w29VUHfsGAasYKen6xzW3HCtYiBbADnoGf5KEiJCr4tDaxADLe7f7iC9QADYy9acczzNq7nZvqtyHhp5HFdCLt"
+    },
+    {
+      "at": "2026-10-10T21:06:39.153Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 16,
+      "signature": "4JXbT1gGZDPfe5utjdipP79qDC6XvkxqpFE9QkeLSHeXh5QEdGBsTK12wEcw98oYitx4HXFoS8u4i638HcTS2jiP"
+    },
+    {
+      "at": "2026-10-10T21:06:39.361Z",
+      "action": "ended (won); sol-half margin 23% -> 23%, ladder shift 1 -> 1",
+      "auctionId": 15
+    },
+    {
+      "at": "2026-10-10T21:06:47.141Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 15
+    },
+    {
+      "at": "2026-10-10T21:06:47.141Z",
+      "action": "ended (won); btc-mini margin 23% -> 23%, ladder shift 0 -> 0",
+      "auctionId": 16
+    },
+    {
+      "at": "2026-10-10T21:06:55.021Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 16
+    },
+    {
+      "at": "2026-10-10T21:06:57.581Z",
+      "action": "created 0.001 Test BTC: cost $83 (jupiter $82988.82), minimum $102.09 at 23%, credit $0.25, cap 33, 409 target credits",
+      "auctionId": 17,
+      "signature": "V7mX8QmKLSYLxgKVPo2N3whBMNimrJ4ZR213cXQwNEQXR26RqPRC5eW7aTTk7wGzUFksNbASz1ZP4zvi66a8CVZ"
+    },
+    {
+      "at": "2026-10-10T21:07:00.042Z",
+      "action": "created 0.5 Test SOL: cost $56 (jupiter $110.32), minimum $68.88 at 23%, credit $0.05, cap 112, 1378 target credits",
+      "auctionId": 18,
+      "signature": "2Q6agjRa2kjCv3uMgQpbBioFUdrJNuRT4fBFjUEiruG5jeDKE7MjsMebQfwBn49cFDCwk6caq2F1X2KpZmB21im4"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "4XUGQN6bnDMVejGsp4m8A4eCcgsDWc2SiGWATUtvr5jYKefg3rrJAkweF7D5XULwgvbPJzkUWiYZHdELNEZ7XCS5"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "53jfmntSoXxCvsBXDdByioUF4yxLgGQnydabaii2SXFBT2kF7GzNL7ALbYG8Jrv6uamX8XasJLRYNyfjAjs6tbSA"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "4KiAbze79ExYexrXVyqVEULo5Lx8sSikm4K7goNBWGByWvmb2kJFzRp88zpBhN8xRGVLuxWnvMGCx7vJHzQWJdXN"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "4XGiW36NjF8kusKxfva2sctWeG5GHSnCFz89wzZzdjLvMi3ynA5yvKzk45UB5XrDFAKvd6NSMLkJ4iRUbrk98vbd"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "37qR1nki9JVs8SmpH7k9ZXAdjHmeben6NRXkjEbqWQUVKPfFuba1XnRjNNZGWGkBb72gRjsHiRagZcg434phzFRL"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "3xLn959okzgZUeQmDxj89BSncpDv8xS15P4B1oHNhyPeMmAMXUDaNfqWzA9P3xcBq6CM5yJAstNv1F44GSCUguL6"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "47VZUqtC8U6zVG2aJ8F74MBMSD792AiT7PC7cgX1AC7gfanpcxBAbkyWXbRbYM8bk6ge6zQG5hXpuXHMXmqJcbju"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "5A5oUi5k8vDRxG8x9EsmsoqjVADAeSUzF6Khm3fLzsbdBRE17WbUiJdM3x95EPfVV8CJjYTpyL9vnawUZF4sxRaG"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "3a9zvwTSTLzMW1Qxt5cz6hQCzCDm77q8gUr517uXs94dnsdfVFh4geT5rQ1rUwoXgWktFQY2iuX3nmRv5fpC7xDG"
+    },
+    {
+      "at": "2026-10-10T21:08:43.364Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "4FAiuZ3JAWW1evUAdAPRwC52RYeEYJGW8EQSM1LsSNYVTNPeUKTaugv8wJcJZxXvSV5vxMZZYx9hYRkAVq6RHT6e"
+    },
+    {
+      "at": "2026-10-10T21:08:43.365Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "3LKvEVmYyN3ZqVWLKnifH8wvfkU4iTPgHQkXgGzuzUXHS5BzAE9LAYEqb1TJsJzYfHvip4fNfo1vukWNnFqmagCh"
+    },
+    {
+      "at": "2026-10-10T21:08:43.365Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 17,
+      "signature": "scdvUherRSXSiPFhwFBxxB2eAAdMBfER4JLfgtGF5VQk9wph6VpSh4GEZsQ67keuB4L4K2F3NvTQHx4XrpjnhTy"
+    },
+    {
+      "at": "2026-10-10T21:08:43.365Z",
+      "action": "bots: bought 13 credits",
+      "auctionId": 17,
+      "signature": "3wWsELm7SsyqSXcsRaesUPQL4nXqxzHcuDm524R4dMBhCqubKJXu2uHQSi2xqV9cQYrVxv5UyLwTWVQiustgmQK7"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "4K9z2tbDbJ7Yd3dLaSEinRmrriZFzKnVFiUGQTn13THysKmhhKSpZhdcZ7tgs8WM6fzNRiKmwmXhvxtGAjXDhixJ"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "4hwfhwT81cmdZoh7124kzxFVjsdKqa5aoucF2pk43kT5ZFQSL4MFenqiDUtv6mBu7AiSmTdNxQaCJHSPUKvM4JSf"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "C8qZwTXyvX89nXS1CdUFdA77U447yYnrsTE2esK79bBRRYkuqCoXnNufFkZp2QtPDWDqsLmrEwXyT1vkkwnghRL"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "2kFfpPu2rWcJeJaaemSiFWSf2LVvtrcLy2pgLsEADmWtMW2DobSAZ9nGkU67LNgfpmxiLuHKv5TSDa9v91mi9XVg"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "5B9GTASLzvn5hWR4b2pQ8ztzEoXiM1siutaq3LHGLxHS7JLLK4roQirD18DWD9psX47dvvarVidZ4yNGFppRb7vy"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "49tHtsiSBa2HtsidBG5sUjKS84rruyWFFAqsGZ99yW5is5sExQM28VQkNVJU5QnvJAiYDLsdUubM7Z34pUgNTD2d"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "3XYWRJ2TV9Vat9iuBFCZHBZG29aDm18B1pEh18Q7G6iAQuMdmecrNTXa4mSVbqv8MrWfuFbMAnchW1z5MgWuFghf"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "37f3KE6LtFeAHeSwHeMqrbYAAw1HzuWgjJX5pAng7aZrdujbbgoxvwTTqgx69T6VkWzBD5svUdbU2zPUZHASyhR8"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "2Fj5LjnoHgbawcx2kTNPYoyoBBopi8nfqtUwtxHEjJQSNFXFqtswc8Rhb6fqwCRSvHZdztvJoh9sd5pTJDksdMAJ"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "495V4brtDhjUP2XUPu2aH5bMeuiQnZsLrxhALVUePQwrzRG91vZLEMxWcpHr9Ev4CFLCyxVufWHTxqZzG8eedEyu"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "4oN1B4L1HHnbi69Zr6sFCcRMug9sppGL5cUvaStu3Wkv9PfE4D83JDBwooHTJU1JMH83UawnCKFzXp21ip9ra7tg"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 18,
+      "signature": "4WGxTc3yuUJvTPSdcGXFn1NgdRPDvoSxkzY6DSGCGSjm4SiXUp1oZbP666sCNPMPXk5Zrs6RAVek6858n9uH535y"
+    },
+    {
+      "at": "2026-10-10T21:08:50.942Z",
+      "action": "bots: bought 34 credits",
+      "auctionId": 18,
+      "signature": "5gNjubYFFSnGJTyYiqphQvjARidnh9sEwQCTRSzs9vaibY7JWxjKFGkweeX6XygctfDQvRMN3JYynwA1Yrxr7WSr"
+    },
+    {
+      "at": "2026-10-10T21:09:38.763Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 17,
+      "signature": "5whTqg21porLSdaoirP1r4PXFo7ry2n2tTakzSXTxT2CUBjwLFnLPefGck6XkxRsyE5UK7Z8STfwJxDMC5j7xYgW"
+    },
+    {
+      "at": "2026-10-10T21:09:40.748Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 18,
+      "signature": "4upv1fyrgZkKXe5dgYjyfP38ZQxv8s34gDozsPVK22YWF8Z2odenjgZynwXsZE23YuaGD2WRAaXW9mYY7zr3vghn"
+    },
+    {
+      "at": "2026-10-10T21:12:03.557Z",
+      "action": "bots: 2gPN… bid (4 bot bids left)",
+      "auctionId": 18,
+      "signature": "3rbAGxZkEgi9Vc3BKpQG6oufSHqQFCT9AkqDiew1DM6DghZszbgKmq9YFeQw9Tnd7uxhnMQn2EchJVZ5DuSCnHQv"
+    },
+    {
+      "at": "2026-10-10T21:12:08.408Z",
+      "action": "bots: 7D82… bid (2 bot bids left)",
+      "auctionId": 17,
+      "signature": "3Q1tBvR24qa91Kf4nXPPaJqGrnFgoeSaACX5zhE6DSfgABchztHqPquMGCFW6AYByUzeUjg35jPf9qvWZNF7kWfy"
+    },
+    {
+      "at": "2026-10-10T21:12:18.503Z",
+      "action": "bots: 7D82… bid (3 bot bids left)",
+      "auctionId": 18,
+      "signature": "vr8Xn1Us1sHMMBHUVNFMv9r9TNvUxkzVzgAPnnqVoZfa9YnrvoqPNXPeiHsdiYMf4ahavX6bBAQBFGaFugXXDwf"
+    },
+    {
+      "at": "2026-10-10T21:12:23.832Z",
+      "action": "bots: 647i… bid (1 bot bids left)",
+      "auctionId": 17,
+      "signature": "5ZrW8x4qR3bh32VYZnWfeKvriYzkCPXXRS87oZUQ557Nt5mWvSKUTvmUDrUxh1292gPCnNqz8Q1MTqgBTBCAUdDN"
+    },
+    {
+      "at": "2026-10-10T21:12:33.556Z",
+      "action": "bots: DdeF… bid (2 bot bids left)",
+      "auctionId": 18,
+      "signature": "FQH6RbYKvGGJu54Ft8hsM9kboJdqW8BorsyXVwRmX6vcHY8YrR1ciEhKJu9cSMA6bU62rWTmPLfmkV26MM8BnWW"
+    },
+    {
+      "at": "2026-10-10T21:12:43.493Z",
+      "action": "bots: 7D82… bid (0 bot bids left)",
+      "auctionId": 17,
+      "signature": "29xCfKqcPQCAbD34kkyDmcCkqXSB3nH8e4BuFBj5VxFVtZch8Fik9oKcLegWTeWKUpejdEP23UA8Qh9HvwvxPxwE"
+    },
+    {
+      "at": "2026-10-10T21:12:53.425Z",
+      "action": "bots: 8Fc6… bid (1 bot bids left)",
+      "auctionId": 18,
+      "signature": "5MqyefxaxGGAxckeYh1uHpne6keEUKkh1E11Y812mSWs64DCqFFbFY8JbBqrP6YLMWELPAgyAovmwontna2QRbjq"
+    },
+    {
+      "at": "2026-10-10T21:13:13.598Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 17,
+      "signature": "4MTZaaeikJQSVFS9A8DtsvTR8GTriWzntvzJkCoWnFg3vbTi9DYaXX9nUiWDkJ5QmK7GDMXeNtjiaFsC8fEc32Km"
+    },
+    {
+      "at": "2026-10-10T21:13:18.104Z",
+      "action": "bots: bid failed",
+      "auctionId": 18,
+      "error": "transaction 46rQ85AyP1GQLr6pe83ChvFsn2W1UUdge6yuxufrfL9mQ8QEEwbLhE8rd57JXxfoNQ2Yq6GdamuBjgnCBhMZRH3H failed: {\"InstructionError\":[1,{\"Custom\":6033}]}"
+    },
+    {
+      "at": "2026-10-10T21:13:18.311Z",
+      "action": "ended (won); btc-mini margin 23% -> 23%, ladder shift 0 -> 0",
+      "auctionId": 17
+    },
+    {
+      "at": "2026-10-10T21:13:29.778Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 17
+    },
+    {
+      "at": "2026-10-10T21:13:32.338Z",
+      "action": "created 0.001 Test BTC: cost $83 (jupiter $82930.04), minimum $102.09 at 23%, credit $0.25, cap 33, 409 target credits",
+      "auctionId": 19,
+      "signature": "5x1H29bfZ6MfD5TKaWxquH2GBAhH3d9a8MqRyLc6SvSSwt1hoF8mgNvdAYo9cmki8h4jc5yCtRpktPotjRAwi6T"
+    },
+    {
+      "at": "2026-10-10T21:13:34.999Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 18,
+      "signature": "5xiWB17f99m2AcdaaAGneFWgUvgyRS333JjYMKd8XerCJr6mxGGYePudWindx7FW7stEp5eX1HZzxo31jr5GmwgB"
+    },
+    {
+      "at": "2026-10-10T21:13:35.206Z",
+      "action": "ended (won); sol-half margin 23% -> 23%, ladder shift 1 -> 1",
+      "auctionId": 18
+    },
+    {
+      "at": "2026-10-10T21:13:44.216Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 18
+    },
+    {
+      "at": "2026-10-10T21:13:48.619Z",
+      "action": "created 0.5 Test SOL: cost $56 (jupiter $110.20), minimum $68.88 at 23%, credit $0.05, cap 112, 1378 target credits",
+      "auctionId": 20,
+      "signature": "2j3KJfX2LDTLHgCdzjCsymGyPDhz8RZ1856tUwWYyYvADcAu7PZiWkzYrtb1ZzrdZeX82k1paF9jQHPM2DduYccV"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "2kRfVd3nknuQKq3RMMWcKpydQpatGWeFqPXLxXsw8PAYV6VZ5rsnkSM58QpeL7EBDehax44cgXg7afRJXeYV9MGr"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "Ef9hWgcUxMFuCis4QwR1iynAhSyNmfvE2cDEtXpaMZJ7qa1ZPb7DofpYu18xTsQ7ZHszwh6VeDkVmY4ApAxSvnn"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "2KiBmetq9sY6YJLik9LHCxfb7ghSVJ7FadxcS2EqN5utw8WW4AKDErgNuwwDdyLyVxiz5UkK1qJAPyifRtsmGwUw"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "xrVTDXrNfUxgXAXK3RxTrecaMjuSVX9SLz9KdHDxbma6vUJebcQcm8dCTaThfoadjCqKDPS2DfMED6rV5ZnS35a"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "4Ewwouf8UpLW3wU4j4P1sDD7anpmxAKHvTdRKMPdanVFFvyfAjD72whEb1UbfdbDqyV98FTv3SDeNHXRfeMv68rU"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "1LEz3drLKdY1yCZxtJDvHC7G2kTyjbFXVuPZeYwcQU1ZNvi3HzZPLSqKC2hcJ69C1eeq8CXs7SXxC2M8SDRmtrh"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "AzEEfUXAZMKdKLqFQpwcULFu98j3DEeTedKh9nRK4ucR3hehXNnAYiXhECMBAdKsmAaY6jzfyjB2SPEeMDsREwR"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "qj5yE7N6NitfKWhGzLxhwQiHAmTh5ZRfjbo44D6KvCa42P6PGxs85WikvWBAahAC6WsozPCovfzDENb1uR4AZ9Z"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "2RnqqHKejVaK1gB2i6KiKgqTLCMD4yvw9Q2vT9w98B8YC6p8TsnVe57Jr6ED2whuJmouWPLWVPpBUTprgXjh8Fhb"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "FvX7HBy8qty7yScYvrRQeDWdTNdEUiHVi4TSv2m3mtHibXAsdLznZjZTNxSGQH6zTdGowwa7coHZ6ULkCQYmA6o"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "qgYP9RYHrx7V8ikKnMynZdQPzo88S6eL4GRSswQyoC9qoHXpTDEVDkeLtYrwNrU1JgJrQx552cVmSJay6TpUnzb"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 19,
+      "signature": "chSvM2GoSuvBLuF5hbTmLoHwtMEu33Ncz66LNLXG9CwXLadbhndNewLELmcCnATvCRbPzPnvgRSBcBCupwWiVe6"
+    },
+    {
+      "at": "2026-10-10T21:15:21.595Z",
+      "action": "bots: bought 13 credits",
+      "auctionId": 19,
+      "signature": "ymxHdUYVDv43SnBi319QfUfLv9iV1VDGMDxR1y1MovfD1hMYfF1J7X3vtQfiTmb6HYrr7ci5Cq3yAoAWoNnpHoS"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "416dvAGdjrrGa6WVviXaEkBakhs9WaEtSLT28ZswKJqhHbQi3stUAZofec9EC1EAN84tSA2nyEhajp5naHQiAM7B"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "229QgkFDT6pyM4G1EB8kbcui7XRE5PzTYQdpbFkbD7vbkPNznGj7rHUbXvWDxJfPHQJCVxGYTSrtbaJtQqev5rxZ"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "3FXR11Sc81UVjvVexeBwtTmH7qxYMvqDAarkGkecbxjAk1Un7xncMYVm19XSXWFUawrREhQJw4kgPsBYR6a5SVgw"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "5p6jBKCnYVVkGvJYQLobjUkDC1M33Ttjabpvavnpw3iZJnuCkBz4yfHEphQfwKLzBe5SjHhyNrdRf6GWFZfBR9yS"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "QZ94cCQCPV7gCjeuFWkUn94ixWVgJpeCoSKjb7TXnwR83fAJ3UwJBp1aPZG1W84KMGrMN2PfsecDEqhMgeAWVmb"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "5i3SLQiNvvbr5dREQgs2FWdfpACVkWXCtgWjMKJBWuZPC5hGVBwsFhFUHozDmxk3N9mA5b5MaHNqTRHC2i1HiAop"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "mpizUaYiaMdUWj4a3manyiZiUjydM1fA9MegL9Lnta6NhK9UPaZsvfiiWLzDBx2XYjMdEoJwvzJ399szyfiDnTZ"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "2qY6BcXqmkFgVyWjRWLGU6cnRqtT9SrHTwuWw3qeWAJ7vib5itT7RhTBh6DxaX4pHzSFncbMELC4ZE1HcEMQEq3W"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "2nxZ7qUNMTRcaQZw2LkG8hC5ngk97uLoePbH9iUmTxGoJ6oHz7XDYRhAcr7n7RRServVHNUhMufmKGUuS38QN3xj"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "4E3vj6Z8AqNP7VimKQfpzNzKkKVVncFdV6aBhRKzUKosHwmG8e4U6NidngEwcszTZ1Tr1KWnmxBN1pZcYURgJSvh"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "5KCMxuDyqUWXwso4JnAVcAJ8gtkwMJsNi76eShQxSGp3P4NQSt3SfGh2r1w1GbVWP6jmuhavCow5G6b2cnHVF3vD"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 20,
+      "signature": "5KfRkRMuVcsmy5x46EfbPA8kEa7JQPXotdebeVhUH9boTnwpNDoeRFSwZT5SknL3CjtJ38LGn2GWd8nCuBmxXwnb"
+    },
+    {
+      "at": "2026-10-10T21:15:39.412Z",
+      "action": "bots: bought 34 credits",
+      "auctionId": 20,
+      "signature": "39s7yna7LAzhrEiD1pP7kGMTSeDQgg1ptWtgXSuFSsDRjGUpjkcJ5joTdM4RGFuh4qnZB66ADuh5yRVAfrLqEmaz"
+    },
+    {
+      "at": "2026-10-10T21:15:54.978Z",
+      "action": "tick failed",
+      "error": "failed to get info about account SysvarC1ock11111111111111111111111111111111: TypeError: fetch failed"
+    },
+    {
+      "at": "2026-10-10T21:16:16.897Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 19,
+      "signature": "2hDrgzueAnQQXqn5wJ8f2mmUmifPGKcyJX6DS8Z4LEvZG8NvFLPirDA4AKmc6nz37QW9yvNkPUv4uJCFzbm5o7Yz"
+    },
+    {
+      "at": "2026-10-10T21:16:24.979Z",
+      "action": "tick failed",
+      "error": "failed to get info about account SysvarC1ock11111111111111111111111111111111: TypeError: fetch failed"
+    },
+    {
+      "at": "2026-10-10T21:16:39.832Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 20,
+      "signature": "3T8XPQRonrSmRxwQFW82vPLnjZfpD2zhDBZkYh5ZqJRYdLnvit4fN2zXidCELKwDcNmeZmGmBna3DpkW6wbKnXiS"
+    },
+    {
+      "at": "2026-10-10T21:22:44.480Z",
+      "action": "settled: no bids, lot to treasury",
+      "auctionId": 19,
+      "signature": "34eWoooYvLhrfwDFQ392ZboGx2FXErjKABNWGf78apjz1JHxMtwiHFfbZqs9mwKTLH3mrFAtN924xEtQgr71WQWk"
+    },
+    {
+      "at": "2026-10-10T21:22:46.527Z",
+      "action": "settled: no bids, lot to treasury",
+      "auctionId": 20,
+      "signature": "4mBsgBkgoL2W1J5RaDryfwtWCXyX8cdmSdodcw9wQSncJSBNJ4qNLi47zQTn4JeJ4R7YEyTgW8om7SND64kXWWny"
+    },
+    {
+      "at": "2026-10-10T21:22:46.736Z",
+      "action": "ended (noBids); btc-mini margin 23% -> 23%, ladder shift 0 -> 0",
+      "auctionId": 19
+    },
+    {
+      "at": "2026-10-10T21:22:54.719Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 19
+    },
+    {
+      "at": "2026-10-10T21:22:54.719Z",
+      "action": "ended (noBids); sol-half margin 23% -> 23%, ladder shift 1 -> 1",
+      "auctionId": 20
+    },
+    {
+      "at": "2026-10-10T21:23:02.599Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 20
+    },
+    {
+      "at": "2026-10-10T21:23:05.205Z",
+      "action": "created 0.001 Test BTC: cost $84 (jupiter $83073.25), minimum $103.32 at 23%, credit $0.25, cap 33, 414 target credits",
+      "auctionId": 21,
+      "signature": "6ZhsXXtpwRddqYYg9mXkmwbVWAAaeycUX7CER7HcA6Ywc7RgnyLr9SCfn9QKpRj1CYNLqvTGmk7QZNg7jTP9quZ"
+    },
+    {
+      "at": "2026-10-10T21:23:07.761Z",
+      "action": "created 0.5 Test SOL: cost $56 (jupiter $110.17), minimum $68.88 at 23%, credit $0.05, cap 112, 1378 target credits",
+      "auctionId": 22,
+      "signature": "4VqrAb636S6gS1yToQkLP2R8fEYMRpADcK1W7YDeQ7evdxs3NsPDaoNWW4poFnsvUtmYnRV6V3Ht7wtcNQWYaWBv"
+    },
+    {
+      "at": "2026-10-10T21:24:14.213Z",
+      "action": "tick failed",
+      "error": "failed to get info about account SysvarC1ock11111111111111111111111111111111: TypeError: fetch failed"
+    },
+    {
+      "at": "2026-10-10T21:24:51.865Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "2af655VM49LxbwfsQSqseDTVsyJdqKDr3R3aSgt7wgibJY4kNZM57ZEBk2JieaoGNhutWsfLeL6N5u72y8Wd9SU2"
+    },
+    {
+      "at": "2026-10-10T21:24:51.865Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "3njNf3jKNeZqHz2AVkD9Sc1fPAz7Ao7vZjrGvJjRPqoPxipn1kx8zpoPGzdQUy61BREYcpXo5ivAfRik68JSX5dx"
+    },
+    {
+      "at": "2026-10-10T21:24:51.865Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "62RjugXdMzDYMkRCox9YYvoHqK5MqqJPNRugDiyyALJZFx43yBuUdEiXt7PR886TwG27X3MrzKLGho5CW5zbXHuG"
+    },
+    {
+      "at": "2026-10-10T21:24:51.865Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "4TfW6hRC6gfpepW2qvFukW72neX4oYDH6Tsbf4sobwK51AByueMGhiSH3DwW8We9ayRtTBq9gNFvL3BuyD5ehKZh"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "5pusiugTP8GMTtFuVzSCCKiFXBozVjhW4iUyfCdy6CVjipnAnF1zD4riyqzhkCw4Ej7DSDstauZdSSvKW7iXTTu3"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "NMScutnwpDqT4xdAFvEuSqn234W7vb9h2pQiSR8f6H2ihg3C9VDGiVnpNW6FaBCQJtC5dYEb7afkSHLs6XYcMWx"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "4opNAbig3V7HLduFkGBKYNYMQLB8T7zs67AXB1dCk1sUHE786tdp3TpagvZp4wsStfjhUwXppp7KqRXDhimbd3dW"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "5vpxLMxPo5vfJX8mnrX468ybBm76BWmpabiJoZR41skQABSTShsGVNGntyGkjEug8g7RuVT8aaNY3sCaf1gZqrYx"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "24ga53ECNakhy3jaXnrN5jmMtzFnMrN1eXGky7BvRSoZVSTy7vXz5KYchoKDyLrc8eVjAA294SfEW4WHMcCeCnJj"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "5sfKJAkwuZGNt7Mcjpus4muianZvYNBYiCABiL1y6cdsKMRMen3VuJcJ3EThmivjagEDkMoypm4Pw8URmDNQb92"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "22Pqumojtbxht3pKn8SbaYkkX7Xye8p5SLhZdz24zFmMrweXF5JcxemLAjCLWiC3a8KUNQcqwGi3pUwLF9dt13zk"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 21,
+      "signature": "356zxNLCKv6SReri9cyiLxFJ9Hzd7KEdoWdXpyuNcvhWGb27vojnTm43vK93hoSAtG7cUp85zYCE4RbcNgGx2B2j"
+    },
+    {
+      "at": "2026-10-10T21:24:51.866Z",
+      "action": "bots: bought 18 credits",
+      "auctionId": 21,
+      "signature": "s1mQ1UgQH66fuyrME8rLQZig68f1K5kXEDPJ4AuaE8XNEyi2Tqoe4gyQ1atZB2hTQhwt7ZajuYrL9GRrpkcjupo"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "CuyY9V8w5aSDVibVN9CVGVQsCnvdgWyGbsrj6UxkgvND8eGrCsBZE5c39oA68adCemJJAzLehUyknTgzyYywDaG"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "24zrSFWwegawXceU3P8JE7bqv2agbJEujTvAJC8B3oUCkfT6aKGbnJGT8S5atpbbyGQEK2wCsszZmZNP243ZsWxo"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "AFstHEErYCynSDQdiVAmEbEP2neXxSShBPvMd9RdFvxnNdmkXDYDCpMQmrd83eGW3eFiAi9X1JWjHCCCyvqBCQM"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "5N7oezT7d5FJmyC44y3pxGeMNmuap8mFgXAwezzTkVicD1NLEU9FqY1GcKcm6tvSd1ynPTtqx1A6U4muv7FFsEHh"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "5ubZjZoa9Fj45RxbAhSjGip42zwUQfcbatJk1eXRZ2UhGHvHdkjyDohxzSHGzogiP8LZa2KVocdPCJdbfyYdAftV"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "Xd9HddVrNokU4rqzyLTYhxdWpzSso5hnMTcYh4oWqitkiMducmeh1wSqMybDiVHYDLSRMb4DaSf8GB44dsdqBhJ"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "2mvfTWaBKQC6kWTpiuxuJdS98yAyoLQ9xqULwCmGS7yB8N6zLvq4rzjJZAnfXQc9vYPBmjGeBbDUrfDoAVN3BiTE"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "5E2VGC2JLVAycoBf2VnUsLPr1SRNwW3QWzd4DWKUJgvT2WEN4bruPGqGEuYoCUGyV7hAyiou3MDM89oLVPYXZ1i5"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "5xMuD8tisiYXkCgJKd79Kx9k4nHt5HHLr9JexFsja3DsC25HDV4VvjgFCTpFrhMZ9Y5ipBJtThVG8mfpTM1eYM9z"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "27wMmZyvAo9oKBdTH24A51rvNsjxTqGhdn9gj8cfMsQ5jVNpcoDdeQYAX58iGdZhxzFq5ubkJTtW5sHSXBhiesKK"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "3NCj62MrDoE2DBWU6UHFU9zWq5y6jvT8kmaavr5GehjnMKXaXBNo51LJWnYZ81Lpn8qMC7DgHCUaJ7x5mXspu1Aj"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 22,
+      "signature": "39GzxhUdMEGR1iAq8hucdt2ojCUitkcqGpARdXvXq18edWBSwr2u1JTkbFNNsTNHPYTjWjYnjGLSaU3DGpRwX5Ae"
+    },
+    {
+      "at": "2026-10-10T21:24:59.540Z",
+      "action": "bots: bought 34 credits",
+      "auctionId": 22,
+      "signature": "DVA2obyKmvctBh4jKMhsULA7wBbgj8tePgxMJLWUXjAgiyAQYixErrFSFFTBdNzYB4VHH7Wr6LDTh8BgTryEqrB"
+    },
+    {
+      "at": "2026-10-10T21:25:47.157Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 21,
+      "signature": "5oqPLzMgaYZ9Hz1EhYd6bt2y5D3M2kB9EFQUqpUfHAAurTBuvkfCyhvugGFtrgsw6jHJ8yktbuVfnNgZPavKfyWa"
+    },
+    {
+      "at": "2026-10-10T21:25:49.307Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 22,
+      "signature": "5nyUFrHHj2iqWRs492tkDoAeg15ZUvkro6t275qdKfvnZnq281hhpLQqGiRGRgjN2JGY1v9AaPZWD6otCBU7uHZd"
+    },
+    {
+      "at": "2026-10-10T21:28:11.923Z",
+      "action": "bots: 2Qhx… bid (6 bot bids left)",
+      "auctionId": 22,
+      "signature": "3esDbEmuf42ka5fDhtUzehs6bsy7FerXQadSEPLVrdxST1VA4TB6peLPuArySDysWYN6rbfF8mcBsmuEDypZjaoG"
+    },
+    {
+      "at": "2026-10-10T21:28:19.635Z",
+      "action": "bots: 7D82… bid (6 bot bids left)",
+      "auctionId": 21,
+      "signature": "5A2EijiUaUnbSEzzK7drKx7bfQJQo2KEez73ebWvf13vGTfCmhCdyiecoc2ho2PqRdr71jtFUJc1Cs7d1pmbXs9"
+    },
+    {
+      "at": "2026-10-10T21:28:27.110Z",
+      "action": "bots: Aeeu… bid (5 bot bids left)",
+      "auctionId": 22,
+      "signature": "3b3wzDVaSg8KPfGv6xEzPmDbHgw1ZQztrsfdrg4xcq4edF1osAjSAgNHAav5A9mg5dPUDS4Xqz4cSZvY1U8A3kuo"
+    },
+    {
+      "at": "2026-10-10T21:28:39.701Z",
+      "action": "bots: C693… bid (5 bot bids left)",
+      "auctionId": 21,
+      "signature": "33FtPhhAqVqhZ4JNCPeamceem9BmRBGeHVWJ2bCePiuV4yu8ZtAzEXJN4PuraiYgZmTB5WGgNQSCS5dHcxXB51yY"
+    },
+    {
+      "at": "2026-10-10T21:28:42.162Z",
+      "action": "bots: 3DAt… bid (4 bot bids left)",
+      "auctionId": 22,
+      "signature": "EomVVnSyGcCHh63D2zrK4kNXLv9cSZ7R3sFtvbGZAo23Xuj6chGMmHh3kGKg2ByRbz7Y6seZ9noY2J6wBSTAzSt"
+    },
+    {
+      "at": "2026-10-10T21:28:57.112Z",
+      "action": "bots: 8FvN… bid (4 bot bids left)",
+      "auctionId": 21,
+      "signature": "4ccDeWfZcmzAXcp2jRyehVEKaxwkP7ZgErRm1UdujisusXgRvpXQoe5nxzmsvZfEBEGyNZfHL6eAGESYJ8n5md7Q"
+    },
+    {
+      "at": "2026-10-10T21:29:02.228Z",
+      "action": "bots: 8Fc6… bid (3 bot bids left)",
+      "auctionId": 22,
+      "signature": "6he6K7CXcqbPVGCztYDxP7PG82w8fC61mzeYeGVvoTvgtktsGU9Ev3qSe3gwWLREk8aDg5b5EpfE9bW7aNjFCKy"
+    },
+    {
+      "at": "2026-10-10T21:29:12.268Z",
+      "action": "bots: 2Qhx… bid (3 bot bids left)",
+      "auctionId": 21,
+      "signature": "4KJFcSRVbaigfqooCRrj3xB2DBbF4XoTajpSGfJdapwJ7dwSjxe9uewd5bUs9rkdULKj3ixtYeeVWdjhEF3uXDhM"
+    },
+    {
+      "at": "2026-10-10T21:29:22.611Z",
+      "action": "bots: 7D82… bid (2 bot bids left)",
+      "auctionId": 22,
+      "signature": "55DhjCFKuWLCyKNSdhCLjjHYypvKVyLjgjKGhMCarkssW3v7GpxmCBtRtnoURyeeeise1UEoUzgcr5KvQJW8ke4e"
+    },
+    {
+      "at": "2026-10-10T21:29:27.218Z",
+      "action": "bots: 647i… bid (2 bot bids left)",
+      "auctionId": 21,
+      "signature": "hUdsZKjByzyYVJCkTtFfu5AjSnUrui7bsgNMBNiEX6DNCsGe99WfWrvkV9BuFG1WhBrrfJ474yhhtrvUoGKYvw3"
+    },
+    {
+      "at": "2026-10-10T21:29:37.253Z",
+      "action": "bots: Aeeu… bid (1 bot bids left)",
+      "auctionId": 22,
+      "signature": "2tWx414Anxyj8jthTVMMkPj8hHGVV7HERxLfamRU6zMHnPC4WSLJgT1KrG3wk6MZddDsKNb23cuUnNMie9zD7Loc"
+    },
+    {
+      "at": "2026-10-10T21:29:47.185Z",
+      "action": "bots: Aeeu… bid (1 bot bids left)",
+      "auctionId": 21,
+      "signature": "i5ZGSHkJ7qZvqgJgnyGjiRmJRL7jV1RutgKoiGGqPN2ZJv5az5ra9gBAbWSb63CgVoi5aoYSrCXUQdNn3W3Zusg"
+    },
+    {
+      "at": "2026-10-10T21:29:52.204Z",
+      "action": "bots: 3SMG… bid (0 bot bids left)",
+      "auctionId": 22,
+      "signature": "5pk3DLgLucgEgGCrgvLfgVyVG2aQjweMAUnS3F6rik1Cqp1dbwvCoRsbpjRHEZhxKr63ruiajzjiHWLoENss1k4v"
+    },
+    {
+      "at": "2026-10-10T21:30:02.240Z",
+      "action": "bots: 7D82… bid (0 bot bids left)",
+      "auctionId": 21,
+      "signature": "4jgweh5FyboNWFwBpSDy7tayGceLSekCfUMpCcANngkV6uW8h2D3xEbaxmg2ajHtPJzStTARsggZhiyxNtc9LPUy"
+    },
+    {
+      "at": "2026-10-10T21:30:22.550Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 22,
+      "signature": "325gWymDH6mFF8uB18WT9fAVpnQryzWWhxemhQK5SJhku1mTtjgAikKTCzoHNQcUhtPAXGZnpcUtZDsKvqPqeFcU"
+    },
+    {
+      "at": "2026-10-10T21:30:22.820Z",
+      "action": "ended (won); sol-half margin 23% -> 23%, ladder shift 1 -> 1",
+      "auctionId": 22
+    },
+    {
+      "at": "2026-10-10T21:30:33.364Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 22
+    },
+    {
+      "at": "2026-10-10T21:30:35.933Z",
+      "action": "created 0.5 Test SOL: cost $56 (jupiter $110.18), minimum $68.88 at 23%, credit $0.05, cap 112, 1378 target credits",
+      "auctionId": 23,
+      "signature": "aPXxC3BPKt5hTny5KHe6Qf8WcBjwxav2Cg6cXEYLevf6Hxq5dHFzjstNCC6MA6ypiXT2H7aK54n3zF9FwMiBttn"
+    },
+    {
+      "at": "2026-10-10T21:30:38.689Z",
+      "action": "settled: lot to the winner",
+      "auctionId": 21,
+      "signature": "45eBrdDiydssQK3GM8aoppt5jKsXe1pYiwEerQnYTt96dY8ow4mQq4cjuD36VxPcHZNbdFqFEKstDCoKv5XeTuEg"
+    },
+    {
+      "at": "2026-10-10T21:30:38.914Z",
+      "action": "ended (won); btc-mini margin 23% -> 23%, ladder shift 0 -> 0",
+      "auctionId": 21
+    },
+    {
+      "at": "2026-10-10T21:30:49.344Z",
+      "action": "bots: closed 13/13 participant accounts",
+      "auctionId": 21
+    },
+    {
+      "at": "2026-10-10T21:30:51.228Z",
+      "action": "created 0.001 Test BTC: cost $83 (jupiter $82975.07), minimum $102.09 at 23%, credit $0.25, cap 33, 409 target credits",
+      "auctionId": 24,
+      "signature": "2JM2AVNwn4T1TTkFDGbPsnuHCG2DT9pZctENoPXEPL2j46Voe5N51dsm3E9EM2EowMgWbVjxJr1wbMFEeVtihsu"
+    },
+    {
+      "at": "2026-10-10T21:32:29.285Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "4FZsSfdFhE4pFiZhxSjebf88cHiAHWE37WN8t5KWHJRX8jgPyhhUzjNHiG9WtSNGqLDtCPeYRzyB8kUTXYkK3dDt"
+    },
+    {
+      "at": "2026-10-10T21:32:29.285Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "2MfQs3F9GEp2UsYqo91iEYZvtwmvR4KqJ9JwBmiozzn3BivsbZD2uN8Pc3rV7YV3CeJaRPqojCsY642KhrW3b4kN"
+    },
+    {
+      "at": "2026-10-10T21:32:29.285Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "2h5jfsiNLHY1vnx9jJU87S5NLGDktEyPWEMcUmC5QfiC71TcjyvRiRgsd8JgYhxSntXPYiadtfUkv2Rv7pBzZFGT"
+    },
+    {
+      "at": "2026-10-10T21:32:29.285Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "3qd8M6vo6QDHEmvRpA1GjyENhAV4PZ2Hy7iHEG5iaUCEYuvUZ8rbJFsZoQWgnZTnnhp5eDXmUW1rKFMEJ4q2MV3z"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "5ZqmethWDQyAgmRVUYpkXsDVMRhczmno8TJxtaP1hMU6TemrwAoDGdYBu7dYWk3ECDGhmXhef7PBYSDtkvKaJpMr"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "4ko1jPVeAJxHtUdwgbFVcyHN6bYSM7o97ZKvB41V5T2BjtBnvLE1DwaWqrs7b84N2HbQvaNeGAokzorJW8VYUZRj"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "j8i8NU2x1bKP4q5T7poTwrbrqLvwCh4jw3mS5PVFtSuxGxzTULRMqwG4k3bB8mKzd42aojDZmYasQcfh34sV1ct"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "avHYXGkCpQYE648ocymoso4qpzHoqGuTP9U3DYjvcpNnoNGvv64QtQ2TqaPb8DR5db3Aw5GuTmGBcjoPi5BXMrF"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "5LsC7BQWzUtTW3L2MGUQL7xHMcGR3aY98R1P2kZDMq5Jk7tN9vsr5W5QqZMzaVAAEtkPCyj3Ni4d4kaKavs3U3Fw"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "4k2MqknVd7ZSp49mnLtN3XQvNM3nC6v9aWSL5pGN6MwySV4Bbg8WhTp4r43eBzmQKTfjZQRhJ5cETWX3htkup8pt"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "3vBjb8cQUWYApgBsQ4bzUi1JumMG6wRPpBQqaRhbjmVUA44Jpw4VsbsGMhudQZtob8npfqj9rmBZMkWKVPzKQvWk"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 112 credits",
+      "auctionId": 23,
+      "signature": "5XTCF3n99TgANhUJygNyuoekETG2SNRoaNWD1XFVoVVPa9xnYc1eS4pzbzTQRsqpgkELPesUUoH88SaJt95gwTGY"
+    },
+    {
+      "at": "2026-10-10T21:32:29.286Z",
+      "action": "bots: bought 34 credits",
+      "auctionId": 23,
+      "signature": "2rXfNTUhqVoSGZYXEfZZHSSfS8EeNUcqyhcwg4kA68KDSL1RzCiCRm6p7hvQqF5sbDcSD3Phb2LP5URj8VLSUARe"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "5R1SDkMTteYSG3czXuDKHdMD3X6eTXe4N3cy1pFrYSVQY3d2FEr3XVPDx7QaKAzWNGTWaNdfKEYFDuvoNQVJvmfi"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "5Q9Gz7M5ebKXocvZG3MMqdarG2ec1ZJGjUxwNqB6uHDZ7L3EDccnuBJPu8FV5z6TP2MqQ7cbAuCb5Ct2CNk3eFaG"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "5LrkbumLYwq1xRW7wDqfESW3puxko6FbdcLmjbeZNZqbScQbje92mVnknWcTMLndztLRzHzY1YFLTsLFFu2trdRE"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "3iniWonH26cjwZbC58MkFEGzD4XRfntmwC4ms493rK8AkHFU6aE2RYv3h8rtPit1P6opSRfdozYCNzxxWYtzDW7F"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "43b78i3KizaKAd6irD94DnXeUBy72F41pX9wGiyeZgDWTPeTEspY1PHVLD18opbJeLqd3SUxVRacaJjWCyRNSQPQ"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "2Va5wocG1ABZvhBzahHgbohorUwWEWDuxQB9P8JqDcF7Pxtz32XoVPVRJRmnVEB2ymyBB4jTCm42tzomnLq4LP3F"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "31P4i9rRhUcDAdAk52v46zPmfXTzXGF9C5GquKUNm5AgnGmgbdJqusWLJmDbs2duCQZrDEGthaKn2nSmv9xTL3j"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "2nAxDYjr6PJZ9T2aLnq2w9RGTmgn1Gqtayfod4xNptcTAqjDsXhDam94Ma8GanQSJLC9U2dzu41br6oPhfYG2bBA"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "2tz1oUZXnvCz78V6oenLsrpw7igdhZRkCuxfZ1h8DJHzFseEbmfTMtn6tofm9JLJkeLczCFBW2cjZf8uHugmw5z4"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "2XSPNpxazrfnupXMz3uoJmuNarbtJyDFJcdTa47DM8tCkJHaBgB6PvHN4NYEJfsdJb8KaURwYx15JZS9okp7eXef"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "2nSNm1QKk4dWKJ4iHRd51H6oKuSkorb2FuQcWoJsT3HTydH1zp1Qd76cH3x1cTVApQhszbMjQEiDFBmsNFiiYBGj"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 33 credits",
+      "auctionId": 24,
+      "signature": "MrPmM8auh9RXqZRhwcB2jPHzuKKu3ra8ZWqceiHr3DY37x4VtptWGRj8HM2hNzfWjxiHZeZtxHMHVy8VRBfkDJh"
+    },
+    {
+      "at": "2026-10-10T21:32:47.209Z",
+      "action": "bots: bought 13 credits",
+      "auctionId": 24,
+      "signature": "3dA2UoPkk5CeTb6p9jqrmrQy1U2VvfAvNgN2TTc3UAXWieq61y4Ej5QfKFzCAAoWcgmgtKMg7KaknyWu26dkgEPw"
+    },
+    {
+      "at": "2026-10-10T21:33:25.192Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 23,
+      "signature": "3RJyWLYx2pd2iuNfudE7FxqGwhbMwua11noPB7GHTKNdWp1ZgTaR5xUPUEWkD3ayAS8peW3Rb7tjpkoPyPndcjSe"
+    },
+    {
+      "at": "2026-10-10T21:33:39.836Z",
+      "action": "lot bought (mock) and funded",
+      "auctionId": 24,
+      "signature": "2ThAmwG3qnCfTo4dnbBfMgzQfQ4Ha4rDsdzPyymvEuesuvadvM6Kom6FGw6WgmXw2Q4EGVJi7P4phg4uq6nEdaoe"
+    },
+    {
+      "at": "2026-10-10T21:35:54.696Z",
+      "action": "bots: FvDP… bid (3 bot bids left)",
+      "auctionId": 23,
+      "signature": "31JQvCq32GC6uoVTtCiWWvx8jX4HVtfgJCRbXtfLHxP8w6PR7om9CMER2bPj3use6hcvNxVsee69d4PKjBGgfUmB"
+    },
+    {
+      "at": "2026-10-10T21:36:04.731Z",
+      "action": "bots: FvDP… bid (7 bot bids left)",
+      "auctionId": 24,
+      "signature": "2Ec446itft8YveSh8P2Fjo6WZ43SLYQ1fEuK3zenzTywXJcF3jfqKuh245CBpaHRHqx59mQfTNLKzmP3FCePy3Mu"
+    },
+    {
+      "at": "2026-10-10T21:36:14.765Z",
+      "action": "bots: Gu25… bid (2 bot bids left)",
+      "auctionId": 23,
+      "signature": "zsgr89rnVwPvoB3MHHdHfARPTMcSgehzwRuL6d9Hruxcs3PgwmrA5hbY6m8WLp9r1KSWprAGqs61uFzvrDSUAtg"
+    }
+  ]
+}

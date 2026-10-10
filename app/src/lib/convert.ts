@@ -24,6 +24,7 @@ export function toAuctionView(address: PublicKey, a: any): AuctionView {
     salesMinimum: big(a.salesMinimum),
     salesClose: num(a.salesClose),
     originalSalesClose: num(a.originalSalesClose),
+    getReadySecs: num(a.getReadySecs),
     openingWindow: num(a.openingWindow),
     countdown: num(a.countdown),
     endTime: num(a.endTime),

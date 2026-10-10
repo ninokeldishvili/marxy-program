@@ -43,9 +43,6 @@ import {
 import idl from "../target/idl/marxy.json";
 import type { Marxy } from "../target/types/marxy.js";
 
-/** Get-ready period between sales close and battle start (GET_READY_SECS on-chain). */
-const GET_READY_SECS = 15 * 60;
-
 const { values: args } = parseArgs({
   options: {
     "auction-id": { type: "string" },
@@ -172,7 +169,8 @@ async function main() {
   if (auction.funded) fail("auction is already funded");
   const now = Math.floor(Date.now() / 1000);
   const salesClose = auction.salesClose.toNumber();
-  const battleStart = salesClose + GET_READY_SECS;
+  // Each auction stores the get-ready period it was created with.
+  const battleStart = salesClose + auction.getReadySecs.toNumber();
   if (now < salesClose) fail(`sales are open until ${new Date(salesClose * 1000).toISOString()}`);
   if (now >= battleStart) fail(`funding closed at battle start ${new Date(battleStart * 1000).toISOString()}`);
   if (auction.revenue.lt(auction.salesMinimum)) fail("sales minimum not met; settle into refunds instead");

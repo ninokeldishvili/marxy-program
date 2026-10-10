@@ -1,6 +1,5 @@
 // The one place that decides which stage an auction is in. Pure: give it the
 // auction and the on-chain time. Used by the UI and the worker alike.
-import { GET_READY_SECS } from "./idl";
 import type { AuctionView } from "./types";
 
 export type Stage =
@@ -33,15 +32,15 @@ export interface StageInfo {
 
 type StageInput = Pick<
   AuctionView,
-  "status" | "salesClose" | "postponed" | "revenue" | "salesMinimum" | "funded" | "endTime"
+  "status" | "salesClose" | "getReadySecs" | "postponed" | "revenue" | "salesMinimum" | "funded" | "endTime"
 >;
 
-export function battleStartOf(a: Pick<AuctionView, "salesClose">, getReadySecs = GET_READY_SECS): number {
-  return a.salesClose + getReadySecs;
+export function battleStartOf(a: Pick<AuctionView, "salesClose" | "getReadySecs">): number {
+  return a.salesClose + a.getReadySecs;
 }
 
-export function getStage(a: StageInput, now: number, getReadySecs = GET_READY_SECS): StageInfo {
-  const battleStart = battleStartOf(a, getReadySecs);
+export function getStage(a: StageInput, now: number): StageInfo {
+  const battleStart = battleStartOf(a);
   const minimumMet = a.revenue >= a.salesMinimum;
   const info = (stage: Stage, deadline: number | null = null): StageInfo => ({
     stage,

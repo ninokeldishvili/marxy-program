@@ -20,6 +20,7 @@ function auction(over: Partial<AuctionView> = {}): AuctionView {
     salesMinimum: 123n,
     salesClose: CLOSE,
     originalSalesClose: CLOSE,
+    getReadySecs: READY,
     openingWindow: 40,
     countdown: 25,
     endTime: 0,
@@ -36,11 +37,11 @@ function auction(over: Partial<AuctionView> = {}): AuctionView {
   };
 }
 
-const stage = (a: AuctionView, now: number) => getStage(a, now, READY).stage;
+const stage = (a: AuctionView, now: number) => getStage(a, now).stage;
 
 describe("getStage", () => {
   it("is open before sales close, counting down to it", () => {
-    const s = getStage(auction(), CLOSE - 10, READY);
+    const s = getStage(auction(), CLOSE - 10);
     expect(s.stage).toBe("open");
     expect(s.deadline).toBe(CLOSE);
     expect(s.remaining).toBe(10);
@@ -60,7 +61,7 @@ describe("getStage", () => {
   });
 
   it("counts the get-ready period down to battle start", () => {
-    const s = getStage(auction({ revenue: 123n, funded: true, endTime: BATTLE + 40 }), CLOSE + 100, READY);
+    const s = getStage(auction({ revenue: 123n, funded: true, endTime: BATTLE + 40 }), CLOSE + 100);
     expect(s.stage).toBe("getReady");
     expect(s.battleStart).toBe(BATTLE);
     expect(s.remaining).toBe(READY - 100);
@@ -69,7 +70,7 @@ describe("getStage", () => {
 
   it("opens the battle exactly at battle start", () => {
     const a = auction({ revenue: 123n, funded: true, endTime: BATTLE + 40 });
-    const s = getStage(a, BATTLE, READY);
+    const s = getStage(a, BATTLE);
     expect(s.stage).toBe("battle");
     expect(s.remaining).toBe(40);
   });

@@ -6,11 +6,11 @@ skip_local_validator = true
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-marxy = "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA"
-
 [programs.devnet]
-marxy = "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA"
+marxy = "eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF"
+
+[programs.localnet]
+marxy = "eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF"
 
 [provider]
 cluster = "localnet"

@@ -78,4 +78,6 @@ pub enum MarxyError {
     MissingAccount,
     #[msg("Withdrawals are not possible while the auction is active")]
     AuctionStillActive,
+    #[msg("Get-ready period must be between 1 minute and 1 hour")]
+    InvalidGetReadySecs,
 }

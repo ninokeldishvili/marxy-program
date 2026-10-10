@@ -224,10 +224,10 @@ export async function mockFundLotIxs(
 
 export async function initializeConfigIx(
   program: MarxyProgram,
-  a: { admin: PublicKey; treasury: PublicKey; usdcMint: PublicKey; minMarginBps: number },
+  a: { admin: PublicKey; treasury: PublicKey; usdcMint: PublicKey; minMarginBps: number; getReadySecs: number },
 ): Promise<TransactionInstruction> {
   return program.methods
-    .initializeConfig(a.minMarginBps)
+    .initializeConfig(a.minMarginBps, new BN(a.getReadySecs))
     .accountsPartial({ admin: a.admin, config: configPda(), treasury: a.treasury, usdcMint: a.usdcMint })
     .instruction();
 }

@@ -4,7 +4,8 @@
  *  1. Loads the admin keypair (ADMIN_KEYPAIR_PATH) and creates a treasury keypair in .keys/.
  *  2. Creates the mock USDC mint (6 decimals) and the Test BTC (8) / Test SOL (9) lot mints,
  *     all with the admin as mint authority. Mint keypairs live in .keys/mints/.
- *  3. Calls initialize_config(admin, treasury, mock USDC, 2,300 bps) if the config doesn't exist.
+ *  3. Calls initialize_config(admin, treasury, mock USDC, 2,300 bps, GET_READY_SECS) if the config
+ *     doesn't exist. GET_READY_SECS (env, default 300) is the get-ready period for new auctions.
  *  4. Writes every address to src/config/devnet.json and prints the env vars for .env.local.
  *
  * Usage (from app/):  npm run devnet:setup [-- --update-config]
@@ -13,13 +14,14 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { BN } from "@anchor-lang/core";
 import { createMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import type { LotTokenConfig, LotTokenKey, MarxyConfig } from "../src/config";
 import { initializeConfigIx } from "../src/lib/instructions";
 import { configPda, getProgram } from "../src/lib/program";
-import { PROGRAM_ID } from "../src/lib/idl";
+import { MAX_GET_READY_SECS, MIN_GET_READY_SECS, PROGRAM_ID } from "../src/lib/idl";
 import { MIN_MARGIN_BPS } from "../src/lib/pricing";
 import { loadAdmin, loadOrCreateKeypair } from "../src/lib/node/keys";
 import { adminKeypairPath, CONFIG_OUT_PATH, KEYS_DIR, rpcUrl } from "../src/lib/node/paths";
@@ -31,8 +33,18 @@ const MINTS: { key: "usdc" | LotTokenKey; file: string; name: string; symbol: st
   { key: "testSol", file: "test-sol.json", name: "Test SOL", symbol: "tSOL", decimals: 9 },
 ];
 
+/** Get-ready period for new auctions: 5 minutes unless GET_READY_SECS says otherwise. */
+function getReadySecs(): number {
+  const secs = Number(process.env.GET_READY_SECS ?? 300);
+  if (!Number.isInteger(secs) || secs < MIN_GET_READY_SECS || secs > MAX_GET_READY_SECS) {
+    throw new Error(`GET_READY_SECS must be a whole number of seconds between ${MIN_GET_READY_SECS} and ${MAX_GET_READY_SECS}`);
+  }
+  return secs;
+}
+
 async function main() {
   const updateConfig = process.argv.includes("--update-config");
+  const getReady = getReadySecs();
   const url = rpcUrl();
   const connection = new Connection(url, "confirmed");
   const admin = loadAdmin();
@@ -78,15 +90,17 @@ async function main() {
       treasury: treasury.keypair.publicKey,
       usdcMint: mints.usdc,
       minMarginBps: MIN_MARGIN_BPS,
+      getReadySecs: getReady,
     });
     const sig = await sendIxs(connection, [ix], admin);
-    console.log(`config:   initialized (${sig})`);
+    console.log(`config:   initialized, get-ready ${getReady}s (${sig})`);
   } else {
     const mismatches = [
       !config.admin.equals(admin.publicKey) && `admin is ${config.admin.toBase58()}`,
       !config.treasury.equals(treasury.keypair.publicKey) && `treasury is ${config.treasury.toBase58()}`,
       !config.usdcMint.equals(mints.usdc) && `USDC mint is ${config.usdcMint.toBase58()}`,
       config.minMarginBps !== MIN_MARGIN_BPS && `minimum margin is ${config.minMarginBps} bps`,
+      config.getReadySecs.toNumber() !== getReady && `get-ready period is ${config.getReadySecs}s`,
     ].filter(Boolean) as string[];
     if (mismatches.length === 0) {
       console.log("config:   exists and matches");
@@ -94,7 +108,7 @@ async function main() {
       throw new Error(`the config belongs to another admin (${mismatches.join("; ")}); use that keypair as ADMIN_KEYPAIR_PATH`);
     } else if (updateConfig) {
       const ix = await program.methods
-        .updateConfig(null, treasury.keypair.publicKey, mints.usdc, MIN_MARGIN_BPS)
+        .updateConfig(null, treasury.keypair.publicKey, mints.usdc, MIN_MARGIN_BPS, new BN(getReady))
         .accountsPartial({ admin: admin.publicKey, config: configPda() })
         .instruction();
       const sig = await sendIxs(connection, [ix], admin);
@@ -143,6 +157,7 @@ NEXT_PUBLIC_RPC_URL=${process.env.NEXT_PUBLIC_RPC_URL ?? url}
 RPC_URL=${url}
 ADMIN_KEYPAIR_PATH=${adminKeypairPath()}
 ADMIN_API_SECRET=${secretSet ? "(set)" : "<a long random string: openssl rand -hex 24>"}
+GET_READY_SECS=${getReady}
 DEMO_SALES_MINUTES=${process.env.DEMO_SALES_MINUTES ?? "10"}
 DEMO_BOTS=${process.env.DEMO_BOTS ?? "true"}
 `);

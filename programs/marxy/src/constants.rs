@@ -24,13 +24,11 @@ pub const POSTPONE_GRACE_SECONDS: i64 = 60 * 60;
 #[constant]
 pub const MAX_POSTPONE_SECONDS: i64 = 30 * 24 * 60 * 60;
 
-/// Get-ready period between sales close and battle start (15 minutes). The
-/// backend buys and funds the lot during it; bidding opens when it ends.
-#[cfg(not(feature = "demo-timers"))]
+/// Bounds for the get-ready period between sales close and battle start
+/// (`Config::get_ready_secs`): 1 minute to 1 hour. The backend buys and funds
+/// the lot during it, so it can't be shorter than a funding round trip.
 #[constant]
-pub const GET_READY_SECS: i64 = 15 * 60;
+pub const MIN_GET_READY_SECS: i64 = 60;
 
-/// Demo builds (`--features demo-timers`): a 2-minute get-ready period.
-#[cfg(feature = "demo-timers")]
 #[constant]
-pub const GET_READY_SECS: i64 = 2 * 60;
+pub const MAX_GET_READY_SECS: i64 = 60 * 60;

@@ -16,7 +16,7 @@ import { CONFIG, IS_CONFIGURED } from "../src/config";
 import type { LotType } from "../src/lib/catalog";
 import { parseAmount } from "../src/lib/catalog";
 import { friendlyError } from "../src/lib/errors";
-import { GET_READY_SECS, POSTPONE_GRACE_SECONDS } from "../src/lib/idl";
+import { POSTPONE_GRACE_SECONDS } from "../src/lib/idl";
 import { fetchUsdPrices } from "../src/lib/jupiter";
 import { applyLearning, DEFAULT_TUNING, filledEarly, type AuctionOutcome } from "../src/lib/learning";
 import { lotCostFromPrice, priceLot } from "../src/lib/pricing";
@@ -315,7 +315,7 @@ async function main() {
     throw new Error(`ADMIN_KEYPAIR_PATH is ${platform.admin.publicKey.toBase58()}, but the program admin is ${chain.admin.toBase58()}`);
   }
   console.log(`marxy worker: ${rpcUrl()}, admin ${platform.admin.publicKey.toBase58()}`);
-  console.log(`get-ready ${GET_READY_SECS}s, sales ${DEMO_SALES_MINUTES} min, bots ${DEMO_BOTS ? "on" : "off"}`);
+  console.log(`get-ready ${chain.getReadySecs}s (config), sales ${DEMO_SALES_MINUTES} min, bots ${DEMO_BOTS ? "on" : "off"}`);
   if (DEMO_BOTS) {
     bots = new Bots(platform, log);
     state.bots = bots.pubkeys;

@@ -1,6 +1,6 @@
 # Implementation notes
 
-Notes from building the Marxy program (2026-10-09; updated 2026-10-10 for the revised spec: platform minimum margin, sales close + 15-minute get-ready period, battle start). The rules, instructions, PDAs and how-to-run steps are in [README.md](README.md). This file records the state of the work, the decisions that went beyond the spec, and the open items.
+Notes from building the Marxy program (2026-10-09; updated 2026-10-10 for the revised spec: platform minimum margin, sales close + get-ready period, battle start; updated 2026-10-11: the get-ready period moved into the config). The rules, instructions, PDAs and how-to-run steps are in [README.md](README.md). This file records the state of the work, the decisions that went beyond the spec, and the open items.
 
 ## State at hand-off
 
@@ -39,12 +39,12 @@ Tests: the 10 required scenarios, plus config management (margin changes, admin 
 8. **Recipient accounts in settle** are validated against the derived ATA addresses and created on demand (paid by the caller), for both the lot recipient and the treasury's USDC account.
 9. **Window boundaries.** Funding is allowed for `sales_close <= now < battle_start`, and settling into `NotFunded` from `now >= battle_start`, so the two never overlap. Bidding is allowed for `battle_start <= now < end_time`, and settling a funded auction once `now >= end_time`. The postpone window is inclusive (`<= original_sales_close + 1 h`), and the matching settle path opens at `> original_sales_close + 1 h`.
 10. **Countdown reset** follows the spec literally: `end_time = now + countdown`, even when that's earlier than what's left of the opening window.
-11. **Battle start is derived, not stored:** `Auction::battle_start()` = `sales_close + GET_READY_SECS`. It's emitted in `AuctionCreated`, `AuctionPostponed` and `LotFunded` so the UI and backend don't have to compute it.
+11. **Battle start is derived, not stored:** `Auction::battle_start()` = `sales_close + get_ready_secs`, where the auction copied `get_ready_secs` from the config at creation (so a config change never moves a running auction's battle start). It's emitted in `AuctionCreated`, `AuctionPostponed` and `LotFunded` so the UI and backend don't have to compute it.
 12. **Margin rounding and snapshot.** The required sales minimum is `ceil(lot_value × (10_000 + min_margin_bps) / 10_000)`, computed in u128, so rounding never lets an auction undercut the margin. It's checked only at creation; changing `min_margin_bps` later doesn't affect existing auctions, which keep their stored `sales_minimum`. There is no upper bound on `min_margin_bps` (a u16, at most 655%).
 13. **Errors for "too early" / "too late":** `SalesStillOpen` (fund or settle before sales close), `FundingClosed` (fund at or after battle start), `FundingWindowOpen` (settle into NotFunded before battle start), `BattleNotStarted` (bid before battle start). Cancelling at or after sales close returns `SalesLocked`.
 14. **Extra error names:** `ThresholdAlreadyMet`, `PostponeWindowClosed`, `PostponeTooFar`, `InvalidNewSalesClose`, `SalesCloseInPast`, `SalesStillOpen`, `AuctionNotActive`, `LotNotDeposited`, `InvalidLotMint`, `InvalidUsdcMint`, `MissingAccount`, `ZeroCredits`, `ZeroLotValue`, `ZeroOpeningWindow`, `MathOverflow`. `PlatformCannotBid` covers both buying and bidding by the admin or treasury.
 
-15. **`demo-timers` cargo feature** (added for the demo app): `anchor build -- --features demo-timers` sets `GET_READY_SECS` to 120 instead of 900. The IDL's `GET_READY_SECS` constant follows the feature, and the app reads it from the synced IDL. The default build is unchanged: its executable hash is still `7fb51699…fe0f`, the same as the verified devnet deployment.
+15. **Get-ready period in the config** (2026-10-11): `Config::get_ready_secs`, set by `initialize_config` and changed by `update_config`, bounded to 60–3600 s (`MIN_GET_READY_SECS` / `MAX_GET_READY_SECS`, `InvalidGetReadySecs`). It replaced the compile-time `GET_READY_SECS` constant and the `demo-timers` feature. Both account layouts changed, so the program moved to a new ID (`eFXAZBc…tcCF`) instead of upgrading `Y8ue…zpA` in place. The build no longer matches the previously verified hash `7fb51699…fe0f`; verify the new deployment again.
 
 ## Known behaviours and caveats
 
