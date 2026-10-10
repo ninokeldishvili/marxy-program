@@ -1,0 +1,25 @@
+{
+  "cluster": "devnet",
+  "programId": "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA",
+  "admin": "AmpNzrk2vGjNxZ1wpuRS2UAtsu9tpRBfpfHjyt9Z6bZ",
+  "treasury": "CG6AM5RM8cKNwP3CmYk6zErSJERpctZx9sVWPTyZeg2b",
+  "configPda": "ESo6jtpP6aBmZiU4WLRRL78aaY414gpGP1hbw5QGFSGi",
+  "usdcMint": "DuE6oMh2MG1xfCYBCP3982dJPa2fENvaukjErAtZHCD3",
+  "usdcTokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  "lotMints": {
+    "testBtc": {
+      "mint": "92euDB9ZLMxLBpQZ3mkGGcrp6LoLKAxpkVafhQ87e7Th",
+      "name": "Test BTC",
+      "symbol": "tBTC",
+      "decimals": 8,
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    },
+    "testSol": {
+      "mint": "5kNY7WckHQzMMtQLZ5kf1pCu6rRMvyQEEtyi2dujmhNj",
+      "name": "Test SOL",
+      "symbol": "tSOL",
+      "decimals": 9,
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    }
+  }
+}

@@ -1,0 +1,2157 @@
+{
+  "address": "Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA",
+  "metadata": {
+    "name": "marxy",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Marxy: last-bid-wins auctions for crypto lots"
+  },
+  "instructions": [
+    {
+      "name": "buy_credits",
+      "discriminator": [
+        14,
+        173,
+        58,
+        38,
+        248,
+        235,
+        115,
+        102
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "participant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "player"
+              }
+            ]
+          }
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "player_usdc",
+          "writable": true
+        },
+        {
+          "name": "usdc_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "usdc_token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "credits",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "cancel_auction",
+      "discriminator": [
+        156,
+        43,
+        197,
+        110,
+        218,
+        105,
+        143,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "usdc_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "usdc_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_auction",
+      "discriminator": [
+        234,
+        6,
+        201,
+        246,
+        47,
+        219,
+        176,
+        107
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "params.auction_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lot_mint"
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "usdc_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "usdc_token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "CreateAuctionParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "fund_lot",
+      "discriminator": [
+        120,
+        168,
+        108,
+        255,
+        107,
+        63,
+        28,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lot_mint"
+        },
+        {
+          "name": "admin_lot_account",
+          "docs": [
+            "The admin's lot tokens, bought just before through Jupiter."
+          ],
+          "writable": true
+        },
+        {
+          "name": "lot_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "lot_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "lot_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "lot_token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "docs": [
+            "Becomes the platform admin."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "min_margin_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "place_bid",
+      "discriminator": [
+        238,
+        77,
+        148,
+        91,
+        200,
+        151,
+        92,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "bidder",
+          "signer": true
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "participant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "bidder"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "postpone",
+      "discriminator": [
+        124,
+        116,
+        101,
+        206,
+        191,
+        184,
+        240,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_sales_close",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "settle",
+      "discriminator": [
+        175,
+        42,
+        185,
+        87,
+        144,
+        131,
+        102,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "usdc_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "treasury_usdc",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "usdc_token_program"
+        },
+        {
+          "name": "lot_mint",
+          "optional": true
+        },
+        {
+          "name": "lot_vault",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "lot_recipient",
+          "docs": [
+            "when nobody bid. Checked in the handler."
+          ],
+          "optional": true
+        },
+        {
+          "name": "lot_recipient_token",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "lot_token_program",
+          "optional": true
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_config",
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "new_treasury",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "new_usdc_mint",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "new_min_margin_bps",
+          "type": {
+            "option": "u16"
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auction",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction.auction_id",
+                "account": "Auction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "participant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "player"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "usdc_vault",
+          "writable": true,
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "auction"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "player_usdc",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "usdc_token_program"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Auction",
+      "discriminator": [
+        218,
+        94,
+        247,
+        242,
+        126,
+        233,
+        131,
+        81
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Participant",
+      "discriminator": [
+        32,
+        142,
+        108,
+        79,
+        247,
+        179,
+        54,
+        6
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuctionCreated",
+      "discriminator": [
+        133,
+        190,
+        194,
+        65,
+        172,
+        0,
+        70,
+        178
+      ]
+    },
+    {
+      "name": "AuctionPostponed",
+      "discriminator": [
+        94,
+        199,
+        13,
+        13,
+        87,
+        169,
+        13,
+        177
+      ]
+    },
+    {
+      "name": "AuctionRefunding",
+      "discriminator": [
+        246,
+        215,
+        155,
+        210,
+        135,
+        217,
+        182,
+        159
+      ]
+    },
+    {
+      "name": "AuctionSettled",
+      "discriminator": [
+        61,
+        151,
+        131,
+        170,
+        95,
+        203,
+        219,
+        147
+      ]
+    },
+    {
+      "name": "BidPlaced",
+      "discriminator": [
+        135,
+        53,
+        176,
+        83,
+        193,
+        69,
+        108,
+        61
+      ]
+    },
+    {
+      "name": "CreditsBought",
+      "discriminator": [
+        176,
+        237,
+        13,
+        63,
+        123,
+        84,
+        185,
+        118
+      ]
+    },
+    {
+      "name": "LotFunded",
+      "discriminator": [
+        105,
+        97,
+        180,
+        159,
+        22,
+        147,
+        211,
+        179
+      ]
+    },
+    {
+      "name": "ParticipantClosed",
+      "discriminator": [
+        62,
+        49,
+        218,
+        252,
+        40,
+        130,
+        68,
+        71
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Only the platform admin may perform this action"
+    },
+    {
+      "code": 6001,
+      "name": "MathOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6002,
+      "name": "ZeroLotAmount",
+      "msg": "Lot amount must be greater than zero"
+    },
+    {
+      "code": 6003,
+      "name": "ZeroLotValue",
+      "msg": "Lot value must be greater than zero"
+    },
+    {
+      "code": 6004,
+      "name": "ZeroCreditPrice",
+      "msg": "Credit price must be greater than zero"
+    },
+    {
+      "code": 6005,
+      "name": "ZeroCountdown",
+      "msg": "Countdown must be greater than zero"
+    },
+    {
+      "code": 6006,
+      "name": "ZeroOpeningWindow",
+      "msg": "Opening window must be greater than zero"
+    },
+    {
+      "code": 6007,
+      "name": "SalesCloseInPast",
+      "msg": "Sales close must be in the future"
+    },
+    {
+      "code": 6008,
+      "name": "ThresholdBelowMargin",
+      "msg": "Sales minimum must be at least the lot value plus the platform minimum margin"
+    },
+    {
+      "code": 6009,
+      "name": "CreditPriceTooHigh",
+      "msg": "One credit costs more than the per-player cap (10% of the lot value)"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidLotMint",
+      "msg": "The lot mint cannot be the USDC mint"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidUsdcMint",
+      "msg": "The USDC mint does not match the platform config"
+    },
+    {
+      "code": 6012,
+      "name": "AuctionNotActive",
+      "msg": "The auction is not active"
+    },
+    {
+      "code": 6013,
+      "name": "SalesLocked",
+      "msg": "Credit sales are closed"
+    },
+    {
+      "code": 6014,
+      "name": "SalesStillOpen",
+      "msg": "Credit sales are still open"
+    },
+    {
+      "code": 6015,
+      "name": "ZeroCredits",
+      "msg": "Must buy at least one credit"
+    },
+    {
+      "code": 6016,
+      "name": "CreditLimitExceeded",
+      "msg": "Purchase exceeds the per-player credit cap"
+    },
+    {
+      "code": 6017,
+      "name": "PlatformCannotBid",
+      "msg": "The platform admin and treasury cannot participate"
+    },
+    {
+      "code": 6018,
+      "name": "ThresholdNotMet",
+      "msg": "Sales minimum has not been met"
+    },
+    {
+      "code": 6019,
+      "name": "ThresholdAlreadyMet",
+      "msg": "Sales minimum has already been met"
+    },
+    {
+      "code": 6020,
+      "name": "AlreadyPostponed",
+      "msg": "The auction has already been postponed once"
+    },
+    {
+      "code": 6021,
+      "name": "PostponeWindowClosed",
+      "msg": "The postpone window has closed"
+    },
+    {
+      "code": 6022,
+      "name": "PostponeWindowOpen",
+      "msg": "The postpone window is still open"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidNewSalesClose",
+      "msg": "New sales close must be in the future and later than the current one"
+    },
+    {
+      "code": 6024,
+      "name": "PostponeTooFar",
+      "msg": "New sales close is too far in the future"
+    },
+    {
+      "code": 6025,
+      "name": "AlreadyFunded",
+      "msg": "The lot has already been funded"
+    },
+    {
+      "code": 6026,
+      "name": "NotFunded",
+      "msg": "The lot has not been funded"
+    },
+    {
+      "code": 6027,
+      "name": "FundingClosed",
+      "msg": "Funding closed: the battle has started"
+    },
+    {
+      "code": 6028,
+      "name": "FundingWindowOpen",
+      "msg": "The lot can still be funded until battle start"
+    },
+    {
+      "code": 6029,
+      "name": "LotNotDeposited",
+      "msg": "The lot vault does not hold the full lot"
+    },
+    {
+      "code": 6030,
+      "name": "BattleNotStarted",
+      "msg": "The battle has not started yet"
+    },
+    {
+      "code": 6031,
+      "name": "NoCreditsLeft",
+      "msg": "No credits left"
+    },
+    {
+      "code": 6032,
+      "name": "AlreadyLastBidder",
+      "msg": "You are already the last bidder"
+    },
+    {
+      "code": 6033,
+      "name": "BiddingEnded",
+      "msg": "Bidding has ended"
+    },
+    {
+      "code": 6034,
+      "name": "AuctionNotEnded",
+      "msg": "The auction has not ended yet"
+    },
+    {
+      "code": 6035,
+      "name": "WrongRecipient",
+      "msg": "Lot recipient does not match the auction outcome"
+    },
+    {
+      "code": 6036,
+      "name": "MissingAccount",
+      "msg": "A required account is missing"
+    },
+    {
+      "code": 6037,
+      "name": "AuctionStillActive",
+      "msg": "Withdrawals are not possible while the auction is active"
+    }
+  ],
+  "types": [
+    {
+      "name": "Auction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction_id",
+            "type": "u64"
+          },
+          {
+            "name": "lot_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lot_amount",
+            "docs": [
+              "Lot size in the lot mint's base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lot_value",
+            "docs": [
+              "Lot value in USDC base units, fixed at creation."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "usdc_mint",
+            "docs": [
+              "USDC mint this auction was created with (the config may change later)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "credit_price",
+            "docs": [
+              "Price of one credit in USDC base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_credits_per_player",
+            "type": "u64"
+          },
+          {
+            "name": "sales_minimum",
+            "docs": [
+              "USDC that must be sold for the auction to run."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sales_close",
+            "docs": [
+              "Current sales close (moves once if postponed). Battle start is",
+              "`sales_close + GET_READY_SECS`."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "original_sales_close",
+            "docs": [
+              "Sales close as created; the postpone window is measured from it."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "opening_window",
+            "docs": [
+              "Seconds after battle start in which the first bid must land."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "countdown",
+            "docs": [
+              "Seconds each bid adds from \"now\"."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "end_time",
+            "docs": [
+              "0 until funded; then the time bidding closes."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "funded",
+            "type": "bool"
+          },
+          {
+            "name": "funded_time",
+            "type": "i64"
+          },
+          {
+            "name": "total_credits_sold",
+            "type": "u64"
+          },
+          {
+            "name": "revenue",
+            "docs": [
+              "USDC currently held for this auction's credits."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "participant_count",
+            "docs": [
+              "Open participant accounts."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bid_count",
+            "type": "u64"
+          },
+          {
+            "name": "last_bidder",
+            "docs": [
+              "Default pubkey until the first bid."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "AuctionStatus"
+              }
+            }
+          },
+          {
+            "name": "postponed",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuctionCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "auction_id",
+            "type": "u64"
+          },
+          {
+            "name": "lot_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lot_amount",
+            "type": "u64"
+          },
+          {
+            "name": "lot_value",
+            "type": "u64"
+          },
+          {
+            "name": "credit_price",
+            "type": "u64"
+          },
+          {
+            "name": "max_credits_per_player",
+            "type": "u64"
+          },
+          {
+            "name": "sales_minimum",
+            "type": "u64"
+          },
+          {
+            "name": "sales_close",
+            "type": "i64"
+          },
+          {
+            "name": "battle_start",
+            "type": "i64"
+          },
+          {
+            "name": "opening_window",
+            "type": "i64"
+          },
+          {
+            "name": "countdown",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuctionPostponed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_sales_close",
+            "type": "i64"
+          },
+          {
+            "name": "new_sales_close",
+            "type": "i64"
+          },
+          {
+            "name": "new_battle_start",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuctionRefunding",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "reason",
+            "type": {
+              "defined": {
+                "name": "RefundReason"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuctionSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "lot_amount",
+            "type": "u64"
+          },
+          {
+            "name": "revenue",
+            "type": "u64"
+          },
+          {
+            "name": "bid_count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuctionStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Settled"
+          },
+          {
+            "name": "Refunding"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BidPlaced",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "bidder",
+            "type": "pubkey"
+          },
+          {
+            "name": "credits_left",
+            "type": "u64"
+          },
+          {
+            "name": "end_time",
+            "type": "i64"
+          },
+          {
+            "name": "bid_count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Signs every platform action (create / postpone / cancel / fund)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Receives revenue, returned lots and vault rent."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "usdc_mint",
+            "docs": [
+              "USDC mint used for credits in new auctions."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "min_margin_bps",
+            "docs": [
+              "Minimum margin over the lot value that every sales minimum must cover,",
+              "in basis points (2300 = 23%)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateAuctionParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction_id",
+            "type": "u64"
+          },
+          {
+            "name": "lot_amount",
+            "type": "u64"
+          },
+          {
+            "name": "lot_value",
+            "type": "u64"
+          },
+          {
+            "name": "credit_price",
+            "type": "u64"
+          },
+          {
+            "name": "sales_minimum",
+            "type": "u64"
+          },
+          {
+            "name": "sales_close",
+            "type": "i64"
+          },
+          {
+            "name": "opening_window",
+            "type": "i64"
+          },
+          {
+            "name": "countdown",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreditsBought",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "credits",
+            "type": "u64"
+          },
+          {
+            "name": "cost",
+            "type": "u64"
+          },
+          {
+            "name": "player_credits",
+            "type": "u64"
+          },
+          {
+            "name": "total_credits_sold",
+            "type": "u64"
+          },
+          {
+            "name": "revenue",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LotFunded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "lot_amount",
+            "type": "u64"
+          },
+          {
+            "name": "funded_time",
+            "type": "i64"
+          },
+          {
+            "name": "battle_start",
+            "docs": [
+              "Bidding opens here."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "end_time",
+            "docs": [
+              "Battle start + opening window: the first bid must land before it."
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Participant",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "credits_bought",
+            "type": "u64"
+          },
+          {
+            "name": "credits_left",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ParticipantClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "auction",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "refunded",
+            "docs": [
+              "USDC returned to the player (0 after a settled auction)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "credits_burned",
+            "docs": [
+              "Unused credits that were burned."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RefundReason",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Cancelled"
+          },
+          {
+            "name": "SalesMinimumMissed"
+          },
+          {
+            "name": "NotFunded"
+          },
+          {
+            "name": "NoBids"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "AUCTION_SEED",
+      "type": "bytes",
+      "value": "[97, 117, 99, 116, 105, 111, 110]"
+    },
+    {
+      "name": "CONFIG_SEED",
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "GET_READY_SECS",
+      "docs": [
+        "Demo builds (`--features demo-timers`): a 2-minute get-ready period."
+      ],
+      "type": "i64",
+      "value": "120"
+    },
+    {
+      "name": "MAX_PLAYER_SHARE_BPS",
+      "docs": [
+        "Maximum share of the lot value one wallet may buy in credits (10%)."
+      ],
+      "type": "u64",
+      "value": "1000"
+    },
+    {
+      "name": "MAX_POSTPONE_SECONDS",
+      "docs": [
+        "How far ahead of \"now\" a postponed sales close may be (30 days)."
+      ],
+      "type": "i64",
+      "value": "2592000"
+    },
+    {
+      "name": "PARTICIPANT_SEED",
+      "type": "bytes",
+      "value": "[112, 97, 114, 116, 105, 99, 105, 112, 97, 110, 116]"
+    },
+    {
+      "name": "POSTPONE_GRACE_SECONDS",
+      "docs": [
+        "How long after the original sales close the admin may still postpone (1 hour)."
+      ],
+      "type": "i64",
+      "value": "3600"
+    }
+  ]
+}

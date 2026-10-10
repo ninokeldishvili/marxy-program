@@ -24,7 +24,14 @@ programs/marxy/src/
   instructions/       one file per instruction
 programs/marxy/tests/ LiteSVM integration tests (load target/deploy/marxy.so)
 scripts/fund-lot.ts   backend: buy the lot (Jupiter or --mock) and call fund_lot
+app/                  demo app: Next.js + Phantom, worker, devnet setup and smoke test (see app/README.md)
 ```
+
+## Demo app
+
+`app/` is a Next.js app (Phantom, devnet) plus a backend worker that plays the platform's role: it lists lots, funds them, postpones, settles and runs optional demo bots. See [app/README.md](app/README.md).
+
+For demos, build the program with `anchor build -- --features demo-timers`. That shortens the get-ready period from 15 to 2 minutes (`GET_READY_SECS = 120`); nothing else changes. The default build is unaffected and stays byte-identical to the verified devnet deployment.
 
 ## Rules enforced on-chain
 

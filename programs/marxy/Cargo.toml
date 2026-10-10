@@ -18,6 +18,8 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 anchor-debug = []
 custom-heap = []
 custom-panic = []
+# Demo builds only: shortens the get-ready period to 2 minutes.
+demo-timers = []
 
 
 [dependencies]

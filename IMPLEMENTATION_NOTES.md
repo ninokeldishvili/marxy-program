@@ -44,6 +44,8 @@ Tests: the 10 required scenarios, plus config management (margin changes, admin 
 13. **Errors for "too early" / "too late":** `SalesStillOpen` (fund or settle before sales close), `FundingClosed` (fund at or after battle start), `FundingWindowOpen` (settle into NotFunded before battle start), `BattleNotStarted` (bid before battle start). Cancelling at or after sales close returns `SalesLocked`.
 14. **Extra error names:** `ThresholdAlreadyMet`, `PostponeWindowClosed`, `PostponeTooFar`, `InvalidNewSalesClose`, `SalesCloseInPast`, `SalesStillOpen`, `AuctionNotActive`, `LotNotDeposited`, `InvalidLotMint`, `InvalidUsdcMint`, `MissingAccount`, `ZeroCredits`, `ZeroLotValue`, `ZeroOpeningWindow`, `MathOverflow`. `PlatformCannotBid` covers both buying and bidding by the admin or treasury.
 
+15. **`demo-timers` cargo feature** (added for the demo app): `anchor build -- --features demo-timers` sets `GET_READY_SECS` to 120 instead of 900. The IDL's `GET_READY_SECS` constant follows the feature, and the app reads it from the synced IDL. The default build is unchanged: its executable hash is still `7fb51699…fe0f`, the same as the verified devnet deployment.
+
 ## Known behaviours and caveats
 
 - **A second `settle`** fails with Anchor's `AccountNotInitialized` (3012) rather than a custom error, because the USDC vault is already closed.

@@ -1,0 +1,9 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+.env.local
+.env*.local
+.keys/
+worker/state.json
+worker/commands/
