@@ -12,7 +12,8 @@ pub struct AuctionCreated {
     pub credit_price: u64,
     pub max_credits_per_player: u64,
     pub sales_minimum: u64,
-    pub start_time: i64,
+    pub sales_close: i64,
+    pub battle_start: i64,
     pub opening_window: i64,
     pub countdown: i64,
 }
@@ -31,8 +32,9 @@ pub struct CreditsBought {
 #[event]
 pub struct AuctionPostponed {
     pub auction: Pubkey,
-    pub old_start_time: i64,
-    pub new_start_time: i64,
+    pub old_sales_close: i64,
+    pub new_sales_close: i64,
+    pub new_battle_start: i64,
 }
 
 #[event]
@@ -40,6 +42,9 @@ pub struct LotFunded {
     pub auction: Pubkey,
     pub lot_amount: u64,
     pub funded_time: i64,
+    /// Bidding opens here.
+    pub battle_start: i64,
+    /// Battle start + opening window: the first bid must land before it.
     pub end_time: i64,
 }
 

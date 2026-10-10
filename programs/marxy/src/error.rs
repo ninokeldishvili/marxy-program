@@ -16,10 +16,10 @@ pub enum MarxyError {
     ZeroCountdown,
     #[msg("Opening window must be greater than zero")]
     ZeroOpeningWindow,
-    #[msg("Start time must be in the future")]
-    StartTimeInPast,
-    #[msg("Sales minimum must be at least the lot value")]
-    ThresholdBelowLotValue,
+    #[msg("Sales close must be in the future")]
+    SalesCloseInPast,
+    #[msg("Sales minimum must be at least the lot value plus the platform minimum margin")]
+    ThresholdBelowMargin,
     #[msg("One credit costs more than the per-player cap (10% of the lot value)")]
     CreditPriceTooHigh,
     #[msg("The lot mint cannot be the USDC mint")]
@@ -28,8 +28,10 @@ pub enum MarxyError {
     InvalidUsdcMint,
     #[msg("The auction is not active")]
     AuctionNotActive,
-    #[msg("Credit sales are closed: the auction has started")]
+    #[msg("Credit sales are closed")]
     SalesLocked,
+    #[msg("Credit sales are still open")]
+    SalesStillOpen,
     #[msg("Must buy at least one credit")]
     ZeroCredits,
     #[msg("Purchase exceeds the per-player credit cap")]
@@ -46,24 +48,22 @@ pub enum MarxyError {
     PostponeWindowClosed,
     #[msg("The postpone window is still open")]
     PostponeWindowOpen,
-    #[msg("New start must be in the future and later than the current start")]
-    InvalidNewStart,
-    #[msg("New start is too far in the future")]
+    #[msg("New sales close must be in the future and later than the current one")]
+    InvalidNewSalesClose,
+    #[msg("New sales close is too far in the future")]
     PostponeTooFar,
-    #[msg("The auction has not started yet")]
-    AuctionNotStarted,
-    #[msg("The auction has already started")]
-    AuctionAlreadyStarted,
     #[msg("The lot has already been funded")]
     AlreadyFunded,
     #[msg("The lot has not been funded")]
     NotFunded,
-    #[msg("The funding window has closed")]
-    FundingWindowClosed,
-    #[msg("The funding window is still open")]
+    #[msg("Funding closed: the battle has started")]
+    FundingClosed,
+    #[msg("The lot can still be funded until battle start")]
     FundingWindowOpen,
     #[msg("The lot vault does not hold the full lot")]
     LotNotDeposited,
+    #[msg("The battle has not started yet")]
+    BattleNotStarted,
     #[msg("No credits left")]
     NoCreditsLeft,
     #[msg("You are already the last bidder")]

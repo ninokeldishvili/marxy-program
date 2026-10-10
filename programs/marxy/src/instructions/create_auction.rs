@@ -8,7 +8,7 @@ use crate::{
     constants::*,
     error::MarxyError,
     events::AuctionCreated,
-    state::{Auction, AuctionStatus, Config},
+    state::{battle_start, Auction, AuctionStatus, Config},
     utils::now,
 };
 
@@ -19,7 +19,7 @@ pub struct CreateAuctionParams {
     pub lot_value: u64,
     pub credit_price: u64,
     pub sales_minimum: u64,
-    pub start_time: i64,
+    pub sales_close: i64,
     pub opening_window: i64,
     pub countdown: i64,
 }
@@ -72,11 +72,23 @@ pub fn handle_create_auction(
     require!(params.credit_price > 0, MarxyError::ZeroCreditPrice);
     require!(params.countdown > 0, MarxyError::ZeroCountdown);
     require!(params.opening_window > 0, MarxyError::ZeroOpeningWindow);
-    require!(params.start_time > now()?, MarxyError::StartTimeInPast);
+    require!(params.sales_close > now()?, MarxyError::SalesCloseInPast);
+
+    // Guaranteed profit: sales minimum >= ceil(lot value * (1 + minimum margin)).
+    let required_minimum = (params.lot_value as u128)
+        .checked_mul(
+            BPS_DENOMINATOR
+                .checked_add(ctx.accounts.config.min_margin_bps as u64)
+                .ok_or(MarxyError::MathOverflow)? as u128,
+        )
+        .and_then(|v| v.checked_add(BPS_DENOMINATOR as u128 - 1))
+        .and_then(|v| v.checked_div(BPS_DENOMINATOR as u128))
+        .ok_or(MarxyError::MathOverflow)?;
     require!(
-        params.sales_minimum >= params.lot_value,
-        MarxyError::ThresholdBelowLotValue
+        params.sales_minimum as u128 >= required_minimum,
+        MarxyError::ThresholdBelowMargin
     );
+    let battle_start = battle_start(params.sales_close)?;
 
     // floor(lot value * 10% / credit price), computed in u128 to avoid overflow.
     let max_credits_per_player = (params.lot_value as u128)
@@ -98,8 +110,8 @@ pub fn handle_create_auction(
         credit_price: params.credit_price,
         max_credits_per_player,
         sales_minimum: params.sales_minimum,
-        start_time: params.start_time,
-        original_start_time: params.start_time,
+        sales_close: params.sales_close,
+        original_sales_close: params.sales_close,
         opening_window: params.opening_window,
         countdown: params.countdown,
         end_time: 0,
@@ -124,7 +136,8 @@ pub fn handle_create_auction(
         credit_price: auction.credit_price,
         max_credits_per_player,
         sales_minimum: auction.sales_minimum,
-        start_time: auction.start_time,
+        sales_close: auction.sales_close,
+        battle_start,
         opening_window: auction.opening_window,
         countdown: auction.countdown,
     });

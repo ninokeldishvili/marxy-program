@@ -36,6 +36,7 @@ pub fn handle_place_bid(ctx: Context<PlaceBid>) -> Result<()> {
         MarxyError::AuctionNotActive
     );
     require!(auction.funded, MarxyError::NotFunded);
+    require!(now >= auction.battle_start()?, MarxyError::BattleNotStarted);
     require!(now < auction.end_time, MarxyError::BiddingEnded);
     require!(participant.credits_left >= 1, MarxyError::NoCreditsLeft);
     require!(auction.last_bidder != bidder, MarxyError::AlreadyLastBidder);

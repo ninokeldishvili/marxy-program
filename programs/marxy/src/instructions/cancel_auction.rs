@@ -45,10 +45,7 @@ pub fn handle_cancel_auction(ctx: Context<CancelAuction>) -> Result<()> {
         auction.status == AuctionStatus::Active,
         MarxyError::AuctionNotActive
     );
-    require!(
-        now()? < auction.start_time,
-        MarxyError::AuctionAlreadyStarted
-    );
+    require!(now()? < auction.sales_close, MarxyError::SalesLocked);
 
     if auction.participant_count == 0 && ctx.accounts.usdc_vault.amount == 0 {
         let id = auction.auction_id.to_le_bytes();

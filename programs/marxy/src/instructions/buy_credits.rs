@@ -60,7 +60,7 @@ pub fn handle_buy_credits(ctx: Context<BuyCredits>, credits: u64) -> Result<()> 
         auction.status == AuctionStatus::Active,
         MarxyError::AuctionNotActive
     );
-    require!(now()? < auction.start_time, MarxyError::SalesLocked);
+    require!(now()? < auction.sales_close, MarxyError::SalesLocked);
 
     let participant = &mut ctx.accounts.participant;
     if participant.player == Pubkey::default() {

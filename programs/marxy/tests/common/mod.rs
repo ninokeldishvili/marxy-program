@@ -15,7 +15,7 @@ use {
     litesvm::{types::FailedTransactionMetadata, LiteSVM},
     marxy::{
         error::MarxyError, instructions::CreateAuctionParams, Auction, Config, Participant,
-        AUCTION_SEED, CONFIG_SEED, PARTICIPANT_SEED,
+        AUCTION_SEED, CONFIG_SEED, GET_READY_SECS, PARTICIPANT_SEED,
     },
     solana_instruction::error::InstructionError,
     solana_keypair::Keypair,
@@ -38,13 +38,17 @@ pub const USDC: u64 = 1_000_000;
 
 /// 0.5 BTC with 8 decimals.
 pub const LOT_AMOUNT: u64 = 50_000_000;
-/// Lot value 100 USDC, credit 1 USDC -> cap of 10 credits per player, minimum 100 credits.
+/// Lot value 100 USDC, credit 1 USDC -> cap of 10 credits per player.
 pub const LOT_VALUE: u64 = 100 * USDC;
+/// Platform minimum margin: 23%.
+pub const MIN_MARGIN_BPS: u16 = 2_300;
+/// Lot value * (1 + 23%): 123 credits, so at least 13 capped players.
+pub const SALES_MINIMUM: u64 = 123 * USDC;
 pub const CREDIT_PRICE: u64 = USDC;
 pub const MAX_CREDITS: u64 = 10;
 pub const OPENING_WINDOW: i64 = 40;
 pub const COUNTDOWN: i64 = 25;
-/// Seconds between "now" and the start for auctions created with `default_params`.
+/// Seconds between "now" and sales close for auctions created with `default_params`.
 pub const LEAD_TIME: i64 = 3_600;
 
 pub type TxResult = Result<(), FailedTransactionMetadata>;
@@ -272,7 +276,10 @@ impl Env {
     pub fn initialize_config_ix(&self, admin: &Pubkey) -> Instruction {
         Instruction::new_with_bytes(
             marxy::id(),
-            &marxy::instruction::InitializeConfig {}.data(),
+            &marxy::instruction::InitializeConfig {
+                min_margin_bps: MIN_MARGIN_BPS,
+            }
+            .data(),
             marxy::accounts::InitializeConfig {
                 admin: *admin,
                 config: Self::config_pda(),
@@ -290,6 +297,7 @@ impl Env {
         new_admin: Option<Pubkey>,
         new_treasury: Option<Pubkey>,
         new_usdc_mint: Option<Pubkey>,
+        new_min_margin_bps: Option<u16>,
     ) -> TxResult {
         let ix = Instruction::new_with_bytes(
             marxy::id(),
@@ -297,6 +305,7 @@ impl Env {
                 new_admin,
                 new_treasury,
                 new_usdc_mint,
+                new_min_margin_bps,
             }
             .data(),
             marxy::accounts::UpdateConfig {
@@ -308,15 +317,15 @@ impl Env {
         self.send(&[ix], signer, &[])
     }
 
-    /// Default lot parameters, starting `LEAD_TIME` seconds from now.
+    /// Default lot parameters, with sales closing `LEAD_TIME` seconds from now.
     pub fn default_params(&self, auction_id: u64) -> CreateAuctionParams {
         CreateAuctionParams {
             auction_id,
             lot_amount: LOT_AMOUNT,
             lot_value: LOT_VALUE,
             credit_price: CREDIT_PRICE,
-            sales_minimum: LOT_VALUE,
-            start_time: self.now() + LEAD_TIME,
+            sales_minimum: SALES_MINIMUM,
+            sales_close: self.now() + LEAD_TIME,
             opening_window: OPENING_WINDOW,
             countdown: COUNTDOWN,
         }
@@ -348,12 +357,17 @@ impl Env {
         self.create_auction_as(&admin, params)
     }
 
-    /// Create auction `id` with `default_params`, returning its start time.
+    /// Create auction `id` with `default_params`, returning its sales close.
     pub fn create_default(&mut self, id: u64) -> i64 {
         let params = self.default_params(id);
-        let start = params.start_time;
+        let close = params.sales_close;
         self.create_auction(params).expect("create_auction");
-        start
+        close
+    }
+
+    /// Sales close + the 15-minute get-ready period.
+    pub fn battle_start(&self, id: u64) -> i64 {
+        self.auction(id).sales_close + GET_READY_SECS
     }
 
     pub fn buy(&mut self, id: u64, player: &Keypair, credits: u64) -> TxResult {
@@ -387,10 +401,10 @@ impl Env {
             .collect()
     }
 
-    pub fn postpone(&mut self, id: u64, signer: &Keypair, new_start_time: i64) -> TxResult {
+    pub fn postpone(&mut self, id: u64, signer: &Keypair, new_sales_close: i64) -> TxResult {
         let ix = Instruction::new_with_bytes(
             marxy::id(),
-            &marxy::instruction::Postpone { new_start_time }.data(),
+            &marxy::instruction::Postpone { new_sales_close }.data(),
             marxy::accounts::Postpone {
                 admin: signer.pubkey(),
                 config: Self::config_pda(),

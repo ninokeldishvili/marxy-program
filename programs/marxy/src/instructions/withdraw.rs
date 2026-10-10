@@ -67,7 +67,7 @@ pub fn handle_withdraw(ctx: Context<Withdraw>) -> Result<()> {
         AuctionStatus::Active => {
             let auction = &ctx.accounts.auction;
             require!(
-                auction.postponed && now()? < auction.start_time,
+                auction.postponed && now()? < auction.sales_close,
                 MarxyError::AuctionStillActive
             );
             checked_cost(credits_bought, auction.credit_price)?

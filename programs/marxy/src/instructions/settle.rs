@@ -91,18 +91,20 @@ pub fn handle_settle(ctx: Context<Settle>) -> Result<()> {
         return Ok(());
     }
 
-    require!(now >= auction.start_time, MarxyError::AuctionNotStarted);
+    require!(now >= auction.sales_close, MarxyError::SalesStillOpen);
     if auction.sales_minimum_met() {
-        let deadline = auction
-            .start_time
-            .checked_add(FUNDING_WINDOW_SECONDS)
-            .ok_or(MarxyError::MathOverflow)?;
-        require!(now > deadline, MarxyError::FundingWindowOpen);
+        // Not funded by battle start.
+        require!(
+            now >= auction.battle_start()?,
+            MarxyError::FundingWindowOpen
+        );
         enter_refunding(ctx, RefundReason::NotFunded)
     } else {
+        // Short at sales close: the admin may still postpone (once) within
+        // the grace period; a postponed auction settles at its new close.
         if !auction.postponed {
             let deadline = auction
-                .original_start_time
+                .original_sales_close
                 .checked_add(POSTPONE_GRACE_SECONDS)
                 .ok_or(MarxyError::MathOverflow)?;
             require!(now > deadline, MarxyError::PostponeWindowOpen);

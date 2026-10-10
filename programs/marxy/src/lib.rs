@@ -17,8 +17,8 @@ declare_id!("Y8uexnWNeCDLe2fuZmL6bPArX3uKEhbaAgnij84EzpA");
 pub mod marxy {
     use super::*;
 
-    pub fn initialize_config(ctx: Context<InitializeConfig>) -> Result<()> {
-        instructions::initialize_config::handle_initialize_config(ctx)
+    pub fn initialize_config(ctx: Context<InitializeConfig>, min_margin_bps: u16) -> Result<()> {
+        instructions::initialize_config::handle_initialize_config(ctx, min_margin_bps)
     }
 
     pub fn update_config(
@@ -26,12 +26,14 @@ pub mod marxy {
         new_admin: Option<Pubkey>,
         new_treasury: Option<Pubkey>,
         new_usdc_mint: Option<Pubkey>,
+        new_min_margin_bps: Option<u16>,
     ) -> Result<()> {
         instructions::update_config::handle_update_config(
             ctx,
             new_admin,
             new_treasury,
             new_usdc_mint,
+            new_min_margin_bps,
         )
     }
 
@@ -43,8 +45,8 @@ pub mod marxy {
         instructions::buy_credits::handle_buy_credits(ctx, credits)
     }
 
-    pub fn postpone(ctx: Context<Postpone>, new_start_time: i64) -> Result<()> {
-        instructions::postpone::handle_postpone(ctx, new_start_time)
+    pub fn postpone(ctx: Context<Postpone>, new_sales_close: i64) -> Result<()> {
+        instructions::postpone::handle_postpone(ctx, new_sales_close)
     }
 
     pub fn fund_lot(ctx: Context<FundLot>) -> Result<()> {

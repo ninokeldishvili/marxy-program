@@ -25,7 +25,9 @@ pub struct Postpone<'info> {
     pub auction: Account<'info, Auction>,
 }
 
-pub fn handle_postpone(ctx: Context<Postpone>, new_start_time: i64) -> Result<()> {
+/// Allowed once, while sales are below the minimum: any time before sales
+/// close and up to `POSTPONE_GRACE_SECONDS` after the original sales close.
+pub fn handle_postpone(ctx: Context<Postpone>, new_sales_close: i64) -> Result<()> {
     let auction = &mut ctx.accounts.auction;
     let now = now()?;
     require!(
@@ -39,27 +41,28 @@ pub fn handle_postpone(ctx: Context<Postpone>, new_start_time: i64) -> Result<()
         MarxyError::ThresholdAlreadyMet
     );
     let deadline = auction
-        .original_start_time
+        .original_sales_close
         .checked_add(POSTPONE_GRACE_SECONDS)
         .ok_or(MarxyError::MathOverflow)?;
     require!(now <= deadline, MarxyError::PostponeWindowClosed);
     require!(
-        new_start_time > now && new_start_time > auction.start_time,
-        MarxyError::InvalidNewStart
+        new_sales_close > now && new_sales_close > auction.sales_close,
+        MarxyError::InvalidNewSalesClose
     );
     let latest = now
         .checked_add(MAX_POSTPONE_SECONDS)
         .ok_or(MarxyError::MathOverflow)?;
-    require!(new_start_time <= latest, MarxyError::PostponeTooFar);
+    require!(new_sales_close <= latest, MarxyError::PostponeTooFar);
 
-    let old_start_time = auction.start_time;
-    auction.start_time = new_start_time;
+    let old_sales_close = auction.sales_close;
+    auction.sales_close = new_sales_close;
     auction.postponed = true;
 
     emit!(AuctionPostponed {
         auction: auction.key(),
-        old_start_time,
-        new_start_time,
+        old_sales_close,
+        new_sales_close,
+        new_battle_start: auction.battle_start()?,
     });
     Ok(())
 }

@@ -6,7 +6,7 @@ use {
     anchor_lang::error::ErrorCode as AnchorError,
     common::*,
     marxy::{
-        error::MarxyError, AuctionStatus, FUNDING_WINDOW_SECONDS, MAX_POSTPONE_SECONDS,
+        error::MarxyError, AuctionStatus, GET_READY_SECS, MAX_POSTPONE_SECONDS,
         POSTPONE_GRACE_SECONDS,
     },
     solana_keypair::Keypair,
@@ -22,9 +22,10 @@ type Mutation = Box<dyn Fn(&mut marxy::instructions::CreateAuctionParams)>;
 fn happy_path() {
     let mut env = Env::new(TOKEN_2022);
     let id = 1;
-    let start = env.create_default(id);
+    let close = env.create_default(id);
     let a = env.auction(id);
     assert_eq!(a.max_credits_per_player, MAX_CREDITS);
+    assert_eq!(a.sales_minimum, SALES_MINIMUM);
     assert_eq!(a.status, AuctionStatus::Active);
     assert!(env.exists(&env.usdc_vault(id)));
     assert!(
@@ -32,7 +33,7 @@ fn happy_path() {
         "nothing escrowed at creation"
     );
 
-    // p0 buys in two purchases.
+    // SELL: p0 buys in two purchases.
     let p0 = env.new_player(100 * USDC);
     assert_ok(env.buy(id, &p0, 4));
     assert_ok(env.buy(id, &p0, 6));
@@ -52,60 +53,75 @@ fn happy_path() {
     assert_err(env.buy(id, &p1, 1), MarxyError::CreditLimitExceeded);
     assert_err(env.buy(id, &p0, 1), MarxyError::CreditLimitExceeded);
 
-    let others = env.fill(id, 8);
+    let others = env.fill(id, 11);
     // A small player with a single credit.
     let small = env.new_player(10 * USDC);
     assert_ok(env.buy(id, &small, 1));
 
     let a = env.auction(id);
-    assert_eq!(a.total_credits_sold, 101);
-    assert_eq!(a.revenue, 101 * USDC);
-    assert_eq!(a.participant_count, 11);
-    assert_eq!(env.balance(&env.usdc_vault(id)), 101 * USDC);
+    assert_eq!(a.total_credits_sold, 131);
+    assert_eq!(a.revenue, 131 * USDC);
+    assert_eq!(a.participant_count, 14);
+    assert_eq!(env.balance(&env.usdc_vault(id)), 131 * USDC);
 
     // Withdrawing while active (not postponed) is not allowed.
     assert_err(env.withdraw(id, &p0), MarxyError::AuctionStillActive);
 
-    // Bidding before the start / before funding fails.
+    // Bidding before funding fails; funding before sales close fails.
     assert_err(env.bid(id, &p0), MarxyError::NotFunded);
+    // (The admin holds one unit short of the lot; the time check fires first.)
+    env.mint_lot_to_admin(LOT_AMOUNT - 1);
+    let admin = env.admin.insecure_clone();
+    env.set_time(close - 1);
+    assert_err(env.fund_as(id, &admin), MarxyError::SalesStillOpen);
 
-    // LOCK: buying at/after the start fails.
-    env.set_time(start);
+    // LOCK: buying at/after sales close fails.
+    env.set_time(close);
     assert_err(env.buy(id, &small, 1), MarxyError::SalesLocked);
     let late = env.new_player(10 * USDC);
     assert_err(env.buy(id, &late, 1), MarxyError::SalesLocked);
     assert_err(env.bid(id, &p0), MarxyError::NotFunded);
 
-    // FUND: non-admin fails.
+    // GET READY: a non-admin cannot fund.
     let mallory = env.new_player(0);
     let (lot_mint, lot_program) = (env.lot_mint, env.lot_program);
     env.mint_to(&lot_mint, &lot_program, &mallory.pubkey(), LOT_AMOUNT);
     assert_err(env.fund_as(id, &mallory), MarxyError::Unauthorized);
 
-    // The admin holding less than the lot amount fails.
-    env.mint_lot_to_admin(LOT_AMOUNT - 1);
-    let admin = env.admin.insecure_clone();
+    // The admin holding less than the lot amount (wrong amount) fails.
+    assert_eq!(env.lot_balance(&admin.pubkey()), LOT_AMOUNT - 1);
     assert!(
         env.fund_as(id, &admin).is_err(),
         "underfunded admin account"
     );
     assert!(!env.auction(id).funded);
 
-    // The backend completes the purchase and funds.
+    // The backend completes the purchase and funds early in the get-ready period.
     env.mint_lot_to_admin(1);
     env.warp(5);
     let funded_at = env.now();
     assert_ok(env.fund_as(id, &admin));
+    let battle_start = close + GET_READY_SECS;
     let a = env.auction(id);
     assert!(a.funded);
     assert_eq!(a.funded_time, funded_at);
-    assert_eq!(a.end_time, funded_at + OPENING_WINDOW);
+    assert_eq!(
+        a.end_time,
+        battle_start + OPENING_WINDOW,
+        "opening window counts from battle start, not from funding"
+    );
     assert_eq!(env.balance(&env.lot_vault(id)), LOT_AMOUNT);
     assert_eq!(env.lot_balance(&admin.pubkey()), 0);
     env.mint_lot_to_admin(LOT_AMOUNT);
     assert_err(env.fund_as(id, &admin), MarxyError::AlreadyFunded);
 
+    // Funded, but bidding only opens at battle start.
+    assert_err(env.bid(id, &p0), MarxyError::BattleNotStarted);
+    env.set_time(battle_start - 1);
+    assert_err(env.bid(id, &p0), MarxyError::BattleNotStarted);
+
     // BATTLE: a wallet without a participant account cannot bid.
+    env.set_time(battle_start);
     assert_anchor_err(env.bid(id, &late), AnchorError::AccountNotInitialized);
 
     env.warp(10);
@@ -169,7 +185,7 @@ fn happy_path() {
     let a = env.auction(id);
     assert_eq!(a.status, AuctionStatus::Settled);
     assert_eq!(env.lot_balance(&p1.pubkey()), LOT_AMOUNT);
-    assert_eq!(env.usdc_balance(&treasury), 101 * USDC);
+    assert_eq!(env.usdc_balance(&treasury), 131 * USDC);
     assert!(!env.exists(&env.usdc_vault(id)), "usdc vault closed");
     assert!(!env.exists(&env.lot_vault(id)), "lot vault closed");
     assert_eq!(
@@ -199,7 +215,7 @@ fn happy_path() {
 
     // Winner closes too.
     assert_ok(env.withdraw(id, &p1));
-    assert_eq!(env.auction(id).participant_count, 9);
+    assert_eq!(env.auction(id).participant_count, 12);
 }
 
 /// 2. Sales minimum missed, no postponement.
@@ -207,29 +223,33 @@ fn happy_path() {
 fn sales_minimum_missed() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 2;
-    let start = env.create_default(id);
-    let players = env.fill(id, 5);
-    assert_eq!(env.auction(id).revenue, 50 * USDC);
+    let close = env.create_default(id);
+    // 12 capped players = 120 USDC: above the lot value, below lot value + 23%.
+    let players = env.fill(id, 12);
+    assert_eq!(env.auction(id).revenue, 120 * USDC);
 
-    env.set_time(start);
+    let caller = env.new_player(0);
+    env.set_time(close - 1);
+    assert_err(env.settle(id, &caller, None), MarxyError::SalesStillOpen);
+
+    env.set_time(close);
     env.mint_lot_to_admin(LOT_AMOUNT);
     let admin = env.admin.insecure_clone();
     assert_err(env.fund_as(id, &admin), MarxyError::ThresholdNotMet);
     assert_err(env.bid(id, &players[0]), MarxyError::NotFunded);
 
-    let caller = env.new_player(0);
-    env.set_time(start + 10);
+    env.set_time(close + 10);
     assert_err(
         env.settle(id, &caller, None),
         MarxyError::PostponeWindowOpen,
     );
-    env.set_time(start + POSTPONE_GRACE_SECONDS);
+    env.set_time(close + POSTPONE_GRACE_SECONDS);
     assert_err(
         env.settle(id, &caller, None),
         MarxyError::PostponeWindowOpen,
     );
 
-    env.set_time(start + POSTPONE_GRACE_SECONDS + 1);
+    env.set_time(close + POSTPONE_GRACE_SECONDS + 1);
     assert_err(
         env.postpone(id, &admin, env.now() + 3_600),
         MarxyError::PostponeWindowClosed,
@@ -237,6 +257,7 @@ fn sales_minimum_missed() {
     assert_ok(env.settle(id, &caller, None));
     assert_eq!(env.auction(id).status, AuctionStatus::Refunding);
     assert_err(env.fund_as(id, &admin), MarxyError::AuctionNotActive);
+    assert_err(env.bid(id, &players[0]), MarxyError::AuctionNotActive);
 
     let treasury_lamports = env.lamports(&env.treasury.pubkey());
     let vault_rent = env.lamports(&env.usdc_vault(id));
@@ -257,39 +278,47 @@ fn sales_minimum_missed() {
 fn postpone_once_then_runs() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 3;
-    let start = env.create_default(id);
+    let close = env.create_default(id);
     let early = env.fill(id, 3);
     let admin = env.admin.insecure_clone();
 
-    // After the start (sales locked) but within the grace hour.
-    env.set_time(start + 600);
+    // After sales close (sales locked) but within the grace hour.
+    env.set_time(close + 600);
     let latecomer = env.new_player(10 * USDC);
     assert_err(env.buy(id, &latecomer, 1), MarxyError::SalesLocked);
 
-    // Non-admin, past, too far, earlier than current start.
+    // Non-admin, now, earlier than current close, too far.
     let now = env.now();
     assert_err(
         env.postpone(id, &early[0], now + 86_400),
         MarxyError::Unauthorized,
     );
-    assert_err(env.postpone(id, &admin, now), MarxyError::InvalidNewStart);
     assert_err(
-        env.postpone(id, &admin, start - 1),
-        MarxyError::InvalidNewStart,
+        env.postpone(id, &admin, now),
+        MarxyError::InvalidNewSalesClose,
+    );
+    assert_err(
+        env.postpone(id, &admin, close - 1),
+        MarxyError::InvalidNewSalesClose,
     );
     assert_err(
         env.postpone(id, &admin, now + MAX_POSTPONE_SECONDS + 1),
         MarxyError::PostponeTooFar,
     );
 
-    let new_start = now + 2 * 86_400;
-    assert_ok(env.postpone(id, &admin, new_start));
+    let new_close = now + 2 * 86_400;
+    assert_ok(env.postpone(id, &admin, new_close));
     let a = env.auction(id);
     assert!(a.postponed);
-    assert_eq!(a.start_time, new_start);
-    assert_eq!(a.original_start_time, start);
+    assert_eq!(a.sales_close, new_close);
+    assert_eq!(a.original_sales_close, close);
+    assert_eq!(
+        env.battle_start(id),
+        new_close + GET_READY_SECS,
+        "battle start moves"
+    );
     assert_err(
-        env.postpone(id, &admin, new_start + 60),
+        env.postpone(id, &admin, new_close + 60),
         MarxyError::AlreadyPostponed,
     );
 
@@ -303,54 +332,59 @@ fn postpone_once_then_runs() {
     assert_eq!(a.participant_count, 2);
 
     // New buyers fill the minimum.
-    let mut players = env.fill(id, 8);
-    assert_ok(env.buy(id, &latecomer, 1));
-    assert_eq!(env.auction(id).revenue, 101 * USDC);
+    let mut players = env.fill(id, 10);
+    assert_ok(env.buy(id, &latecomer, 3));
+    assert_eq!(env.auction(id).revenue, 123 * USDC);
     assert_err(
-        env.postpone(id, &admin, new_start + 60),
+        env.postpone(id, &admin, new_close + 60),
         MarxyError::AlreadyPostponed,
     );
 
-    env.set_time(new_start - 1);
-    assert_err(env.buy_lot_and_fund(id), MarxyError::AuctionNotStarted);
-    env.set_time(new_start);
+    env.set_time(new_close - 1);
+    assert_err(env.buy_lot_and_fund(id), MarxyError::SalesStillOpen);
+    env.set_time(new_close);
     assert_err(env.buy(id, &latecomer, 1), MarxyError::SalesLocked);
     assert_err(env.withdraw(id, &early[1]), MarxyError::AuctionStillActive);
     assert_ok(env.fund_as(id, &admin));
+    assert_eq!(
+        env.auction(id).end_time,
+        new_close + GET_READY_SECS + OPENING_WINDOW
+    );
 
     players.push(latecomer);
-    env.warp(1);
+    assert_err(env.bid(id, &players[0]), MarxyError::BattleNotStarted);
+    env.set_time(env.battle_start(id));
     assert_ok(env.bid(id, &players[0]));
     env.warp(1);
-    assert_ok(env.bid(id, &players[8]));
+    assert_ok(env.bid(id, &players[10]));
     let end = env.auction(id).end_time;
     env.set_time(end);
-    let winner = players[8].pubkey();
+    let winner = players[10].pubkey();
     assert_ok(env.settle(id, &players[3], Some(winner)));
     assert_eq!(env.auction(id).status, AuctionStatus::Settled);
     assert_eq!(env.lot_balance(&winner), LOT_AMOUNT);
-    assert_eq!(env.usdc_balance(&env.treasury.pubkey()), 101 * USDC);
+    assert_eq!(env.usdc_balance(&env.treasury.pubkey()), 123 * USDC);
 }
 
-/// 4. Postponed and still short: refunds from the new start.
+/// 4. Postponed and still short: refunds from the new sales close.
 #[test]
 fn postponed_still_short() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 4;
-    let start = env.create_default(id);
+    let close = env.create_default(id);
     let mut players = env.fill(id, 4);
     let admin = env.admin.insecure_clone();
 
-    // Postpone before the start this time.
-    env.set_time(start - 100);
-    let new_start = start + 86_400;
-    assert_ok(env.postpone(id, &admin, new_start));
+    // Postpone before sales close this time.
+    env.set_time(close - 100);
+    let new_close = close + 86_400;
+    assert_ok(env.postpone(id, &admin, new_close));
     players.extend(env.fill(id, 2));
 
     let caller = env.new_player(0);
-    env.set_time(new_start - 1);
-    assert_err(env.settle(id, &caller, None), MarxyError::AuctionNotStarted);
-    env.set_time(new_start);
+    env.set_time(new_close - 1);
+    assert_err(env.settle(id, &caller, None), MarxyError::SalesStillOpen);
+    env.set_time(new_close);
     assert_err(env.buy_lot_and_fund(id), MarxyError::ThresholdNotMet);
     assert_ok(env.settle(id, &caller, None));
     assert_eq!(env.auction(id).status, AuctionStatus::Refunding);
@@ -358,28 +392,30 @@ fn postponed_still_short() {
     assert!(!env.exists(&env.usdc_vault(id)));
 }
 
-/// 5. Minimum met but the lot is not funded within 15 minutes.
+/// 5. Minimum met but the lot is not funded by battle start.
 #[test]
 fn lot_not_funded_in_time() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 5;
-    let start = env.create_default(id);
-    let players = env.fill(id, 10);
+    let close = env.create_default(id);
+    let players = env.fill(id, 13);
     let admin = env.admin.insecure_clone();
     let caller = env.new_player(0);
+    let battle_start = close + GET_READY_SECS;
 
-    env.set_time(start);
+    env.set_time(close);
     assert_err(
-        env.postpone(id, &admin, start + 3_600),
+        env.postpone(id, &admin, close + 3_600),
         MarxyError::ThresholdAlreadyMet,
     );
-    env.set_time(start + 60);
+    env.set_time(close + 60);
     assert_err(env.settle(id, &caller, None), MarxyError::FundingWindowOpen);
-    env.set_time(start + FUNDING_WINDOW_SECONDS);
+    env.set_time(battle_start - 1);
     assert_err(env.settle(id, &caller, None), MarxyError::FundingWindowOpen);
 
-    env.set_time(start + FUNDING_WINDOW_SECONDS + 1);
-    assert_err(env.buy_lot_and_fund(id), MarxyError::FundingWindowClosed);
+    env.set_time(battle_start);
+    assert_err(env.buy_lot_and_fund(id), MarxyError::FundingClosed);
+    assert_err(env.bid(id, &players[0]), MarxyError::NotFunded);
     assert_ok(env.settle(id, &caller, None));
     assert_eq!(env.auction(id).status, AuctionStatus::Refunding);
     env.refund_all(id, &players);
@@ -391,13 +427,13 @@ fn lot_not_funded_in_time() {
 fn funded_no_bids() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 6;
-    let start = env.create_default(id);
-    let players = env.fill(id, 10);
+    let close = env.create_default(id);
+    let players = env.fill(id, 13);
 
-    env.set_time(start + 30);
+    env.set_time(close + 30);
     assert_ok(env.buy_lot_and_fund(id));
     let end = env.auction(id).end_time;
-    assert_eq!(end, start + 30 + OPENING_WINDOW);
+    assert_eq!(end, close + GET_READY_SECS + OPENING_WINDOW);
 
     let caller = env.new_player(0);
     env.set_time(end - 1);
@@ -424,7 +460,7 @@ fn funded_no_bids() {
     );
     assert!(!env.exists(&env.lot_vault(id)));
     assert_eq!(env.usdc_balance(&treasury), 0, "no revenue taken");
-    assert_eq!(env.balance(&env.usdc_vault(id)), 100 * USDC);
+    assert_eq!(env.balance(&env.usdc_vault(id)), 130 * USDC);
 
     env.refund_all(id, &players);
     assert!(!env.exists(&env.usdc_vault(id)));
@@ -435,12 +471,13 @@ fn funded_no_bids() {
 fn credits_run_out() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 7;
-    let start = env.create_default(id);
-    let players = env.fill(id, 10);
+    let close = env.create_default(id);
+    let players = env.fill(id, 13);
     let (a, b) = (&players[0], &players[1]);
 
-    env.set_time(start);
+    env.set_time(close);
     assert_ok(env.buy_lot_and_fund(id));
+    env.set_time(env.battle_start(id));
     for round in 0..MAX_CREDITS {
         env.warp(COUNTDOWN - 1);
         assert_ok(env.bid(id, a));
@@ -489,10 +526,10 @@ fn cancel_rules() {
     );
 
     let id = 81;
-    let start = env.create_default(id);
+    let close = env.create_default(id);
     let players = env.fill(id, 3);
     assert_err(env.cancel_as(id, &mallory), MarxyError::Unauthorized);
-    env.set_time(start - 1);
+    env.set_time(close - 1);
     assert_ok(env.cancel(id));
     assert_eq!(env.auction(id).status, AuctionStatus::Refunding);
     assert_err(env.buy(id, &players[0], 1), MarxyError::AuctionNotActive);
@@ -500,12 +537,12 @@ fn cancel_rules() {
     env.refund_all(id, &players);
     assert!(!env.exists(&env.usdc_vault(id)));
 
-    // Cancel after the start fails.
+    // Cancel at/after sales close fails.
     let id = 82;
-    let start = env.create_default(id);
+    let close = env.create_default(id);
     env.fill(id, 2);
-    env.set_time(start);
-    assert_err(env.cancel(id), MarxyError::AuctionAlreadyStarted);
+    env.set_time(close);
+    assert_err(env.cancel(id), MarxyError::SalesLocked);
 
     // Cancel with no participants closes the empty vault immediately.
     let id = 83;
@@ -527,17 +564,33 @@ fn invalid_create_params() {
             MarxyError::ZeroOpeningWindow,
         ),
         (
-            Box::new(|p| p.start_time = T0 - 1),
-            MarxyError::StartTimeInPast,
+            Box::new(|p| p.sales_close = T0 - 1),
+            MarxyError::SalesCloseInPast,
         ),
-        (Box::new(|p| p.start_time = T0), MarxyError::StartTimeInPast),
+        (
+            Box::new(|p| p.sales_close = T0),
+            MarxyError::SalesCloseInPast,
+        ),
         (
             Box::new(|p| p.credit_price = 0),
             MarxyError::ZeroCreditPrice,
         ),
+        // Below lot value * (1 + 23%).
         (
-            Box::new(|p| p.sales_minimum = LOT_VALUE - 1),
-            MarxyError::ThresholdBelowLotValue,
+            Box::new(|p| p.sales_minimum = SALES_MINIMUM - 1),
+            MarxyError::ThresholdBelowMargin,
+        ),
+        (
+            Box::new(|p| p.sales_minimum = LOT_VALUE),
+            MarxyError::ThresholdBelowMargin,
+        ),
+        // The required minimum rounds up: 1.23 * 100.000001 USDC = 123.00000123 -> 123.000002.
+        (
+            Box::new(|p| {
+                p.lot_value = LOT_VALUE + 1;
+                p.sales_minimum = 123_000_001;
+            }),
+            MarxyError::ThresholdBelowMargin,
         ),
         // 10% of 100 USDC is 10 USDC; one credit at 10.000001 USDC is too expensive.
         (
@@ -565,6 +618,12 @@ fn invalid_create_params() {
     assert_ok(env.create_auction(p));
     assert_eq!(env.auction(10).max_credits_per_player, 3);
 
+    // The rounded-up minimum itself is accepted.
+    let mut p = env.default_params(11);
+    p.lot_value = LOT_VALUE + 1;
+    p.sales_minimum = 123_000_002;
+    assert_ok(env.create_auction(p));
+
     // Duplicate id fails.
     let p = env.default_params(10);
     assert!(env.create_auction(p).is_err());
@@ -591,7 +650,7 @@ fn platform_exclusion_and_zero_buy() {
     assert_ok(env.buy(id, &player, 1));
 }
 
-/// Config: double init, admin-only updates, and the new treasury being honoured.
+/// Config: double init, admin-only updates, the minimum margin, and rotation.
 #[test]
 fn config_management() {
     let mut env = Env::new(SPL_TOKEN);
@@ -599,6 +658,7 @@ fn config_management() {
     assert_eq!(c.admin, env.admin.pubkey());
     assert_eq!(c.treasury, env.treasury.pubkey());
     assert_eq!(c.usdc_mint, env.usdc_mint);
+    assert_eq!(c.min_margin_bps, MIN_MARGIN_BPS);
 
     let admin = env.admin.insecure_clone();
     let ix = env.initialize_config_ix(&admin.pubkey());
@@ -609,9 +669,31 @@ fn config_management() {
 
     let mallory = env.new_player(0);
     assert_err(
-        env.update_config(&mallory, Some(mallory.pubkey()), None, None),
+        env.update_config(&mallory, Some(mallory.pubkey()), None, None, None),
         MarxyError::Unauthorized,
     );
+    assert_err(
+        env.update_config(&mallory, None, None, None, Some(0)),
+        MarxyError::Unauthorized,
+    );
+
+    // Raising the margin to 30% only affects auctions created afterwards.
+    env.create_default(13);
+    assert_ok(env.update_config(&admin, None, None, None, Some(3_000)));
+    assert_eq!(env.config().min_margin_bps, 3_000);
+    assert_eq!(env.auction(13).sales_minimum, SALES_MINIMUM);
+    let mut p = env.default_params(14);
+    assert_err(
+        env.create_auction(p.clone()),
+        MarxyError::ThresholdBelowMargin,
+    );
+    p.sales_minimum = 130 * USDC;
+    assert_ok(env.create_auction(p));
+    // A zero margin allows a sales minimum equal to the lot value.
+    assert_ok(env.update_config(&admin, None, None, None, Some(0)));
+    let mut p = env.default_params(15);
+    p.sales_minimum = LOT_VALUE;
+    assert_ok(env.create_auction(p));
 
     // Rotate treasury and admin.
     let new_treasury = Keypair::new();
@@ -624,9 +706,11 @@ fn config_management() {
         Some(new_admin.pubkey()),
         Some(new_treasury.pubkey()),
         None,
+        None,
     ));
     assert_eq!(env.config().admin, new_admin.pubkey());
     assert_eq!(env.config().treasury, new_treasury.pubkey());
+    assert_eq!(env.config().min_margin_bps, 0, "unchanged when None");
 
     // The old admin lost its rights; the old treasury may now play.
     let params = env.default_params(12);
@@ -671,17 +755,17 @@ fn mint_validation() {
 fn precreated_lot_vault_does_not_block_funding() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 30;
-    let start = env.create_default(id);
-    let players = env.fill(id, 10);
+    let close = env.create_default(id);
+    let players = env.fill(id, 13);
     let auction = Env::auction_pda(id);
     let (mint, program) = (env.lot_mint, env.lot_program);
     env.create_ata(&auction, &mint, &program);
 
-    env.set_time(start);
+    env.set_time(close);
     assert_ok(env.buy_lot_and_fund(id));
     assert_eq!(env.balance(&env.lot_vault(id)), LOT_AMOUNT);
 
-    env.warp(1);
+    env.set_time(env.battle_start(id) + 1);
     assert_ok(env.bid(id, &players[2]));
     env.warp(COUNTDOWN);
     assert_ok(env.settle(id, &players[0], Some(players[2].pubkey())));
@@ -727,9 +811,9 @@ fn fee_on_transfer_lot_is_rejected() {
     env.lot_mint = mint.pubkey();
 
     let id = 40;
-    let start = env.create_default(id);
-    env.fill(id, 10);
-    env.set_time(start);
+    let close = env.create_default(id);
+    env.fill(id, 13);
+    env.set_time(close);
     assert_err(env.buy_lot_and_fund(id), MarxyError::LotNotDeposited);
     assert!(!env.auction(id).funded);
 }
@@ -739,11 +823,11 @@ fn fee_on_transfer_lot_is_rejected() {
 fn settle_rejects_wrong_treasury() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 50;
-    let start = env.create_default(id);
-    let players = env.fill(id, 10);
-    env.set_time(start);
+    let close = env.create_default(id);
+    let players = env.fill(id, 13);
+    env.set_time(close);
     assert_ok(env.buy_lot_and_fund(id));
-    env.warp(1);
+    env.set_time(env.battle_start(id));
     assert_ok(env.bid(id, &players[0]));
     env.warp(COUNTDOWN);
 

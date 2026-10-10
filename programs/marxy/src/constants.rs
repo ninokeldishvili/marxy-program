@@ -16,14 +16,15 @@ pub const BPS_DENOMINATOR: u64 = 10_000;
 #[constant]
 pub const MAX_PLAYER_SHARE_BPS: u64 = 1_000;
 
-/// How long after the original start the admin may still postpone (1 hour).
+/// How long after the original sales close the admin may still postpone (1 hour).
 #[constant]
 pub const POSTPONE_GRACE_SECONDS: i64 = 60 * 60;
 
-/// How far ahead of "now" a postponed start may be (30 days).
+/// How far ahead of "now" a postponed sales close may be (30 days).
 #[constant]
 pub const MAX_POSTPONE_SECONDS: i64 = 30 * 24 * 60 * 60;
 
-/// How long after the start the admin has to fund the lot (15 minutes).
+/// Get-ready period between sales close and battle start (15 minutes). The
+/// backend buys and funds the lot during it; bidding opens when it ends.
 #[constant]
-pub const FUNDING_WINDOW_SECONDS: i64 = 15 * 60;
+pub const GET_READY_SECS: i64 = 15 * 60;

@@ -1,5 +1,7 @@
 /**
- * Backend step "FUND": buy the lot and deposit it into the auction's lot vault.
+ * Backend step "GET READY": buy the lot and deposit it into the auction's lot vault.
+ * Run it after sales close and before battle start (sales close + 15 minutes),
+ * once the sales minimum is met.
  *
  *   mainnet:  Jupiter quote (USDC -> lot mint, ExactOut for the lot amount),
  *             swap from the admin wallet, then `fund_lot`.
@@ -41,7 +43,8 @@ import {
 import idl from "../target/idl/marxy.json";
 import type { Marxy } from "../target/types/marxy.js";
 
-const FUNDING_WINDOW_SECONDS = 15 * 60;
+/** Get-ready period between sales close and battle start (GET_READY_SECS on-chain). */
+const GET_READY_SECS = 15 * 60;
 
 const { values: args } = parseArgs({
   options: {
@@ -168,9 +171,10 @@ async function main() {
   if (!("active" in auction.status)) fail("auction is not active");
   if (auction.funded) fail("auction is already funded");
   const now = Math.floor(Date.now() / 1000);
-  const start = auction.startTime.toNumber();
-  if (now < start) fail(`auction starts at ${new Date(start * 1000).toISOString()}`);
-  if (now > start + FUNDING_WINDOW_SECONDS) fail("funding window (15 min after start) has closed");
+  const salesClose = auction.salesClose.toNumber();
+  const battleStart = salesClose + GET_READY_SECS;
+  if (now < salesClose) fail(`sales are open until ${new Date(salesClose * 1000).toISOString()}`);
+  if (now >= battleStart) fail(`funding closed at battle start ${new Date(battleStart * 1000).toISOString()}`);
   if (auction.revenue.lt(auction.salesMinimum)) fail("sales minimum not met; settle into refunds instead");
 
   const lotMint = auction.lotMint;
@@ -188,6 +192,7 @@ async function main() {
   console.log(`auction:     #${auctionId} ${auctionPda}`);
   console.log(`lot:         ${lotAmount} units of ${lotMint} (token program ${lotTokenProgram})`);
   console.log(`admin holds: ${held}, to buy: ${needed}`);
+  console.log(`deadline:    ${new Date(battleStart * 1000).toISOString()} (${battleStart - now}s left)`);
 
   if (needed > 0n) {
     if (args.mock) {

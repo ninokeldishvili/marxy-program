@@ -64,13 +64,11 @@ pub fn handle_fund_lot(ctx: Context<FundLot>) -> Result<()> {
         MarxyError::AuctionNotActive
     );
     require!(!auction.funded, MarxyError::AlreadyFunded);
-    require!(now >= auction.start_time, MarxyError::AuctionNotStarted);
+    // Get-ready period: sales close <= now < battle start.
+    require!(now >= auction.sales_close, MarxyError::SalesStillOpen);
+    let battle_start = auction.battle_start()?;
+    require!(now < battle_start, MarxyError::FundingClosed);
     require!(auction.sales_minimum_met(), MarxyError::ThresholdNotMet);
-    let funding_deadline = auction
-        .start_time
-        .checked_add(FUNDING_WINDOW_SECONDS)
-        .ok_or(MarxyError::MathOverflow)?;
-    require!(now <= funding_deadline, MarxyError::FundingWindowClosed);
 
     let lot_amount = auction.lot_amount;
     let balance_before = ctx.accounts.lot_vault.amount;
@@ -101,7 +99,9 @@ pub fn handle_fund_lot(ctx: Context<FundLot>) -> Result<()> {
     let auction = &mut ctx.accounts.auction;
     auction.funded = true;
     auction.funded_time = now;
-    auction.end_time = now
+    // Bidding opens at battle start however early the lot arrived, so the
+    // countdown players see is honest.
+    auction.end_time = battle_start
         .checked_add(auction.opening_window)
         .ok_or(MarxyError::MathOverflow)?;
 
@@ -109,6 +109,7 @@ pub fn handle_fund_lot(ctx: Context<FundLot>) -> Result<()> {
         auction: auction.key(),
         lot_amount,
         funded_time: now,
+        battle_start,
         end_time: auction.end_time,
     });
     Ok(())

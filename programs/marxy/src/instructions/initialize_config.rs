@@ -22,11 +22,12 @@ pub struct InitializeConfig<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handle_initialize_config(ctx: Context<InitializeConfig>) -> Result<()> {
+pub fn handle_initialize_config(ctx: Context<InitializeConfig>, min_margin_bps: u16) -> Result<()> {
     let config = &mut ctx.accounts.config;
     config.admin = ctx.accounts.admin.key();
     config.treasury = ctx.accounts.treasury.key();
     config.usdc_mint = ctx.accounts.usdc_mint.key();
+    config.min_margin_bps = min_margin_bps;
     config.bump = ctx.bumps.config;
     Ok(())
 }
