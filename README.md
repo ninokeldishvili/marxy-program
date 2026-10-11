@@ -16,7 +16,7 @@ Built with Anchor 1.1.2 / Solana CLI 3.1.10. Program ID (keypair in `target/depl
 ```
 programs/marxy/src/
   lib.rs              instruction entrypoints
-  constants.rs        seeds and rule constants (10% cap, 1 h, 30 days, get-ready bounds 1 min to 1 h)
+  constants.rs        seeds and rule constants (25% cap, 1 h, 30 days, get-ready bounds 1 min to 1 h)
   state.rs            Config, Auction, Participant, AuctionStatus, RefundReason
   events.rs           events for the UI and backend
   error.rs            MarxyError
@@ -40,7 +40,7 @@ The get-ready period is a config value, not a build option: set it with `initial
 | 1 | **Lot.** The admin creates an auction with the lot mint, lot amount, lot value (USDC), credit price, sales minimum, sales close, opening window and countdown. Nothing is escrowed at creation. | `create_auction` |
 | 2 | **Credit price** is fixed per auction and never changes. | stored once, no setter |
 | 3 | **Buying.** Before sales close, in one or several purchases. USDC goes into the auction's USDC vault (ATA owned by the auction PDA). | `buy_credits` |
-| 4 | **Per-player cap** = `floor(lot_value × 10% / credit_price)`, computed and stored at creation. If one credit costs more than 10% of the lot value, creation fails. | `MAX_PLAYER_SHARE_BPS`, `CreditLimitExceeded`, `CreditPriceTooHigh` |
+| 4 | **Per-player cap** = `floor(lot_value × 25% / credit_price)`, computed and stored at creation. If one credit costs more than 25% of the lot value, creation fails. | `MAX_PLAYER_SHARE_BPS`, `CreditLimitExceeded`, `CreditPriceTooHigh` |
 | 5 | **Sales minimum (guaranteed profit)** ≥ `ceil(lot_value × (10_000 + min_margin_bps) / 10_000)`, using the config's minimum margin at creation time (checked math). Below it at sales close, the auction can't be funded or bid on, so every auction that runs is profitable. | `ThresholdBelowMargin`, `ThresholdNotMet` |
 | 6 | **Postpone once** if below the minimum, any time before sales close until 1 h after the *original* sales close. New sales close: in the future, later than the current one, at most 30 days ahead; battle start moves with it. While postponed (before the new sales close), sales reopen and buyers may withdraw a full refund. If nobody postpones within the hour, or the postponed sales close also misses the minimum, anyone can settle into refunds. | `postpone`, `POSTPONE_GRACE_SECONDS`, `MAX_POSTPONE_SECONDS` |
 | 7 | **Lock.** From sales close on (on-chain clock), buying fails. | `SalesLocked` |

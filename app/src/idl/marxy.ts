@@ -1430,7 +1430,7 @@ export type Marxy = {
     {
       "code": 6009,
       "name": "creditPriceTooHigh",
-      "msg": "One credit costs more than the per-player cap (10% of the lot value)"
+      "msg": "One credit costs more than the per-player cap (25% of the lot value)"
     },
     {
       "code": 6010,
@@ -2161,10 +2161,11 @@ export type Marxy = {
     {
       "name": "maxPlayerShareBps",
       "docs": [
-        "Maximum share of the lot value one wallet may buy in credits (10%)."
+        "Maximum share of the lot value one wallet may buy in credits (25%), so a",
+        "full auction needs at least 5 players (the minimum is the lot value + margin)."
       ],
       "type": "u64",
-      "value": "1000"
+      "value": "2500"
     },
     {
       "name": "maxPostponeSeconds",

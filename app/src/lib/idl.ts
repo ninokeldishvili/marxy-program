@@ -18,6 +18,6 @@ export const MIN_GET_READY_SECS = constant("MIN_GET_READY_SECS");
 export const MAX_GET_READY_SECS = constant("MAX_GET_READY_SECS");
 /** How long after the original sales close the admin may still postpone. */
 export const POSTPONE_GRACE_SECONDS = constant("POSTPONE_GRACE_SECONDS");
-/** 10% per-player cap, in basis points. */
+/** 25% per-player cap, in basis points. */
 export const MAX_PLAYER_SHARE_BPS = constant("MAX_PLAYER_SHARE_BPS");
 export const BPS_DENOMINATOR = 10_000;

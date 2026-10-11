@@ -282,7 +282,7 @@ export function Landing() {
             ["◎", "Every credit tracked on-chain", "Every purchase and every bid is public and verifiable. Check it yourself."],
             ["🔒", "Prize held in escrow", "Your USDC and the prize sit in on-chain vaults until the battle is decided."],
             ["⚡", "Fast and cheap for every bid", "Solana confirms bids in moments for a fraction of a cent, so the countdown stays fair."],
-            ["⚖", "Same cap for everyone", "No player can buy more than 10% of the prize's cost in credits. No whales."],
+            ["⚖", "Same cap for everyone", "No player can buy more than 25% of the prize's cost in credits. No whales."],
             ["↺", "Money back if the target isn't reached", "If an auction is cancelled for any reason, you get back 100% of what you paid."],
           ].map(([icon, title, body]) => (
             <article key={title} className="card reveal">

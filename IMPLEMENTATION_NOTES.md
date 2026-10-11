@@ -6,7 +6,7 @@ Notes from building the Marxy program (2026-10-09; updated 2026-10-10 for the re
 
 - Toolchain: Anchor CLI 1.1.2, Solana CLI 3.1.10, Rust 1.89 for the program (`rust-toolchain.toml`). The `anchor-lang` / `anchor-spl` crates are pinned to `=1.1.2` to match the CLI (the scaffold had resolved 1.2.1).
 - `anchor build`: clean, no warnings. `cargo clippy --all-targets`: 0 warnings.
-- `anchor test` (runs `cargo test`): 15 of 15 LiteSVM integration tests pass against `target/deploy/marxy.so`. They use a 23% minimum margin (lot value 100 USDC → sales minimum 123 USDC, so at least 13 capped players).
+- `anchor test` (runs `cargo test`): 16 of 16 LiteSVM integration tests pass against `target/deploy/marxy.so`. They use a 23% minimum margin and the 25% per-player cap (lot value 100 USDC → sales minimum 123 USDC, so at least 5 capped players).
 - `scripts/fund-lot.ts`: type-checks (`yarn typecheck`) and starts correctly, but it has **not** been run against a cluster (nothing was deployed).
 - No git commands were run and nothing was deployed.
 

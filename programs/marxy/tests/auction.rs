@@ -33,15 +33,15 @@ fn happy_path() {
         "nothing escrowed at creation"
     );
 
-    // SELL: p0 buys in two purchases.
+    // SELL: p0 buys up to the cap in two purchases.
     let p0 = env.new_player(100 * USDC);
-    assert_ok(env.buy(id, &p0, 4));
-    assert_ok(env.buy(id, &p0, 6));
+    assert_ok(env.buy(id, &p0, 10));
+    assert_ok(env.buy(id, &p0, 15));
     assert_eq!(
         env.participant(id, &p0.pubkey()).unwrap().credits_bought,
-        10
+        MAX_CREDITS
     );
-    assert_eq!(env.usdc_balance(&p0.pubkey()), 90 * USDC);
+    assert_eq!(env.usdc_balance(&p0.pubkey()), 75 * USDC);
 
     // p1 tries to exceed the cap, then buys the max, then can't buy more.
     let p1 = env.new_player(100 * USDC);
@@ -53,16 +53,16 @@ fn happy_path() {
     assert_err(env.buy(id, &p1, 1), MarxyError::CreditLimitExceeded);
     assert_err(env.buy(id, &p0, 1), MarxyError::CreditLimitExceeded);
 
-    let others = env.fill(id, 11);
+    let others = env.fill(id, 3);
     // A small player with a single credit.
     let small = env.new_player(10 * USDC);
     assert_ok(env.buy(id, &small, 1));
 
     let a = env.auction(id);
-    assert_eq!(a.total_credits_sold, 131);
-    assert_eq!(a.revenue, 131 * USDC);
-    assert_eq!(a.participant_count, 14);
-    assert_eq!(env.balance(&env.usdc_vault(id)), 131 * USDC);
+    assert_eq!(a.total_credits_sold, 126);
+    assert_eq!(a.revenue, 126 * USDC);
+    assert_eq!(a.participant_count, 6);
+    assert_eq!(env.balance(&env.usdc_vault(id)), 126 * USDC);
 
     // Withdrawing while active (not postponed) is not allowed.
     assert_err(env.withdraw(id, &p0), MarxyError::AuctionStillActive);
@@ -129,7 +129,7 @@ fn happy_path() {
     let a = env.auction(id);
     assert_eq!(a.end_time, env.now() + COUNTDOWN, "bid resets countdown");
     assert_eq!(a.last_bidder, p0.pubkey());
-    assert_eq!(env.participant(id, &p0.pubkey()).unwrap().credits_left, 9);
+    assert_eq!(env.participant(id, &p0.pubkey()).unwrap().credits_left, MAX_CREDITS - 1);
     assert_err(env.bid(id, &p0), MarxyError::AlreadyLastBidder);
 
     env.warp(20);
@@ -185,7 +185,7 @@ fn happy_path() {
     let a = env.auction(id);
     assert_eq!(a.status, AuctionStatus::Settled);
     assert_eq!(env.lot_balance(&p1.pubkey()), LOT_AMOUNT);
-    assert_eq!(env.usdc_balance(&treasury), 131 * USDC);
+    assert_eq!(env.usdc_balance(&treasury), 126 * USDC);
     assert!(!env.exists(&env.usdc_vault(id)), "usdc vault closed");
     assert!(!env.exists(&env.lot_vault(id)), "lot vault closed");
     assert_eq!(
@@ -215,7 +215,7 @@ fn happy_path() {
 
     // Winner closes too.
     assert_ok(env.withdraw(id, &p1));
-    assert_eq!(env.auction(id).participant_count, 12);
+    assert_eq!(env.auction(id).participant_count, 4);
 }
 
 /// 2. Sales minimum missed, no postponement.
@@ -224,9 +224,9 @@ fn sales_minimum_missed() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 2;
     let close = env.create_default(id);
-    // 12 capped players = 120 USDC: above the lot value, below lot value + 23%.
-    let players = env.fill(id, 12);
-    assert_eq!(env.auction(id).revenue, 120 * USDC);
+    // 4 capped players = 100 USDC: the lot value, below lot value + 23%.
+    let players = env.fill(id, 4);
+    assert_eq!(env.auction(id).revenue, 100 * USDC);
 
     let caller = env.new_player(0);
     env.set_time(close - 1);
@@ -284,7 +284,7 @@ fn postpone_once_then_runs() {
 
     // After sales close (sales locked) but within the grace hour.
     env.set_time(close + 600);
-    let latecomer = env.new_player(10 * USDC);
+    let latecomer = env.new_player(25 * USDC);
     assert_err(env.buy(id, &latecomer, 1), MarxyError::SalesLocked);
 
     // Non-admin, now, earlier than current close, too far.
@@ -325,15 +325,15 @@ fn postpone_once_then_runs() {
     // Sales reopen; a buyer withdraws in full.
     let before = env.usdc_balance(&early[0].pubkey());
     assert_ok(env.withdraw(id, &early[0]));
-    assert_eq!(env.usdc_balance(&early[0].pubkey()), before + 10 * USDC);
+    assert_eq!(env.usdc_balance(&early[0].pubkey()), before + 25 * USDC);
     let a = env.auction(id);
-    assert_eq!(a.total_credits_sold, 20);
-    assert_eq!(a.revenue, 20 * USDC);
+    assert_eq!(a.total_credits_sold, 50);
+    assert_eq!(a.revenue, 50 * USDC);
     assert_eq!(a.participant_count, 2);
 
-    // New buyers fill the minimum.
-    let mut players = env.fill(id, 10);
-    assert_ok(env.buy(id, &latecomer, 3));
+    // New buyers fill the minimum: 50 + 2 × 25 + 23 = 123.
+    let mut players = env.fill(id, 2);
+    assert_ok(env.buy(id, &latecomer, 23));
     assert_eq!(env.auction(id).revenue, 123 * USDC);
     assert_err(
         env.postpone(id, &admin, new_close + 60),
@@ -356,11 +356,11 @@ fn postpone_once_then_runs() {
     env.set_time(env.battle_start(id));
     assert_ok(env.bid(id, &players[0]));
     env.warp(1);
-    assert_ok(env.bid(id, &players[10]));
+    assert_ok(env.bid(id, &players[2]));
     let end = env.auction(id).end_time;
     env.set_time(end);
-    let winner = players[10].pubkey();
-    assert_ok(env.settle(id, &players[3], Some(winner)));
+    let winner = players[2].pubkey();
+    assert_ok(env.settle(id, &players[1], Some(winner)));
     assert_eq!(env.auction(id).status, AuctionStatus::Settled);
     assert_eq!(env.lot_balance(&winner), LOT_AMOUNT);
     assert_eq!(env.usdc_balance(&env.treasury.pubkey()), 123 * USDC);
@@ -372,14 +372,14 @@ fn postponed_still_short() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 4;
     let close = env.create_default(id);
-    let mut players = env.fill(id, 4);
+    let mut players = env.fill(id, 2);
     let admin = env.admin.insecure_clone();
 
     // Postpone before sales close this time.
     env.set_time(close - 100);
     let new_close = close + 86_400;
     assert_ok(env.postpone(id, &admin, new_close));
-    players.extend(env.fill(id, 2));
+    players.extend(env.fill(id, 2)); // 100 USDC: still short of 123
 
     let caller = env.new_player(0);
     env.set_time(new_close - 1);
@@ -398,7 +398,7 @@ fn lot_not_funded_in_time() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 5;
     let close = env.create_default(id);
-    let players = env.fill(id, 13);
+    let players = env.fill(id, 5);
     let admin = env.admin.insecure_clone();
     let caller = env.new_player(0);
     let battle_start = close + GET_READY_SECS;
@@ -428,7 +428,7 @@ fn funded_no_bids() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 6;
     let close = env.create_default(id);
-    let players = env.fill(id, 13);
+    let players = env.fill(id, 5);
 
     env.set_time(close + 30);
     assert_ok(env.buy_lot_and_fund(id));
@@ -460,7 +460,7 @@ fn funded_no_bids() {
     );
     assert!(!env.exists(&env.lot_vault(id)));
     assert_eq!(env.usdc_balance(&treasury), 0, "no revenue taken");
-    assert_eq!(env.balance(&env.usdc_vault(id)), 130 * USDC);
+    assert_eq!(env.balance(&env.usdc_vault(id)), 125 * USDC);
 
     env.refund_all(id, &players);
     assert!(!env.exists(&env.usdc_vault(id)));
@@ -472,7 +472,7 @@ fn credits_run_out() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 7;
     let close = env.create_default(id);
-    let players = env.fill(id, 13);
+    let players = env.fill(id, 5);
     let (a, b) = (&players[0], &players[1]);
 
     env.set_time(close);
@@ -504,11 +504,11 @@ fn credits_run_out() {
 
     env.set_time(last_bid + COUNTDOWN - 1);
     assert_err(
-        env.settle(id, &players[5], Some(b.pubkey())),
+        env.settle(id, &players[4], Some(b.pubkey())),
         MarxyError::AuctionNotEnded,
     );
     env.set_time(last_bid + COUNTDOWN);
-    assert_ok(env.settle(id, &players[5], Some(b.pubkey())));
+    assert_ok(env.settle(id, &players[4], Some(b.pubkey())));
     assert_eq!(env.lot_balance(&b.pubkey()), LOT_AMOUNT);
 }
 
@@ -592,9 +592,9 @@ fn invalid_create_params() {
             }),
             MarxyError::ThresholdBelowMargin,
         ),
-        // 10% of 100 USDC is 10 USDC; one credit at 10.000001 USDC is too expensive.
+        // 25% of 100 USDC is 25 USDC; one credit at 25.000001 USDC is too expensive.
         (
-            Box::new(|p| p.credit_price = LOT_VALUE / 10 + 1),
+            Box::new(|p| p.credit_price = LOT_VALUE / 4 + 1),
             MarxyError::CreditPriceTooHigh,
         ),
         (Box::new(|p| p.lot_amount = 0), MarxyError::ZeroLotAmount),
@@ -606,17 +606,17 @@ fn invalid_create_params() {
         assert_err(env.create_auction(p), expected);
     }
 
-    // Exactly 10% of the lot value per credit is allowed (cap of 1 credit).
+    // Exactly 25% of the lot value per credit is allowed (cap of 1 credit).
     let mut p = base.clone();
-    p.credit_price = LOT_VALUE / 10;
+    p.credit_price = LOT_VALUE / 4;
     assert_ok(env.create_auction(p));
     assert_eq!(env.auction(9).max_credits_per_player, 1);
 
-    // Cap is floored: 100 USDC * 10% / 3 USDC = 3 credits.
+    // Cap is floored: 100 USDC * 25% / 3 USDC = 8 credits.
     let mut p = env.default_params(10);
     p.credit_price = 3 * USDC;
     assert_ok(env.create_auction(p));
-    assert_eq!(env.auction(10).max_credits_per_player, 3);
+    assert_eq!(env.auction(10).max_credits_per_player, 8);
 
     // The rounded-up minimum itself is accepted.
     let mut p = env.default_params(11);
@@ -758,7 +758,7 @@ fn precreated_lot_vault_does_not_block_funding() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 30;
     let close = env.create_default(id);
-    let players = env.fill(id, 13);
+    let players = env.fill(id, 5);
     let auction = Env::auction_pda(id);
     let (mint, program) = (env.lot_mint, env.lot_program);
     env.create_ata(&auction, &mint, &program);
@@ -814,7 +814,7 @@ fn fee_on_transfer_lot_is_rejected() {
 
     let id = 40;
     let close = env.create_default(id);
-    env.fill(id, 13);
+    env.fill(id, 5);
     env.set_time(close);
     assert_err(env.buy_lot_and_fund(id), MarxyError::LotNotDeposited);
     assert!(!env.auction(id).funded);
@@ -826,7 +826,7 @@ fn settle_rejects_wrong_treasury() {
     let mut env = Env::new(SPL_TOKEN);
     let id = 50;
     let close = env.create_default(id);
-    let players = env.fill(id, 13);
+    let players = env.fill(id, 5);
     env.set_time(close);
     assert_ok(env.buy_lot_and_fund(id));
     env.set_time(env.battle_start(id));
@@ -871,7 +871,7 @@ fn get_ready_period_from_config() {
 
     // Auction 1 keeps the 1-minute period it was created with.
     let close1 = env.create_default(1);
-    let players = env.fill(1, 13);
+    let players = env.fill(1, 5);
     assert_ok(env.update_config(&admin, None, None, None, None, Some(MAX_GET_READY_SECS)));
     assert_eq!(env.config().get_ready_secs, MAX_GET_READY_SECS);
     assert_eq!(env.config().min_margin_bps, MIN_MARGIN_BPS, "unchanged when None");

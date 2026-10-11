@@ -12,7 +12,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   ZeroOpeningWindow: "The opening window must be greater than zero.",
   SalesCloseInPast: "Sales close must be in the future.",
   ThresholdBelowMargin: "The sales minimum is below the platform's minimum margin.",
-  CreditPriceTooHigh: "One credit would cost more than the 10% per-player cap.",
+  CreditPriceTooHigh: "One credit would cost more than the 25% per-player cap.",
   InvalidLotMint: "That lot token doesn't match this auction.",
   InvalidUsdcMint: "That USDC token doesn't match this auction.",
   AuctionNotActive: "This auction has already ended.",

@@ -35,7 +35,7 @@ export function salesMinimumFor(lotValue: bigint, marginBps: number): bigint {
   return ceilDiv(lotValue * (BigInt(BPS_DENOMINATOR) + bps), BigInt(BPS_DENOMINATOR));
 }
 
-/** floor(10% × cost ÷ price), exactly as the program stores it. */
+/** floor(25% × cost ÷ price), exactly as the program stores it. */
 export function capFor(lotValue: bigint, creditPrice: bigint): bigint {
   return (lotValue * BigInt(MAX_PLAYER_SHARE_BPS)) / BigInt(BPS_DENOMINATOR) / creditPrice;
 }
@@ -79,7 +79,7 @@ export function priceLot({ lotValue, marginBps, ladderShift = 0 }: PricingInput)
   let index = ladder.findIndex((p) => ceilDiv(salesMinimum, p) <= MAX_TARGET_CREDITS);
   if (index === -1) index = ladder.length - 1;
   index = Math.max(0, index - Math.max(0, ladderShift));
-  // Never pick a price where one credit exceeds the 10% cap.
+  // Never pick a price where one credit exceeds the 25% cap.
   while (index > 0 && capFor(lotValue, ladder[index]) < 1n) index -= 1;
   const creditPrice = ladder[index];
   const maxCreditsPerPlayer = capFor(lotValue, creditPrice);

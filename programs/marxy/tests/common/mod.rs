@@ -47,7 +47,7 @@ pub const GET_READY_SECS: i64 = 15 * 60;
 /// Lot value * (1 + 23%): 123 credits, so at least 13 capped players.
 pub const SALES_MINIMUM: u64 = 123 * USDC;
 pub const CREDIT_PRICE: u64 = USDC;
-pub const MAX_CREDITS: u64 = 10;
+pub const MAX_CREDITS: u64 = 25;
 pub const OPENING_WINDOW: i64 = 40;
 pub const COUNTDOWN: i64 = 25;
 /// Seconds between "now" and sales close for auctions created with `default_params`.

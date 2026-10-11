@@ -12,9 +12,10 @@ pub const PARTICIPANT_SEED: &[u8] = b"participant";
 /// Basis-point denominator (100%).
 pub const BPS_DENOMINATOR: u64 = 10_000;
 
-/// Maximum share of the lot value one wallet may buy in credits (10%).
+/// Maximum share of the lot value one wallet may buy in credits (25%), so a
+/// full auction needs at least 5 players (the minimum is the lot value + margin).
 #[constant]
-pub const MAX_PLAYER_SHARE_BPS: u64 = 1_000;
+pub const MAX_PLAYER_SHARE_BPS: u64 = 2_500;
 
 /// How long after the original sales close the admin may still postpone (1 hour).
 #[constant]

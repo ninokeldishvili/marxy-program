@@ -53,7 +53,7 @@ describe("priceLot", () => {
     const p = priceLot({ lotValue: usd(10_000), marginBps: 2_300 });
     expect(p.creditPrice).toBe(usd(25));
     expect(p.targetCredits).toBe(492n);
-    expect(p.maxCreditsPerPlayer).toBe(40n); // floor(10% x 10,000 / 25)
+    expect(p.maxCreditsPerPlayer).toBe(100n); // floor(25% x 10,000 / 25)
     expect(p.salesMinimum).toBe(usd(12_300));
   });
 
@@ -63,7 +63,7 @@ describe("priceLot", () => {
     const p = priceLot({ lotValue: usd(100), marginBps: 2_300 });
     expect(p.creditPrice).toBe(usd(0.25));
     expect(p.targetCredits).toBe(492n);
-    expect(p.maxCreditsPerPlayer).toBe(40n);
+    expect(p.maxCreditsPerPlayer).toBe(100n); // floor(25% x 100 / 0.25)
   });
 
   it("does not offer tiny steps to larger lots", () => {
@@ -91,8 +91,8 @@ describe("priceLot", () => {
   });
 
   it("matches the on-chain cap formula", () => {
-    expect(capFor(usd(100), usd(3))).toBe(3n); // floor(10 / 3)
-    expect(capFor(usd(100), usd(10))).toBe(1n);
-    expect(capFor(usd(100), usd(10) + 1n)).toBe(0n);
+    expect(capFor(usd(100), usd(3))).toBe(8n); // floor(25 / 3)
+    expect(capFor(usd(100), usd(25))).toBe(1n);
+    expect(capFor(usd(100), usd(25) + 1n)).toBe(0n);
   });
 });

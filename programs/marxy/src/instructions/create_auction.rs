@@ -91,7 +91,7 @@ pub fn handle_create_auction(
     let get_ready_secs = ctx.accounts.config.get_ready_secs;
     let battle_start = battle_start(params.sales_close, get_ready_secs)?;
 
-    // floor(lot value * 10% / credit price), computed in u128 to avoid overflow.
+    // floor(lot value * 25% / credit price), computed in u128 to avoid overflow.
     let max_credits_per_player = (params.lot_value as u128)
         .checked_mul(MAX_PLAYER_SHARE_BPS as u128)
         .and_then(|v| v.checked_div(BPS_DENOMINATOR as u128))

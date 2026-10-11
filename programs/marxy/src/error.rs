@@ -20,7 +20,7 @@ pub enum MarxyError {
     SalesCloseInPast,
     #[msg("Sales minimum must be at least the lot value plus the platform minimum margin")]
     ThresholdBelowMargin,
-    #[msg("One credit costs more than the per-player cap (10% of the lot value)")]
+    #[msg("One credit costs more than the per-player cap (25% of the lot value)")]
     CreditPriceTooHigh,
     #[msg("The lot mint cannot be the USDC mint")]
     InvalidLotMint,
