@@ -1,0 +1,19 @@
+{
+  "name": "@marxy/program",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "fund-lot": "tsx scripts/fund-lot.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anchor-lang/core": "1.1.2",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/web3.js": "^1.99.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

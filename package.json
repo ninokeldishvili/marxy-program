@@ -1,19 +1,20 @@
 {
-  "name": "marxy-program",
+  "name": "marxy",
   "private": true,
   "license": "UNLICENSED",
+  "workspaces": [
+    "program",
+    "packages/shared",
+    "frontend",
+    "worker"
+  ],
   "scripts": {
-    "fund-lot": "tsx scripts/fund-lot.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@anchor-lang/core": "1.1.2",
-    "@solana/spl-token": "^0.4.15",
-    "@solana/web3.js": "^1.99.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.0",
-    "tsx": "^4.23.15",
-    "typescript": "^5.9.3"
+    "sync-idl": "node scripts/sync-idl.mjs",
+    "devnet:setup": "npm run devnet:setup -w worker --",
+    "dev": "npm run dev -w frontend",
+    "worker": "npm start -w worker",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
   }
 }

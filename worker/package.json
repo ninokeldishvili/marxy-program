@@ -1,0 +1,23 @@
+{
+  "name": "@marxy/worker",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "Marxy platform automation: lists, funds, postpones and settles auctions.",
+  "scripts": {
+    "start": "tsx --env-file-if-exists=.env.local index.ts",
+    "devnet:setup": "tsx --env-file-if-exists=.env.local scripts/devnet-setup.ts",
+    "smoke": "tsx --env-file-if-exists=.env.local scripts/smoke.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anchor-lang/core": "1.1.2",
+    "@marxy/shared": "*",
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.99.0",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3"
+  }
+}

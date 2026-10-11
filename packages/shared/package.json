@@ -1,0 +1,28 @@
+{
+  "name": "@marxy/shared",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "Marxy logic shared by the frontend and the worker: IDL, instruction builders, pricing, stages.",
+  "exports": {
+    "./config": "./src/config/index.ts",
+    "./idl/*": "./src/idl/*",
+    "./node/*": "./src/node/*.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anchor-lang/core": "1.1.2",
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.99.0",
+    "buffer": "6.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3"
+  }
+}
