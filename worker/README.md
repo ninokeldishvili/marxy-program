@@ -47,12 +47,7 @@ Deploy the worker **before** the frontend: the frontend needs its URL. Railway b
 
 1. **Account.** Sign up at https://railway.com with GitHub. An always-on service with a volume needs the **Hobby** plan (about $5/month, usage included).
 2. **Service.** New Project → *Deploy from GitHub repo* → pick the repo (allow Railway's GitHub app to see it) and the branch.
-3. **Settings** (service → Settings):
-   - **Root Directory:** leave empty (repo root): the npm workspaces need it.
-   - **Build Command:** `npm ci`
-   - **Start Command:** `npm run worker`
-   - **Watch Paths** (optional): `worker/**`, `packages/**`, `package-lock.json`, so frontend-only commits don't restart the worker.
-   - Node: the root `package.json` pins `>=22.9` (`engines`); nothing to set.
+3. **Settings** (service → Settings): leave **Root Directory** empty (repo root: the npm workspaces need it). The rest comes from `railway.json` at the repo root: start command `npm run worker`, health check `/health`, one replica, and watch paths so frontend-only commits don't restart the worker. Node is pinned in the root `package.json` (`engines`).
 4. **Volume.** Right-click the service on the canvas → *Attach Volume*, mount path `/data`. It keeps the learned margins, auction records and log across redeploys.
 5. **Variables** (service → Variables):
 
@@ -68,9 +63,8 @@ Deploy the worker **before** the frontend: the frontend needs its URL. Railway b
    | `MARXY_STATE_PATH` | `/data/state.json` |
    | `JUP_API_KEY` | optional |
 
-6. **Public URL.** Settings → Networking → *Generate Domain*. That `https://….up.railway.app` is the frontend's `NEXT_PUBLIC_WORKER_URL`. Railway sets `PORT`; don't set it yourself.
-7. **Health check** (optional): Settings → Deploy → path `/health`. Keep **1 replica**.
-8. **Check:** `curl https://<worker>/health` returns `{"ok":true,…}`. The deploy logs show `admin API on :…` and, on a fresh volume, `adopted from the chain` for every open auction.
+6. **Port and public URL.** Add the variable `PORT=8787`, then Settings → Networking → *Generate Domain* and enter port `8787` (the dialog needs the port the app listens on). That `https://….up.railway.app` is the frontend's `NEXT_PUBLIC_WORKER_URL`.
+7. **Check:** `curl https://<worker>/health` returns `{"ok":true,…}`. The deploy logs show `admin API on :…` and, on a fresh volume, `adopted from the chain` for every open auction.
 
 **Run exactly one worker.** Stop the local one before Railway's starts: two workers race to create and fund the same auctions. A fresh or lost state file is fine: the worker adopts every active on-chain auction it doesn't know.
 

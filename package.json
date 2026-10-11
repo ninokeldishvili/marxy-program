@@ -12,6 +12,7 @@
     "worker"
   ],
   "scripts": {
+    "start": "npm run worker",
     "sync-idl": "node scripts/sync-idl.mjs",
     "devnet:setup": "npm run devnet:setup -w worker --",
     "dev": "npm run dev -w frontend",
