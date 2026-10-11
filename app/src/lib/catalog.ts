@@ -14,6 +14,8 @@ export interface LotType {
   liveAuctions: number;
   /** Sales length in minutes (defaults to DEMO_SALES_MINUTES). */
   salesMinutes?: number;
+  /** Let the demo bots buy and bid in this lot's auctions (default true). */
+  bots?: boolean;
   /** Mainnet mint of the real asset, for the Jupiter price. */
   priceMint: string;
   /** USD price used when Jupiter is unavailable. */

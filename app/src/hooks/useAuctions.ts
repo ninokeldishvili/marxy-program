@@ -1,37 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { fetchAllAuctions } from "@/lib/program";
+import { mergeAuctions } from "@/lib/freshness";
 import type { AuctionView } from "@/lib/types";
-import { useProgram } from "./useProgram";
+import { auctionFromJson, type AuctionJson } from "@/lib/wire";
+import { usePolling } from "./usePolling";
 
-/** Every auction, polled every 3 s. */
+const POLL_MS = 5_000;
+
+/**
+ * Every auction, from GET /api/auctions (one shared RPC read for all visitors),
+ * polled every 5 s while the tab is visible. Lagging reads can't hide or roll
+ * back auctions (see freshness.ts).
+ */
 export function useAuctions(): { auctions: AuctionView[] | null; error: string | null } {
-  const program = useProgram();
   const [auctions, setAuctions] = useState<AuctionView[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
+  usePolling(
+    async (isCancelled) => {
       try {
-        const all = await fetchAllAuctions(program);
-        if (!cancelled) {
-          setAuctions(all);
+        const res = await fetch("/api/auctions", { cache: "no-store" });
+        const body = (await res.json()) as { auctions?: AuctionJson[]; error?: string };
+        if (!res.ok || !body.auctions) throw new Error(body.error ?? `HTTP ${res.status}`);
+        const all = body.auctions.map(auctionFromJson);
+        if (!isCancelled()) {
+          setAuctions((prev) => mergeAuctions(prev, all));
           setError(null);
         }
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (!isCancelled()) setError(e instanceof Error ? e.message : String(e));
       }
-    }
-    load();
-    const id = setInterval(load, 3_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [program]);
+    },
+    POLL_MS,
+    [],
+  );
 
   return { auctions, error };
 }

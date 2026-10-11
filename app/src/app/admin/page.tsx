@@ -121,7 +121,7 @@ function AdminConsole() {
                   <div key={lot.key} className="rounded-2xl bg-surface-2 p-4">
                     <p className="font-semibold">{lot.name}</p>
                     <p className="text-sm text-muted">
-                      margin {((t?.marginBps ?? 2300) / 100).toFixed(0)}% · ladder shift {t?.ladderShift ?? 0} · {t?.completed ?? 0} done · keep {lot.liveAuctions} live
+                      margin {((t?.marginBps ?? 2300) / 100).toFixed(0)}% · ladder shift {t?.ladderShift ?? 0} · {t?.completed ?? 0} done · keep {lot.liveAuctions} live{lot.bots === false && " · no bots"}
                     </p>
                     <Button className="mt-3" variant="ghost" onClick={() => post("/api/admin/create", { lotType: lot.key }, `Create ${lot.name}`)}>
                       Create auction now

@@ -11,6 +11,7 @@ import {
   settleIx,
   type CreateAuctionArgs,
 } from "../instructions";
+import { fresherAuction, mergeAuctions } from "../freshness";
 import { chainUnixTime, configPda, fetchAllAuctions, fetchAuction, getProgram, type MarxyProgram } from "../program";
 import type { AuctionView } from "../types";
 import { loadAdmin } from "./keys";
@@ -32,6 +33,8 @@ export class Platform {
   readonly admin: Keypair;
   readonly usdcTokenProgram: PublicKey;
   private lotPrograms = new Map<string, PublicKey>();
+  /** Every auction seen so far, freshest copy (see freshness.ts). */
+  private seen: AuctionView[] = [];
 
   constructor(connection = new Connection(rpcUrl(), "confirmed"), admin = loadAdmin()) {
     this.connection = connection;
@@ -44,12 +47,19 @@ export class Platform {
     return chainUnixTime(this.connection);
   }
 
-  auctions(): Promise<AuctionView[]> {
-    return fetchAllAuctions(this.program);
+  /** Every auction, merged with earlier reads so a lagging RPC node can't hide or roll one back. */
+  async auctions(): Promise<AuctionView[]> {
+    this.seen = mergeAuctions(this.seen, await fetchAllAuctions(this.program));
+    return this.seen;
   }
 
-  auction(id: bigint | number): Promise<AuctionView | null> {
-    return fetchAuction(this.program, id);
+  async auction(id: bigint | number): Promise<AuctionView | null> {
+    const a = await fetchAuction(this.program, id);
+    const known = this.seen.find((x) => x.id === BigInt(id));
+    if (!a) return known ?? null;
+    const fresh = fresherAuction(known, a);
+    this.seen = mergeAuctions(this.seen, [fresh]);
+    return fresh;
   }
 
   async config(): Promise<OnChainConfig> {

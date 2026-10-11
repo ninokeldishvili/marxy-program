@@ -10,7 +10,7 @@ lists     buy      clock   the lot       bid       settles  withdraw
 
 | Piece | Where | What it does |
 |---|---|---|
-| Web app | `src/app/` | Lobby, auction screen, My auctions, admin page, faucet route |
+| Web app | `src/app/` | Lobby, auction screen, My auctions, admin page, faucet route, and `GET /api/auctions` (the auction list, one shared RPC read every 3 s for all visitors) |
 | Shared logic | `src/lib/` | `getStage`, pricing, learning, error mapping, instruction builders. Used by the app, the worker and the scripts |
 | Worker | `worker/` | The platform's automation: lists lots, funds, postpones, settles, learns, runs the demo bots |
 | Scripts | `scripts/` | `devnet-setup.ts` (one-time), `smoke.ts` (end-to-end check), `sync-idl.mjs` |
@@ -105,6 +105,8 @@ With the 10% cap, an auction needs at least 13 full buyers. With `DEMO_BOTS=true
 - **Close-out:** after an auction ends, bots withdraw, getting their refund or rent back.
 - **Labels:** the UI tags bot wallets as `bot`.
 
+**Player-only lots.** Lot types with `"bots": false` in `worker/catalog.json` never get bot buys or bids, so only real players can fill and win them. The catalog ships two micro lots like this, `0.01 Test SOL` and `0.00002 Test BTC`. Each costs $1–3, so a credit is $0.01 and a full cap is a few cents of test USDC. They run 30-minute sales. The 10% per-player cap still applies, so a micro lot needs at least **13 different wallets** buying their full cap. With fewer, it is postponed once (at ≥ 70% sold) or settles into refunds.
+
 ## Admin page
 
 `/admin` is visible only when the connected wallet is the admin.
@@ -146,6 +148,8 @@ Before you start:
 
 - **"Is Phantom on devnet?"** The app sends transactions through its own devnet RPC after Phantom signs them. If a transaction fails because of the network, the toast tells you how to switch Phantom to devnet.
 - **Countdowns look off.** They run on the chain clock: the offset comes from `getBlockTime` and is refreshed every 30 s.
+- **RPC traffic.** The lobby reads auctions from `/api/auctions`, not the RPC. The auction page relies on websocket updates, with a 15 s fallback poll. Balances refresh every 30 s and after your own transactions. Polling pauses in hidden tabs.
+- **Auctions or credits flicker.** Load-balanced RPCs can serve older account copies. The app never lets an auction or your credits go backwards (`src/lib/freshness.ts`), but balances can still flicker: switch to another RPC.
 - **Rate limits on api.devnet.solana.com.** Set `NEXT_PUBLIC_RPC_URL` and `RPC_URL` to a dedicated devnet RPC.
 - **The worker says "ADMIN_KEYPAIR_PATH is X, but the program admin is Y".** Use the keypair that ran `devnet:setup`.
 - **Low-sales cancellations take an hour.** That's the program's postpone grace period (`POSTPONE_GRACE_SECONDS`). Refunds can only be settled after it.

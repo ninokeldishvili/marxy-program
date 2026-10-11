@@ -6,6 +6,9 @@ import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 
 import { CONFIG, IS_CONFIGURED } from "@/config";
+import { usePolling } from "./usePolling";
+
+const POLL_MS = 30_000;
 
 export interface Balances {
   lamports: number | null;
@@ -39,16 +42,16 @@ export function useBalances(): Balances {
     };
   }, [refresh]);
 
-  useEffect(() => {
-    if (!publicKey) return;
-    let cancelled = false;
-    const wallet = publicKey.toBase58();
-    async function load() {
-      const lamports = await connection.getBalance(publicKey!, "confirmed").catch(() => null);
+  // Slow poll while visible; refreshBalances() reloads right after the player's own transactions.
+  usePolling(
+    async (isCancelled) => {
+      if (!publicKey) return;
+      const wallet = publicKey.toBase58();
+      const lamports = await connection.getBalance(publicKey, "confirmed").catch(() => null);
       let usdc: bigint | null = null;
       let usdcAtaExists = false;
       if (IS_CONFIGURED) {
-        const ata = getAssociatedTokenAddressSync(new PublicKey(CONFIG.usdcMint), publicKey!, false, new PublicKey(CONFIG.usdcTokenProgram));
+        const ata = getAssociatedTokenAddressSync(new PublicKey(CONFIG.usdcMint), publicKey, false, new PublicKey(CONFIG.usdcTokenProgram));
         try {
           const b = await connection.getTokenAccountBalance(ata, "confirmed");
           usdc = BigInt(b.value.amount);
@@ -57,15 +60,11 @@ export function useBalances(): Balances {
           usdc = 0n;
         }
       }
-      if (!cancelled) setLoaded({ wallet, lamports, usdc, usdcAtaExists });
-    }
-    load();
-    const id = setInterval(load, 10_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [connection, publicKey, version]);
+      if (!isCancelled()) setLoaded({ wallet, lamports, usdc, usdcAtaExists });
+    },
+    POLL_MS,
+    [connection, publicKey, version],
+  );
 
   const mine = loaded && publicKey && loaded.wallet === publicKey.toBase58() ? loaded : null;
   return { lamports: mine?.lamports ?? null, usdc: mine?.usdc ?? null, usdcAtaExists: mine?.usdcAtaExists ?? false, refresh };

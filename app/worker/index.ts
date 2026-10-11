@@ -164,19 +164,21 @@ function canSettleShort(a: AuctionView, now: number): boolean {
 async function handleActive(rec: AuctionRecord, a: AuctionView, now: number): Promise<void> {
   const s = getStage(a, now);
   const id = rec.id;
+  const lot = catalog.find((l) => l.key === rec.lotType);
+  // Lots with "bots": false are for real players only.
+  const lotBots = lot?.bots === false ? null : bots;
   if (rec.filledAt === null && s.minimumMet && now < a.salesClose) rec.filledAt = now;
 
   switch (s.stage) {
     case "open":
     case "postponed":
-      if (bots && !s.minimumMet && now >= a.salesClose - BOT_BUY_LEAD_SECS) await bots.fillMinimum(a);
+      if (lotBots && !s.minimumMet && now >= a.salesClose - BOT_BUY_LEAD_SECS) await lotBots.fillMinimum(a);
       return;
 
     case "short": {
       rec.minimumMetAtClose ??= false;
       const enough = a.revenue * 100n >= a.salesMinimum * POSTPONE_MIN_SHARE;
       if (!a.postponed && enough && now <= a.originalSalesClose + POSTPONE_GRACE_SECONDS) {
-        const lot = catalog.find((l) => l.key === rec.lotType);
         const newClose = now + (lot?.salesMinutes ?? DEMO_SALES_MINUTES) * 60;
         if (await act(id, `postponed: ${a.revenue * 100n / a.salesMinimum}% sold, new sales close in ${Math.round((newClose - now) / 60)} min`, () => platform.postpone(a, newClose))) {
           rec.postponedByWorker = true;
@@ -196,7 +198,7 @@ async function handleActive(rec: AuctionRecord, a: AuctionView, now: number): Pr
       return;
 
     case "battle":
-      if (bots && s.remaining !== null) await bots.battle(a, rec, s.remaining);
+      if (lotBots && s.remaining !== null) await lotBots.battle(a, rec, s.remaining);
       return;
 
     case "settling": {
@@ -290,9 +292,11 @@ async function tick() {
   //    lot type. This runs after learning, so new auctions use the latest tuning.
   await processCommands(now, auctions);
   for (const lot of catalog) {
-    const live = Object.values(state.auctions).filter(
-      (r) => r.lotType === lot.key && byId.get(r.id)?.status === "active",
-    ).length;
+    // An auction we created but can't see yet (lagging RPC node) still counts as live.
+    const live = Object.values(state.auctions).filter((r) => {
+      const status = byId.get(r.id)?.status;
+      return r.lotType === lot.key && (status === undefined || status === "active");
+    }).length;
     if (live < lot.liveAuctions) {
       await createAuction(lot, now, auctions).catch((e) => log(`create ${lot.name} failed`, { error: errorText(e) }));
       auctions = await platform.auctions();

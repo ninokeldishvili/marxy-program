@@ -18,5 +18,29 @@
     "liveAuctions": 1,
     "priceMint": "So11111111111111111111111111111111111111112",
     "fallbackUsdPrice": 150
+  },
+  {
+    "key": "sol-micro",
+    "name": "0.01 Test SOL",
+    "token": "testSol",
+    "amount": "0.01",
+    "image": "/assets/img/lot-sol.jpg",
+    "liveAuctions": 1,
+    "salesMinutes": 30,
+    "bots": false,
+    "priceMint": "So11111111111111111111111111111111111111112",
+    "fallbackUsdPrice": 150
+  },
+  {
+    "key": "btc-micro",
+    "name": "0.00002 Test BTC",
+    "token": "testBtc",
+    "amount": "0.00002",
+    "image": "/assets/img/lot-btc.jpg",
+    "liveAuctions": 1,
+    "salesMinutes": 30,
+    "bots": false,
+    "priceMint": "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
+    "fallbackUsdPrice": 80000
   }
 ]

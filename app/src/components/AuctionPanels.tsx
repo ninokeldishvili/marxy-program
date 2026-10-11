@@ -10,6 +10,7 @@ import { useChainClock } from "@/hooks/useChainClock";
 import { useProgram } from "@/hooks/useProgram";
 import { useSendTx } from "@/hooks/useSendTx";
 import { formatDate, formatUsdc, percent } from "@/lib/format";
+import { markParticipantClosed } from "@/lib/freshness";
 import type { BidEvent } from "@/lib/history";
 import { ata, buyCreditsIxs, placeBidIx, refundDue, settleIx, withdrawIxs } from "@/lib/instructions";
 import type { StageInfo } from "@/lib/stage";
@@ -148,7 +149,10 @@ export function WithdrawButton({ auction, participant, reload, label }: Omit<Pan
         playerUsdcExists: usdcAtaExists,
       });
     });
-    if (sig) reload();
+    if (sig) {
+      markParticipantClosed(participant.address);
+      reload();
+    }
   }
 
   return (

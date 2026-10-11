@@ -3,15 +3,17 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { WithdrawButton } from "@/components/AuctionPanels";
 import { useConnectModal } from "@/components/ConnectModal";
 import { Button, Card, LotImage, useLot } from "@/components/ui";
 import { useChainClock } from "@/hooks/useChainClock";
+import { usePolling } from "@/hooks/usePolling";
 import { useProgram } from "@/hooks/useProgram";
 import { toAuctionView } from "@/lib/convert";
 import { formatUsdc } from "@/lib/format";
+import { fresherAuction, fresherParticipant, isParticipantClosed } from "@/lib/freshness";
 import { refundDue } from "@/lib/instructions";
 import { fetchParticipantsOf } from "@/lib/program";
 import { getStage, type Stage } from "@/lib/stage";
@@ -41,32 +43,27 @@ export default function MyAuctions() {
   const [version, setVersion] = useState(0);
   const reload = useCallback(() => setVersion((v) => v + 1), []);
 
-  useEffect(() => {
-    if (!publicKey) return;
-    let cancelled = false;
-    const wallet = publicKey.toBase58();
-    async function load() {
+  // Slow poll while visible; `reload` reads again right after a close-out.
+  usePolling(
+    async (isCancelled) => {
+      if (!publicKey) return;
+      const wallet = publicKey.toBase58();
       try {
-        const participants = await fetchParticipantsOf(program, publicKey!);
+        const participants = await fetchParticipantsOf(program, publicKey);
         const auctions = await program.account.auction.fetchMultiple(participants.map((p) => new PublicKey(p.auction)));
         const out: Row[] = [];
         participants.forEach((p, i) => {
           const a = auctions[i];
           if (a) out.push({ participant: p, auction: toAuctionView(new PublicKey(p.auction), a) });
         });
-        out.sort((x, y) => (x.auction.id < y.auction.id ? 1 : -1));
-        if (!cancelled) setLoaded({ wallet, rows: out });
+        if (!isCancelled()) setLoaded((prev) => ({ wallet, rows: mergeRows(prev?.wallet === wallet ? prev.rows : [], out) }));
       } catch {
         // keep the last result
       }
-    }
-    load();
-    const id = setInterval(load, 5_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [program, publicKey, version]);
+    },
+    15_000,
+    [program, publicKey, version],
+  );
 
   const rows = loaded && publicKey && loaded.wallet === publicKey.toBase58() ? loaded.rows : null;
 
@@ -94,6 +91,25 @@ export default function MyAuctions() {
       {rows?.map((r) => <MyRow key={r.participant.address} row={r} reload={reload} />)}
     </div>
   );
+}
+
+/**
+ * Merges a fresh read into the rows shown: a lagging RPC node can miss
+ * participant accounts or return older copies, so rows only go away once this
+ * browser closed them out (see freshness.ts).
+ */
+function mergeRows(prev: Row[], next: Row[]): Row[] {
+  const byAddress = new Map(prev.map((r) => [r.participant.address, r]));
+  for (const r of next) {
+    const known = byAddress.get(r.participant.address);
+    byAddress.set(r.participant.address, {
+      auction: fresherAuction(known?.auction, r.auction),
+      participant: fresherParticipant(known?.participant, r.participant, r.participant.address) ?? r.participant,
+    });
+  }
+  return [...byAddress.values()]
+    .filter((r) => !isParticipantClosed(r.participant.address))
+    .sort((x, y) => (x.auction.id < y.auction.id ? 1 : -1));
 }
 
 function MyRow({ row, reload }: { row: Row; reload: () => void }) {
