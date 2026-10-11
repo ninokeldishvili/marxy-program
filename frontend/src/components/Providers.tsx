@@ -6,7 +6,6 @@ import { useMemo, type ReactNode } from "react";
 
 import { RPC_URL } from "@marxy/shared/config";
 import { ChainClockProvider } from "@/hooks/useChainClock";
-import { MetaProvider } from "@/hooks/useMeta";
 import { ConnectModalProvider } from "./ConnectModal";
 import { ToastProvider } from "./Toasts";
 
@@ -18,9 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <WalletProvider wallets={wallets} autoConnect>
         <ToastProvider>
           <ConnectModalProvider>
-            <ChainClockProvider>
-              <MetaProvider>{children}</MetaProvider>
-            </ChainClockProvider>
+            <ChainClockProvider>{children}</ChainClockProvider>
           </ConnectModalProvider>
         </ToastProvider>
       </WalletProvider>

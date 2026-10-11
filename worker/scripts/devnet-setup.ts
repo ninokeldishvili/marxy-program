@@ -23,8 +23,8 @@ import { initializeConfigIx } from "@marxy/shared/instructions";
 import { configPda, getProgram } from "@marxy/shared/program";
 import { MAX_GET_READY_SECS, MIN_GET_READY_SECS, PROGRAM_ID } from "@marxy/shared/idl";
 import { MIN_MARGIN_BPS } from "@marxy/shared/pricing";
-import { loadAdmin, loadOrCreateKeypair } from "@marxy/shared/node/keys";
-import { adminKeypairPath, KEYS_DIR, rpcUrl } from "@marxy/shared/node/paths";
+import { adminKeySource, loadAdmin, loadOrCreateKeypair } from "@marxy/shared/node/keys";
+import { KEYS_DIR, rpcUrl } from "@marxy/shared/node/paths";
 import { sendIxs } from "@marxy/shared/node/send";
 
 /** The shared package's address file. Run from worker/ (`npm run devnet:setup`). */
@@ -51,13 +51,13 @@ async function main() {
   const url = rpcUrl();
   const connection = new Connection(url, "confirmed");
   const admin = loadAdmin();
-  console.log(`cluster:  ${url}`);
+  console.log(`cluster:  ${new URL(url).host}`);
   console.log(`program:  ${PROGRAM_ID}`);
-  console.log(`admin:    ${admin.publicKey.toBase58()} (${adminKeypairPath()})`);
+  console.log(`admin:    ${admin.publicKey.toBase58()} (${adminKeySource()})`);
 
   const programInfo = await connection.getAccountInfo(new PublicKey(PROGRAM_ID));
   if (!programInfo?.executable) {
-    throw new Error(`program ${PROGRAM_ID} is not deployed on ${url}; run \`anchor deploy --provider.cluster devnet\` first`);
+    throw new Error(`program ${PROGRAM_ID} is not deployed on ${new URL(url).host}; run \`anchor deploy --provider.cluster devnet\` first`);
   }
 
   const balance = await connection.getBalance(admin.publicKey);
@@ -154,15 +154,13 @@ async function main() {
   // Show what .env.local should contain, using the current values where they're set.
   const secretSet = Boolean(process.env.ADMIN_API_SECRET && !process.env.ADMIN_API_SECRET.startsWith("change-me"));
   console.log(`
-Setup complete. app/.env.local should contain (current values shown; see .env.example):
+Setup complete. worker/.env.local should contain (see .env.example):
 
-NEXT_PUBLIC_RPC_URL=${process.env.NEXT_PUBLIC_RPC_URL ?? url}
-RPC_URL=${url}
-ADMIN_KEYPAIR_PATH=${adminKeypairPath()}
+RPC_URL=(${new URL(url).host})
+ADMIN_KEYPAIR_PATH or ADMIN_KEYPAIR=(${adminKeySource()})
 ADMIN_API_SECRET=${secretSet ? "(set)" : "<a long random string: openssl rand -hex 24>"}
 GET_READY_SECS=${getReady}
-DEMO_SALES_MINUTES=${process.env.DEMO_SALES_MINUTES ?? "10"}
-DEMO_BOTS=${process.env.DEMO_BOTS ?? "true"}
+SALES_MINUTES=${process.env.SALES_MINUTES ?? "30"}
 `);
 }
 

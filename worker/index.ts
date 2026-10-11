@@ -1,12 +1,12 @@
 /**
- * The platform's automation: `npm run worker` (from app/). Signs with the admin
- * keypair and, every 5 s:
+ * The platform's automation: `npm start` (in worker/) or `npm run worker` (repo
+ * root). Signs with the admin keypair and, every 5 s:
  *   - keeps the configured number of auctions open for sales per lot type (catalog.json),
  *   - at sales close: mock-funds (minimum met), postpones once (>= 70% sold) or settles into refunds,
  *   - settles as soon as the countdown ends or a refund path opens,
- *   - learns each lot type's margin / ladder step after every auction,
- *   - with DEMO_BOTS=true, runs the demo bots.
- * State: worker/state.json (read by the app through /api/auctions-meta).
+ *   - learns each lot type's margin / ladder step after every auction.
+ * State: state.json in the worker folder. The admin page reads it through the
+ * worker's API (api.ts).
  */
 import { readFileSync } from "node:fs";
 
@@ -22,15 +22,16 @@ import { applyLearning, DEFAULT_TUNING, filledEarly, type AuctionOutcome } from 
 import { lotCostFromPrice, priceLot } from "@marxy/shared/pricing";
 import { getStage } from "@marxy/shared/stage";
 import type { AuctionView } from "@marxy/shared/types";
-import { takeCommands } from "@marxy/shared/node/commands";
 import { CATALOG_PATH, rpcUrl } from "@marxy/shared/node/paths";
 import { Platform } from "@marxy/shared/node/platform";
 import { readState, writeState, type AuctionRecord, type LogEntry, type WorkerState } from "@marxy/shared/node/state";
-import { BOT_BUY_LEAD_SECS, Bots } from "./bots";
+import { startApi } from "./api";
 
 const TICK_MS = 5_000;
-const DEMO_SALES_MINUTES = Number(process.env.DEMO_SALES_MINUTES ?? 10);
-const DEMO_BOTS = process.env.DEMO_BOTS === "true";
+/** Sales length for lot types without their own `salesMinutes`. */
+const SALES_MINUTES = Number(process.env.SALES_MINUTES ?? 30);
+/** Warn on the admin page when the admin wallet drops below this (it pays rent and fees). */
+const LOW_SOL = Number(process.env.LOW_SOL ?? 1);
 const OPENING_WINDOW = 40;
 const COUNTDOWN = 25;
 /** Postpone instead of cancelling when at least this share of the minimum sold. */
@@ -41,7 +42,8 @@ const LOG_KEEP = 200;
 const catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf8")) as LotType[];
 const platform = new Platform();
 const state: WorkerState = readState();
-let bots: Bots | null = null;
+/** Lot types the admin asked to list now (POST /create), handled on the next tick. */
+const pendingCreates: string[] = [];
 let ticks = 0;
 /** Set when a tick sent a transaction (so the auctions are worth re-reading). */
 let acted = false;
@@ -113,7 +115,7 @@ async function createAuction(lot: LotType, now: number, auctions: AuctionView[])
 
   const maxChainId = auctions.reduce((m, a) => (a.id > m ? a.id : m), 0n);
   const id = Math.max(state.nextAuctionId, Number(maxChainId) + 1);
-  const salesClose = now + (lot.salesMinutes ?? DEMO_SALES_MINUTES) * 60;
+  const salesClose = now + (lot.salesMinutes ?? SALES_MINUTES) * 60;
 
   const ok = await act(
     id,
@@ -140,7 +142,6 @@ async function createAuction(lot: LotType, now: number, auctions: AuctionView[])
     id,
     lotType: lot.key,
     name: lot.name,
-    image: lot.image,
     createdAt: now,
     originalSalesClose: salesClose,
     pricing: {
@@ -165,21 +166,14 @@ async function handleActive(rec: AuctionRecord, a: AuctionView, now: number): Pr
   const s = getStage(a, now);
   const id = rec.id;
   const lot = catalog.find((l) => l.key === rec.lotType);
-  // Lots with "bots": false are for real players only.
-  const lotBots = lot?.bots === false ? null : bots;
   if (rec.filledAt === null && s.minimumMet && now < a.salesClose) rec.filledAt = now;
 
   switch (s.stage) {
-    case "open":
-    case "postponed":
-      if (lotBots && !s.minimumMet && now >= a.salesClose - BOT_BUY_LEAD_SECS) await lotBots.fillMinimum(a);
-      return;
-
     case "short": {
       rec.minimumMetAtClose ??= false;
       const enough = a.revenue * 100n >= a.salesMinimum * POSTPONE_MIN_SHARE;
       if (!a.postponed && enough && now <= a.originalSalesClose + POSTPONE_GRACE_SECONDS) {
-        const newClose = now + (lot?.salesMinutes ?? DEMO_SALES_MINUTES) * 60;
+        const newClose = now + (lot?.salesMinutes ?? SALES_MINUTES) * 60;
         if (await act(id, `postponed: ${a.revenue * 100n / a.salesMinimum}% sold, new sales close in ${Math.round((newClose - now) / 60)} min`, () => platform.postpone(a, newClose))) {
           rec.postponedByWorker = true;
         }
@@ -195,10 +189,6 @@ async function handleActive(rec: AuctionRecord, a: AuctionView, now: number): Pr
     case "getReady":
       rec.minimumMetAtClose ??= true;
       if (!a.funded) await act(id, "lot bought (mock) and funded", () => platform.mockFund(a));
-      return;
-
-    case "battle":
-      if (lotBots && s.remaining !== null) await lotBots.battle(a, rec, s.remaining);
       return;
 
     case "settling": {
@@ -242,16 +232,11 @@ function learn(rec: AuctionRecord, a: AuctionView): void {
 }
 
 async function processCommands(now: number, auctions: AuctionView[]) {
-  for (const cmd of takeCommands()) {
-    if (cmd.type === "create") {
-      const lot = catalog.find((l) => l.key === cmd.lotType);
-      if (!lot) {
-        log(`admin: unknown lot type ${cmd.lotType}`);
-        continue;
-      }
-      log(`admin: create ${lot.name} now`);
-      await createAuction(lot, now, auctions);
-    }
+  for (const lotType of pendingCreates.splice(0)) {
+    const lot = catalog.find((l) => l.key === lotType);
+    if (!lot) continue;
+    log(`admin: create ${lot.name} now`);
+    await createAuction(lot, now, auctions);
   }
 }
 
@@ -261,9 +246,8 @@ async function tick() {
   ticks += 1;
   acted = false;
   const now = await platform.now();
-  if (bots && ticks % 12 === 1) await bots.topUp().catch((e) => log("bots: top-up failed", { error: errorText(e) }));
 
-  // 1. Act on every live auction (fund, postpone, settle, bots).
+  // 1. Act on every live auction (fund, postpone, settle).
   let auctions = await platform.auctions();
   let byId = new Map(auctions.map((a) => [Number(a.id), a]));
   for (const rec of Object.values(state.auctions)) {
@@ -272,7 +256,7 @@ async function tick() {
     await handleActive(rec, a, now).catch((e) => log("tick failed for auction", { auctionId: rec.id, error: errorText(e) }));
   }
 
-  // 2. Learn from auctions that ended (including any settled just now), and close out bots.
+  // 2. Learn from auctions that ended (including any settled just now).
   if (acted) {
     auctions = await platform.auctions();
     byId = new Map(auctions.map((a) => [Number(a.id), a]));
@@ -280,12 +264,7 @@ async function tick() {
   for (const rec of Object.values(state.auctions)) {
     const a = byId.get(rec.id);
     if (!a || a.status === "active") continue;
-    try {
-      learn(rec, a);
-      if (bots && !rec.botsClosedOut) rec.botsClosedOut = await bots.closeOut(a, now);
-    } catch (e) {
-      log("close-out failed", { auctionId: rec.id, error: errorText(e) });
-    }
+    learn(rec, a);
   }
 
   // 3. Admin commands, then keep the configured number of auctions open for
@@ -309,7 +288,7 @@ async function tick() {
 
   if (ticks % 60 === 1) {
     const sol = (await platform.connection.getBalance(platform.admin.publicKey)) / 1e9;
-    if (sol < 0.2) log(`warning: the admin has only ${sol.toFixed(3)} SOL left`);
+    if (sol < LOW_SOL) log(`warning: the admin has only ${sol.toFixed(3)} SOL left`);
   }
   state.updatedAt = Date.now();
   writeState(state);
@@ -321,13 +300,36 @@ async function main() {
   if (!chain.admin.equals(platform.admin.publicKey)) {
     throw new Error(`ADMIN_KEYPAIR_PATH is ${platform.admin.publicKey.toBase58()}, but the program admin is ${chain.admin.toBase58()}`);
   }
-  console.log(`marxy worker: ${rpcUrl()}, admin ${platform.admin.publicKey.toBase58()}`);
-  console.log(`get-ready ${chain.getReadySecs}s (config), sales ${DEMO_SALES_MINUTES} min, bots ${DEMO_BOTS ? "on" : "off"}`);
-  if (DEMO_BOTS) {
-    bots = new Bots(platform, log);
-    state.bots = bots.pubkeys;
-  }
+  // Host only: RPC URLs often carry an API key.
+  console.log(`marxy worker: RPC ${new URL(rpcUrl()).host}, admin ${platform.admin.publicKey.toBase58()}`);
+  console.log(`get-ready ${chain.getReadySecs}s (config), sales ${SALES_MINUTES} min`);
   writeState(state);
+
+  startApi(
+    {
+      health: () => ({ ok: true, updatedAt: state.updatedAt }),
+      state: () => ({ state, catalog }),
+      create(lotType) {
+        if (!catalog.some((l) => l.key === lotType)) {
+          throw new Error(`unknown lot type; one of ${catalog.map((l) => l.key).join(", ")}`);
+        }
+        pendingCreates.push(lotType);
+        return { note: "queued: the worker lists it within 5 s" };
+      },
+      async settle(auctionId) {
+        const auction = await platform.auction(auctionId);
+        if (!auction) throw new Error("auction not found");
+        try {
+          const signature = await platform.settle(auction);
+          log("admin: settled now", { auctionId: Number(auctionId), signature });
+          return { signature };
+        } catch (e) {
+          throw new Error(errorText(e));
+        }
+      },
+    },
+    (line) => console.log(line),
+  );
 
   let stopping = false;
   for (const sig of ["SIGINT", "SIGTERM"] as const) {

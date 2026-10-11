@@ -40,5 +40,9 @@ export async function GET() {
       if (readAt === 0) return Response.json({ error: "The Solana RPC is unavailable. Retrying…" }, { status: 502 });
     }
   }
-  return Response.json({ readAt, auctions: seen.map(auctionToJson) }, { headers: { "Cache-Control": "no-store" } });
+  // The CDN (Vercel) serves one copy per 3 s to everyone, across serverless instances.
+  return Response.json(
+    { readAt, auctions: seen.map(auctionToJson) },
+    { headers: { "Cache-Control": "public, s-maxage=3, stale-while-revalidate=10" } },
+  );
 }

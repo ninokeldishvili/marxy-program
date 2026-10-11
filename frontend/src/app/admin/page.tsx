@@ -9,17 +9,21 @@ import { Button, Card } from "@/components/ui";
 import { CONFIG, explorerTx } from "@marxy/shared/config";
 import { useAuctions } from "@/hooks/useAuctions";
 import { useChainClock } from "@/hooks/useChainClock";
-import type { LotType } from "@marxy/shared/catalog";
 import { formatUsdc } from "@marxy/shared/format";
-import type { WorkerState } from "@marxy/shared/node/state";
 import { getStage } from "@marxy/shared/stage";
+import type { WorkerStateResponse } from "@marxy/shared/workerApi";
 
 const SECRET_KEY = "marxy-admin-secret";
+/** The worker's admin API (worker/api.ts), e.g. https://marxy-worker.up.railway.app */
+const WORKER_URL = (process.env.NEXT_PUBLIC_WORKER_URL ?? "").replace(/\/$/, "");
 
 export default function AdminPage() {
   const { publicKey } = useWallet();
   if (!publicKey || publicKey.toBase58() !== CONFIG.admin) {
     return <p className="text-muted">This page is only available to the platform admin wallet.</p>;
+  }
+  if (!WORKER_URL) {
+    return <p className="text-muted">Set NEXT_PUBLIC_WORKER_URL to the worker&apos;s address to use the admin page.</p>;
   }
   return <AdminConsole />;
 }
@@ -35,7 +39,7 @@ function AdminConsole() {
       return "";
     }
   });
-  const [data, setData] = useState<{ state: WorkerState; catalog: LotType[] } | null>(null);
+  const [data, setData] = useState<WorkerStateResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [version, setVersion] = useState(0);
@@ -50,7 +54,7 @@ function AdminConsole() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch("/api/admin/state", { headers: { "x-admin-secret": secret }, cache: "no-store" });
+        const res = await fetch(`${WORKER_URL}/state`, { headers: { "x-admin-secret": secret }, cache: "no-store" });
         const body = await res.json();
         if (cancelled) return;
         if (!res.ok) {
@@ -61,7 +65,7 @@ function AdminConsole() {
           setData(body);
         }
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (!cancelled) setError(`Can't reach the worker at ${WORKER_URL} (${e instanceof Error ? e.message : String(e)})`);
       }
     }
     load();
@@ -74,14 +78,18 @@ function AdminConsole() {
 
   async function post(path: string, body: object, label: string) {
     const id = toasts.push({ kind: "pending", title: label });
-    const res = await fetch(path, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-admin-secret": secret },
-      body: JSON.stringify(body),
-    });
-    const out = (await res.json()) as { error?: string; signature?: string; note?: string };
-    if (res.ok) toasts.update(id, { kind: "success", title: `${label}: ok`, detail: out.note, signature: out.signature });
-    else toasts.update(id, { kind: "error", title: `${label} failed`, detail: out.error });
+    try {
+      const res = await fetch(`${WORKER_URL}${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-admin-secret": secret },
+        body: JSON.stringify(body),
+      });
+      const out = (await res.json()) as { error?: string; signature?: string; note?: string };
+      if (res.ok) toasts.update(id, { kind: "success", title: `${label}: ok`, detail: out.note, signature: out.signature });
+      else toasts.update(id, { kind: "error", title: `${label} failed`, detail: out.error });
+    } catch (e) {
+      toasts.update(id, { kind: "error", title: `${label} failed`, detail: e instanceof Error ? e.message : String(e) });
+    }
     setVersion((v) => v + 1);
   }
 
@@ -94,7 +102,7 @@ function AdminConsole() {
       <h1 className="text-4xl font-semibold">Admin</h1>
       <Card>
         <label className="block text-sm text-muted">
-          ADMIN_API_SECRET
+          ADMIN_API_SECRET (the worker&apos;s)
           <input
             type="password"
             value={secret}
@@ -121,9 +129,9 @@ function AdminConsole() {
                   <div key={lot.key} className="rounded-2xl bg-surface-2 p-4">
                     <p className="font-semibold">{lot.name}</p>
                     <p className="text-sm text-muted">
-                      margin {((t?.marginBps ?? 2300) / 100).toFixed(0)}% · ladder shift {t?.ladderShift ?? 0} · {t?.completed ?? 0} done · keep {lot.openAuctions} open{lot.bots === false && " · no bots"}
+                      margin {((t?.marginBps ?? 2300) / 100).toFixed(0)}% · ladder shift {t?.ladderShift ?? 0} · {t?.completed ?? 0} done · keep {lot.openAuctions} open
                     </p>
-                    <Button className="mt-3" variant="ghost" onClick={() => post("/api/admin/create", { lotType: lot.key }, `Create ${lot.name}`)}>
+                    <Button className="mt-3" variant="ghost" onClick={() => post("/create", { lotType: lot.key }, `Create ${lot.name}`)}>
                       Create auction now
                     </Button>
                   </div>
@@ -170,7 +178,7 @@ function AdminConsole() {
                           <td className="pr-3">{rec.outcome ?? "-"}</td>
                           <td>
                             {a?.status === "active" && (
-                              <button className="text-accent hover:underline" onClick={() => post("/api/admin/settle", { auctionId: rec.id }, `Settle #${rec.id}`)}>
+                              <button className="text-accent hover:underline" onClick={() => post("/settle", { auctionId: rec.id }, `Settle #${rec.id}`)}>
                                 Settle now
                               </button>
                             )}

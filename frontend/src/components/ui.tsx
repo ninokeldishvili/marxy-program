@@ -4,7 +4,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { explorerAddress, lotTokenByMint } from "@marxy/shared/config";
-import { useMeta } from "@/hooks/useMeta";
 import { formatDuration, formatUnits, shortAddress } from "@marxy/shared/format";
 import type { AuctionView } from "@marxy/shared/types";
 
@@ -55,10 +54,9 @@ export function Countdown({ seconds, className = "" }: { seconds: number | null;
   return <span className={`tabular ${className}`}>{formatDuration(seconds)}</span>;
 }
 
-/** Shortened address, "You" for the connected wallet, and a "bot" tag for demo bots. */
+/** Shortened address, or "You" for the connected wallet. */
 export function Address({ address, link = false }: { address: string; link?: boolean }) {
   const { publicKey } = useWallet();
-  const { bots } = useMeta();
   const you = publicKey?.toBase58() === address;
   const label = you ? "You" : shortAddress(address);
   return (
@@ -70,20 +68,18 @@ export function Address({ address, link = false }: { address: string; link?: boo
       ) : (
         <span className={you ? "text-accent font-semibold" : "font-mono"}>{label}</span>
       )}
-      {bots.includes(address) && <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">bot</span>}
     </span>
   );
 }
 
-/** Lot display data: worker metadata if known, otherwise derived from the mint. */
+/** Lot display data, derived from the auction's lot mint and amount. */
 export function useLot(auction: AuctionView) {
-  const meta = useMeta().auctions[auction.id.toString()];
   const token = lotTokenByMint(auction.lotMint);
   const amount = token ? `${formatUnits(auction.lotAmount, token.decimals)} ${token.name}` : `${auction.lotAmount} units`;
-  // Brand art from public/assets/img (older worker metadata still points at /lots/*.svg).
-  const art = token?.symbol === "tBTC" || meta?.image?.includes("btc") ? "lot-btc" : "lot-sol";
+  // Brand art from public/assets/img.
+  const art = token?.symbol === "tBTC" ? "lot-btc" : "lot-sol";
   return {
-    name: meta?.name ?? amount,
+    name: amount,
     image: `/assets/img/${art}.jpg`,
     art,
     amount,
