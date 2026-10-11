@@ -40,17 +40,16 @@
 .landing .cursor-light::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 16px var(--lime); }
 .landing .hero:hover .cursor-light { opacity: 1; }
 .landing .hero__fade { position: absolute; inset: auto 0 0 0; height: 45%; z-index: 7; background: linear-gradient(to top, var(--bg) 8%, rgba(5,6,5,.6) 45%, transparent); pointer-events: none; }
-.landing .hero__content { position: absolute; z-index: 10; left: 50%; bottom: clamp(48px, 9vh, 96px); translate: -50% 0; width: max-content; max-width: min(92vw, 940px); text-align: center;
-  /* Frosted dark panel so the copy stays readable over the bright scene */
-  padding: clamp(18px, 2.4vw, 28px) clamp(20px, 3vw, 44px); border-radius: 28px;
-  background: linear-gradient(180deg, rgba(5,6,5,.55), rgba(5,6,5,.72));
-  border: 1px solid rgba(255,255,255,.07); box-shadow: 0 20px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.landing .hero__content { position: absolute; z-index: 10; left: 50%; bottom: clamp(48px, 9vh, 96px); translate: -50% 0; width: min(92vw, 940px); text-align: center; }
+/* Soft, edgeless dark glow behind the copy so it reads over the bright scene */
+.landing .hero__content::before { content: ""; position: absolute; z-index: -1; inset: -45% -12% -35%; pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 55%, rgba(5,6,5,.88) 0%, rgba(5,6,5,.7) 45%, rgba(5,6,5,0) 100%); }
+.landing .hero__content .hero__title { text-shadow: 0 2px 24px rgba(0,0,0,.65); }
 .landing .hero__title { font: 600 clamp(30px, 3.6vw, 54px)/1.08 var(--font-display); letter-spacing: -0.02em; }
 .landing .hero__title span, .landing .section__title span { color: var(--lime); text-shadow: 0 0 30px rgba(184,255,60,.4); }
 .landing .hero__sub { margin: 12px auto 24px; color: var(--muted); font-size: clamp(15px, 1.3vw, 18px); max-width: 520px; }
-.landing .hero__content .hero__sub { color: #c8ced6; }
-.landing .hero__content .btn--ghost { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
+.landing .hero__content .hero__sub { color: #c8ced6; text-shadow: 0 1px 12px rgba(0,0,0,.9); }
+.landing .hero__content .btn--ghost { background: rgba(5,6,5,.55); border-color: rgba(255,255,255,.22); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .landing .hero__ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .landing .hero__content .btn { cursor: pointer; }
 .landing .scroll-hint { position: absolute; z-index: 10; left: 50%; bottom: 18px; translate: -50% 0; width: 22px; height: 36px; border: 1px solid var(--line); border-radius: 12px; }

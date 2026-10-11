@@ -28,9 +28,15 @@ html {
   scroll-behavior: smooth;
 }
 
-html,
-body {
+html {
   background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* body stays transparent: a body background would paint over the
+   MeshBackground canvas (position: fixed; z-index: -1). html supplies the colour. */
+body {
+  background: transparent;
   color: var(--color-ink);
 }
 
