@@ -1,12 +1,13 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useRef, type CSSProperties, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 
 import { useConnectModal } from "@/components/ConnectModal";
 import { Art } from "./Art";
 import { initLanding } from "./effects";
 import { LandingAuctions } from "./LandingAuctions";
+import { PracticeBattle } from "./PracticeBattle";
 import "@/app/landing.css";
 
 const X_URL = "https://x.com/marxyfun";
@@ -47,6 +48,8 @@ function XIcon() {
 export function Landing() {
   const root = useRef<HTMLDivElement>(null);
   const { open } = useConnectModal();
+  const [practice, setPractice] = useState(false);
+  const play = () => setPractice(true);
 
   useEffect(() => initLanding(root.current!), []);
 
@@ -109,9 +112,9 @@ export function Landing() {
             <button type="button" className="btn" onClick={open}>
               Connect Wallet
             </button>
-            <Jump to="auctions" className="btn btn--ghost">
-              See live auctions
-            </Jump>
+            <button type="button" className="btn btn--ghost" onClick={play}>
+              ▶ Try a practice battle
+            </button>
           </div>
         </div>
         <div className="scroll-hint">
@@ -234,6 +237,9 @@ export function Landing() {
             <li>You can&apos;t outbid yourself</li>
             <li>Timer hits zero → last bidder wins</li>
           </ul>
+          <button type="button" className="btn battle-sec__play reveal" onClick={play}>
+            ▶ Play it yourself
+          </button>
         </div>
         <div className="battle reveal" id="battleDemo">
           <div className="battle__head">
@@ -359,6 +365,9 @@ export function Landing() {
           <button type="button" className="btn" onClick={open}>
             Connect Wallet
           </button>
+          <button type="button" className="btn btn--ghost" onClick={play}>
+            ▶ Practice battle
+          </button>
           <a href={X_URL} className="btn btn--ghost" target="_blank" rel="noopener noreferrer">
             Follow @marxyfun
           </a>
@@ -374,6 +383,7 @@ export function Landing() {
         </nav>
         <span>© 2026 MARXY</span>
       </footer>
+      {practice && <PracticeBattle onClose={() => setPractice(false)} onConnect={open} />}
     </div>
   );
 }
