@@ -26,9 +26,24 @@ The frontend holds no keys. Its only server code is `GET /api/auctions`: the auc
 
 ## Deploy on Vercel
 
-1. Import the repo, set **Root Directory** to `frontend`. Vercel installs the npm workspaces from the repo root.
-2. Add the variables above. Set `NEXT_PUBLIC_WORKER_URL` to the worker's public URL.
-3. Add the Vercel domain to the worker's `ALLOWED_ORIGIN`, so the admin page can call it.
+Deploy the worker first (see `../worker/README.md`): the frontend needs its URL.
+
+1. **Project.** Add New → Project → import the GitHub repo.
+2. **Settings** in the import screen:
+   - **Root Directory:** `frontend`. Framework: Next.js (detected).
+   - Leave build and install commands at their defaults. Vercel installs the npm workspaces from the root `package-lock.json`, and "Include files outside the root directory in the Build Step" (on by default) lets it build `packages/shared`.
+3. **Environment variables** (Production and Preview):
+
+   | Variable | Value |
+   |---|---|
+   | `NEXT_PUBLIC_RPC_URL` | `https://api.devnet.solana.com` (public; rate-limited per visitor) |
+   | `RPC_URL` | your private devnet RPC, server-only (used by `/api/auctions`) |
+   | `NEXT_PUBLIC_EXPLORER_CLUSTER` | `devnet` |
+   | `NEXT_PUBLIC_WORKER_URL` | `https://<worker>.up.railway.app` |
+
+4. **Deploy.** `NEXT_PUBLIC_*` values are built into the bundle: after changing one, **redeploy**.
+5. **Production branch.** Vercel deploys production from `main`. Merge into `main`, or change it under Settings → Git.
+6. **Tell the worker.** On Railway set `ALLOWED_ORIGIN=https://<project>.vercel.app` (comma-separate any custom domains), or the admin page gets CORS errors.
 
 ## Tokens
 

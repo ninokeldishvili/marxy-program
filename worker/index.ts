@@ -13,11 +13,12 @@ import { readFileSync } from "node:fs";
 
 import { PublicKey } from "@solana/web3.js";
 
-import { CONFIG, IS_CONFIGURED } from "@marxy/shared/config";
+import { CONFIG, IS_CONFIGURED, lotTokenByMint } from "@marxy/shared/config";
 import type { LotType } from "@marxy/shared/catalog";
 import { parseAmount } from "@marxy/shared/catalog";
 import { friendlyError } from "@marxy/shared/errors";
 import { POSTPONE_GRACE_SECONDS } from "@marxy/shared/idl";
+import { formatUnits } from "@marxy/shared/format";
 import { fetchUsdPrices } from "@marxy/shared/jupiter";
 import { applyLearning, DEFAULT_TUNING, filledEarly, type AuctionOutcome } from "@marxy/shared/learning";
 import { lotCostFromPrice, priceLot } from "@marxy/shared/pricing";
@@ -241,6 +242,42 @@ async function processCommands(now: number, auctions: AuctionView[]) {
   }
 }
 
+/**
+ * Records active on-chain auctions this worker has no record of (created by
+ * another worker, or after its state file was lost), so they still get
+ * funded, postponed and settled. Ended auctions are left alone.
+ */
+function adoptUnknown(auctions: AuctionView[], now: number) {
+  for (const a of auctions) {
+    const id = Number(a.id);
+    if (a.status !== "active" || state.auctions[String(id)]) continue;
+    const lot = catalog.find((l) => {
+      const token = CONFIG.lotMints[l.token];
+      return token?.mint === a.lotMint && parseAmount(l.amount, token.decimals) === a.lotAmount;
+    });
+    const token = lotTokenByMint(a.lotMint);
+    state.auctions[String(id)] = {
+      id,
+      lotType: lot?.key ?? "unlisted",
+      name: lot?.name ?? (token ? `${formatUnits(a.lotAmount, token.decimals)} ${token.name}` : `${a.lotAmount} units`),
+      createdAt: now,
+      originalSalesClose: a.originalSalesClose,
+      pricing: {
+        lotValue: a.lotValue.toString(),
+        salesMinimum: a.salesMinimum.toString(),
+        creditPrice: a.creditPrice.toString(),
+        marginBps: Number(((a.salesMinimum - a.lotValue) * 10_000n) / a.lotValue),
+        usdPrice: 0,
+      },
+      filledAt: null,
+      minimumMetAtClose: null,
+      learned: false,
+    };
+    state.nextAuctionId = Math.max(state.nextAuctionId, id + 1);
+    log(`adopted from the chain (${state.auctions[String(id)].name})`, { auctionId: id });
+  }
+}
+
 // ------------------------------------------------------------------ loop
 
 async function tick() {
@@ -251,6 +288,7 @@ async function tick() {
   // 1. Act on every live auction (fund, postpone, settle).
   let auctions = await platform.auctions();
   let byId = new Map(auctions.map((a) => [Number(a.id), a]));
+  adoptUnknown(auctions, now);
   for (const rec of Object.values(state.auctions)) {
     const a = byId.get(rec.id);
     if (a?.status !== "active") continue;

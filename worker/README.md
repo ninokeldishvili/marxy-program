@@ -43,16 +43,35 @@ The secret is the `x-admin-secret` header, compared against `ADMIN_API_SECRET`. 
 
 ## Deploy on Railway
 
-1. New project → Deploy from GitHub repo. In the service settings set **Root Directory** to `/` (the workspaces need the root), **Build Command** `npm ci`, **Start Command** `npm run worker`.
-2. Variables:
-   - `RPC_URL`: a private devnet RPC.
-   - `ADMIN_KEYPAIR`: the admin keypair's JSON byte array (the contents of the keypair file).
-   - `ADMIN_API_SECRET`: `openssl rand -hex 24`.
-   - `ALLOWED_ORIGIN`: the Vercel URL(s), comma-separated.
-   - `GET_READY_SECS=300`, `SALES_MINUTES=30`, optionally `JUP_API_KEY`.
-   - `MARXY_STATE_PATH=/data/state.json`.
-3. Add a **Volume** mounted at `/data`, so the learned margins, auction records and log survive redeploys. (The worker reads the treasury from the on-chain config; only `devnet:setup`, run locally, needs `.keys/`.)
-4. Settings → Networking → **Generate Domain**: that URL is the frontend's `NEXT_PUBLIC_WORKER_URL`. Railway sets `PORT`.
-5. Optional: health check path `/health`.
+Deploy the worker **before** the frontend: the frontend needs its URL. Railway builds from GitHub, so push the branch first.
 
-Run exactly **one** instance: two workers would race to create and fund the same auctions.
+1. **Account.** Sign up at https://railway.com with GitHub. An always-on service with a volume needs the **Hobby** plan (about $5/month, usage included).
+2. **Service.** New Project → *Deploy from GitHub repo* → pick the repo (allow Railway's GitHub app to see it) and the branch.
+3. **Settings** (service → Settings):
+   - **Root Directory:** leave empty (repo root): the npm workspaces need it.
+   - **Build Command:** `npm ci`
+   - **Start Command:** `npm run worker`
+   - **Watch Paths** (optional): `worker/**`, `packages/**`, `package-lock.json`, so frontend-only commits don't restart the worker.
+   - Node: the root `package.json` pins `>=22.9` (`engines`); nothing to set.
+4. **Volume.** Right-click the service on the canvas → *Attach Volume*, mount path `/data`. It keeps the learned margins, auction records and log across redeploys.
+5. **Variables** (service → Variables):
+
+   | Variable | Value |
+   |---|---|
+   | `RPC_URL` | your private devnet RPC (Alchemy, QuickNode, …) |
+   | `ADMIN_KEYPAIR` | the admin keypair's JSON array: the whole content of `~/.config/solana/id.json` |
+   | `ADMIN_API_SECRET` | `openssl rand -hex 24`; keep it, the admin page asks for it |
+   | `ALLOWED_ORIGIN` | `http://localhost:3000` for now; the Vercel URL once it exists |
+   | `GET_READY_SECS` | `300` |
+   | `SALES_MINUTES` | `30` |
+   | `LOW_SOL` | `1` |
+   | `MARXY_STATE_PATH` | `/data/state.json` |
+   | `JUP_API_KEY` | optional |
+
+6. **Public URL.** Settings → Networking → *Generate Domain*. That `https://….up.railway.app` is the frontend's `NEXT_PUBLIC_WORKER_URL`. Railway sets `PORT`; don't set it yourself.
+7. **Health check** (optional): Settings → Deploy → path `/health`. Keep **1 replica**.
+8. **Check:** `curl https://<worker>/health` returns `{"ok":true,…}`. The deploy logs show `admin API on :…` and, on a fresh volume, `adopted from the chain` for every open auction.
+
+**Run exactly one worker.** Stop the local one before Railway's starts: two workers race to create and fund the same auctions. A fresh or lost state file is fine: the worker adopts every active on-chain auction it doesn't know.
+
+The admin key is also the program's upgrade authority. Moving the upgrade authority to an offline key keeps upgrade power off the hosted machine.

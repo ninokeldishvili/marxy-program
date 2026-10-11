@@ -6,8 +6,8 @@
   "scripts": {
     "start": "tsx --env-file-if-exists=.env.local index.ts",
     "devnet:setup": "tsx --env-file-if-exists=.env.local scripts/devnet-setup.ts",
-    "smoke": "tsx --env-file-if-exists=.env.local scripts/smoke.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "rpc-check": "tsx --env-file-if-exists=.env.local scripts/rpc-check.ts"
   },
   "dependencies": {
     "@anchor-lang/core": "1.1.2",
