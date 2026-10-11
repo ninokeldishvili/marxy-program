@@ -1,7 +1,7 @@
 import { Connection } from "@solana/web3.js";
 
+import { RPC_URL } from "@marxy/shared/config";
 import { mergeAuctions } from "@marxy/shared/freshness";
-import { rpcUrl } from "@marxy/shared/node/paths";
 import { fetchAllAuctions, getProgram } from "@marxy/shared/program";
 import type { AuctionView } from "@marxy/shared/types";
 import { auctionToJson } from "@marxy/shared/wire";
@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 /** Every visitor shares one RPC read per this many ms. */
 const TTL_MS = 3_000;
 
-const program = getProgram(new Connection(rpcUrl(), "confirmed"));
+// RPC_URL (server-only, may carry a private key) or the public browser RPC.
+const program = getProgram(new Connection(process.env.RPC_URL || RPC_URL, "confirmed"));
 /** Every auction seen so far, freshest copy (see freshness.ts). */
 let seen: AuctionView[] = [];
 let readAt = 0;

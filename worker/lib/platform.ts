@@ -2,18 +2,18 @@
 // admin API routes and the smoke script. Server / scripts only.
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 
-import { CONFIG, lotTokenByMint } from "../config";
+import { CONFIG, lotTokenByMint } from "@marxy/shared/config";
 import {
   ata,
   createAuctionIx,
-  mockFundLotIxs,
+  fundLotIxs,
   postponeIx,
   settleIx,
   type CreateAuctionArgs,
-} from "../instructions";
-import { fresherAuction, mergeAuctions } from "../freshness";
-import { chainUnixTime, configPda, fetchAllAuctions, fetchAuction, getProgram, type MarxyProgram } from "../program";
-import type { AuctionView } from "../types";
+} from "@marxy/shared/instructions";
+import { fresherAuction, mergeAuctions } from "@marxy/shared/freshness";
+import { chainUnixTime, configPda, fetchAllAuctions, fetchAuction, getProgram, type MarxyProgram } from "@marxy/shared/program";
+import type { AuctionView } from "@marxy/shared/types";
 import { loadAdmin } from "./keys";
 import { rpcUrl } from "./paths";
 import { sendIxs, tokenBalance } from "./send";
@@ -102,14 +102,14 @@ export class Platform {
     return sendIxs(this.connection, [ix], this.admin);
   }
 
-  /** Mock purchase: mint the lot to the admin (test mint authority), then fund_lot, atomically. */
-  async mockFund(auction: AuctionView): Promise<string> {
+  /** Funds the lot (wraps the admin's SOL for SOL lots), then fund_lot, atomically. */
+  async fundLot(auction: AuctionView): Promise<string> {
     const lotTokenProgram = await this.lotTokenProgram(auction.lotMint);
     const adminHolds = await tokenBalance(
       this.connection,
       ata(this.admin.publicKey, new PublicKey(auction.lotMint), lotTokenProgram),
     );
-    const ixs = await mockFundLotIxs(this.program, {
+    const ixs = await fundLotIxs(this.program, {
       auction,
       admin: this.admin.publicKey,
       lotTokenProgram,

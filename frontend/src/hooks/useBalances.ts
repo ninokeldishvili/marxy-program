@@ -1,8 +1,8 @@
 "use client";
 
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, NATIVE_MINT, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, type Connection } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 
 import { CONFIG, IS_CONFIGURED } from "@marxy/shared/config";
@@ -14,6 +14,8 @@ export interface Balances {
   lamports: number | null;
   usdc: bigint | null;
   usdcAtaExists: boolean;
+  /** Wrapped SOL (lots are paid out in it), in lamports; 0 without a wSOL account. */
+  wsol: bigint | null;
   refresh: () => void;
 }
 
@@ -22,6 +24,15 @@ interface Loaded {
   lamports: number | null;
   usdc: bigint | null;
   usdcAtaExists: boolean;
+  wsol: bigint | null;
+}
+
+async function tokenBalance(connection: Connection, account: PublicKey): Promise<bigint | null> {
+  try {
+    return BigInt((await connection.getTokenAccountBalance(account, "confirmed")).value.amount);
+  } catch {
+    return null; // no such account
+  }
 }
 
 const listeners = new Set<() => void>();
@@ -52,20 +63,23 @@ export function useBalances(): Balances {
       let usdcAtaExists = false;
       if (IS_CONFIGURED) {
         const ata = getAssociatedTokenAddressSync(new PublicKey(CONFIG.usdcMint), publicKey, false, new PublicKey(CONFIG.usdcTokenProgram));
-        try {
-          const b = await connection.getTokenAccountBalance(ata, "confirmed");
-          usdc = BigInt(b.value.amount);
-          usdcAtaExists = true;
-        } catch {
-          usdc = 0n;
-        }
+        const b = await tokenBalance(connection, ata);
+        usdc = b ?? 0n;
+        usdcAtaExists = b !== null;
       }
-      if (!isCancelled()) setLoaded({ wallet, lamports, usdc, usdcAtaExists });
+      const wsol = (await tokenBalance(connection, getAssociatedTokenAddressSync(NATIVE_MINT, publicKey, false, TOKEN_PROGRAM_ID))) ?? 0n;
+      if (!isCancelled()) setLoaded({ wallet, lamports, usdc, usdcAtaExists, wsol });
     },
     POLL_MS,
     [connection, publicKey, version],
   );
 
   const mine = loaded && publicKey && loaded.wallet === publicKey.toBase58() ? loaded : null;
-  return { lamports: mine?.lamports ?? null, usdc: mine?.usdc ?? null, usdcAtaExists: mine?.usdcAtaExists ?? false, refresh };
+  return {
+    lamports: mine?.lamports ?? null,
+    usdc: mine?.usdc ?? null,
+    usdcAtaExists: mine?.usdcAtaExists ?? false,
+    wsol: mine?.wsol ?? null,
+    refresh,
+  };
 }

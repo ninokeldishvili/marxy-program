@@ -3,46 +3,24 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 import { CONFIG } from "@marxy/shared/config";
-import { refreshBalances, useBalances } from "@/hooks/useBalances";
+import { useBalances } from "@/hooks/useBalances";
 import { formatSol, formatUsdc, shortAddress } from "@marxy/shared/format";
 import { useConnectModal } from "./ConnectModal";
 import { Logo } from "./Logo";
-import { useToasts } from "./Toasts";
 
 const LOW_SOL = 0.01 * 1e9;
+/** Circle's faucet: pick "Solana Devnet" there. */
+const USDC_FAUCET = "https://faucet.circle.com";
+const SOL_FAUCET = "https://faucet.solana.com";
 
 export function Header() {
   const { publicKey, disconnect, connected } = useWallet();
   const { open } = useConnectModal();
   const { lamports, usdc } = useBalances();
-  const toasts = useToasts();
   const pathname = usePathname();
-  const [claiming, setClaiming] = useState(false);
   const isAdmin = Boolean(publicKey && CONFIG.admin && publicKey.toBase58() === CONFIG.admin);
-
-  async function claim() {
-    if (!publicKey) return open();
-    setClaiming(true);
-    const id = toasts.push({ kind: "pending", title: "Getting 100 test USDC" });
-    try {
-      const res = await fetch("/api/faucet", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ wallet: publicKey.toBase58() }),
-      });
-      const body = (await res.json()) as { signature?: string; error?: string };
-      if (!res.ok) throw new Error(body.error ?? `faucet error ${res.status}`);
-      toasts.update(id, { kind: "success", title: "100 test USDC on the way", signature: body.signature });
-      setTimeout(refreshBalances, 1_000);
-    } catch (e) {
-      toasts.update(id, { kind: "error", title: "Faucet", detail: e instanceof Error ? e.message : String(e) });
-    } finally {
-      setClaiming(false);
-    }
-  }
 
   const nav = [
     { href: "/", label: "Lobby" },
@@ -81,19 +59,21 @@ export function Header() {
               >
                 {lamports === null ? "…" : formatSol(lamports)}
                 {lamports !== null && lamports < LOW_SOL && (
-                  <a href="https://faucet.solana.com" target="_blank" rel="noreferrer" className="ml-2 font-semibold underline">
+                  <a href={SOL_FAUCET} target="_blank" rel="noreferrer" className="ml-2 font-semibold underline">
                     Low: get SOL ↗
                   </a>
                 )}
               </span>
               <span className={`${pill} border-white/10 text-muted`}>{usdc === null ? "…" : `${formatUsdc(usdc)} USDC`}</span>
-              <button
-                onClick={claim}
-                disabled={claiming}
-                className="cursor-pointer rounded-full border border-accent/30 px-4 py-2 font-display font-semibold text-accent transition hover:border-accent hover:shadow-[0_0_24px_rgb(208_242_106/0.14)] disabled:opacity-50"
+              <a
+                href={USDC_FAUCET}
+                target="_blank"
+                rel="noreferrer"
+                title="Circle's faucet: choose Solana Devnet and paste your address"
+                className="rounded-full border border-accent/30 px-4 py-2 font-display font-semibold text-accent transition hover:border-accent hover:shadow-[0_0_24px_rgb(208_242_106/0.14)]"
               >
-                Get 100 test USDC
-              </button>
+                Get devnet USDC ↗
+              </a>
             </>
           )}
           {connected && publicKey ? (
@@ -113,8 +93,12 @@ export function Header() {
       </div>
       {connected && (
         <div className="mx-auto max-w-6xl px-4 pb-3 text-xs text-muted">
-          Need devnet SOL for fees?{" "}
-          <a href="https://faucet.solana.com" target="_blank" rel="noreferrer" className="text-accent hover:underline">
+          Devnet only: tokens have no real value. Credits are paid in devnet USDC from{" "}
+          <a href={USDC_FAUCET} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+            faucet.circle.com ↗
+          </a>{" "}
+          (choose Solana Devnet); fees in devnet SOL from{" "}
+          <a href={SOL_FAUCET} target="_blank" rel="noreferrer" className="text-accent hover:underline">
             faucet.solana.com ↗
           </a>
         </div>

@@ -3,11 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "license": "UNLICENSED",
-  "description": "Marxy logic shared by the frontend and the worker: IDL, instruction builders, pricing, stages.",
+  "description": "Marxy logic shared by the frontend and the worker: IDL, instruction builders, pricing, stages, freshness rules.",
   "exports": {
     "./config": "./src/config/index.ts",
     "./idl/*": "./src/idl/*",
-    "./node/*": "./src/node/*.ts",
     "./*": "./src/*.ts"
   },
   "scripts": {

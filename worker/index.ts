@@ -2,7 +2,8 @@
  * The platform's automation: `npm start` (in worker/) or `npm run worker` (repo
  * root). Signs with the admin keypair and, every 5 s:
  *   - keeps the configured number of auctions open for sales per lot type (catalog.json),
- *   - at sales close: mock-funds (minimum met), postpones once (>= 70% sold) or settles into refunds,
+ *   - at sales close: funds the lot from the admin's SOL (minimum met), postpones once (>= 70% sold)
+ *     or settles into refunds,
  *   - settles as soon as the countdown ends or a refund path opens,
  *   - learns each lot type's margin / ladder step after every auction.
  * State: state.json in the worker folder. The admin page reads it through the
@@ -22,9 +23,9 @@ import { applyLearning, DEFAULT_TUNING, filledEarly, type AuctionOutcome } from 
 import { lotCostFromPrice, priceLot } from "@marxy/shared/pricing";
 import { getStage } from "@marxy/shared/stage";
 import type { AuctionView } from "@marxy/shared/types";
-import { CATALOG_PATH, rpcUrl } from "@marxy/shared/node/paths";
-import { Platform } from "@marxy/shared/node/platform";
-import { readState, writeState, type AuctionRecord, type LogEntry, type WorkerState } from "@marxy/shared/node/state";
+import { CATALOG_PATH, rpcUrl } from "./lib/paths";
+import { Platform } from "./lib/platform";
+import { readState, writeState, type AuctionRecord, type LogEntry, type WorkerState } from "./lib/state";
 import { startApi } from "./api";
 
 const TICK_MS = 5_000;
@@ -101,7 +102,7 @@ async function usdPrice(lot: LotType): Promise<{ usd: number; source: string }> 
 
 async function createAuction(lot: LotType, now: number, auctions: AuctionView[]): Promise<void> {
   const token = CONFIG.lotMints[lot.token];
-  if (!token) throw new Error(`lot token ${lot.token} missing from src/config/devnet.json (run devnet:setup)`);
+  if (!token) throw new Error(`lot token ${lot.token} missing from packages/shared/src/config/devnet.json (run "npm run devnet:setup")`);
   const lotAmount = parseAmount(lot.amount, token.decimals);
   const price = await usdPrice(lot);
   const lotValue = lotCostFromPrice(price.usd, lotAmount, token.decimals);
@@ -188,7 +189,7 @@ async function handleActive(rec: AuctionRecord, a: AuctionView, now: number): Pr
 
     case "getReady":
       rec.minimumMetAtClose ??= true;
-      if (!a.funded) await act(id, "lot bought (mock) and funded", () => platform.mockFund(a));
+      if (!a.funded) await act(id, "lot funded", () => platform.fundLot(a));
       return;
 
     case "settling": {
@@ -295,7 +296,7 @@ async function tick() {
 }
 
 async function main() {
-  if (!IS_CONFIGURED) throw new Error("src/config/devnet.json is empty: run `npm run devnet:setup` first");
+  if (!IS_CONFIGURED) throw new Error("packages/shared/src/config/devnet.json is empty: run `npm run devnet:setup` first");
   const chain = await platform.config();
   if (!chain.admin.equals(platform.admin.publicKey)) {
     throw new Error(`ADMIN_KEYPAIR_PATH is ${platform.admin.publicKey.toBase58()}, but the program admin is ${chain.admin.toBase58()}`);

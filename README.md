@@ -22,3 +22,7 @@ npm run sync-idl            # after `anchor build` in program/: copy the IDL int
 ```
 
 Program: `cd program && anchor build && cargo test`. Program ID `eFXAZBczq33MQPwveUxMPP9SfNw5RAeVpdeNtZYtcCF` on devnet.
+
+Tokens on devnet: credits in Circle's devnet USDC (https://faucet.circle.com, choose Solana Devnet), lots paid out in SOL (wrapped; the app unwraps it), fees in devnet SOL (https://faucet.solana.com). Devnet tokens have no real value.
+
+Deploy: the frontend on Vercel (root directory `frontend`, see [frontend/README.md](frontend/README.md)) and the worker on Railway or any long-running Node host (see [worker/README.md](worker/README.md)).

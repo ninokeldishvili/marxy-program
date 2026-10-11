@@ -3,10 +3,10 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
-import type { WorkerState } from "../workerApi";
+import type { WorkerState } from "@marxy/shared/workerApi";
 import { STATE_PATH } from "./paths";
 
-export type { AuctionRecord, LogEntry, LotTypeState, WorkerState } from "../workerApi";
+export type { AuctionRecord, LogEntry, LotTypeState, WorkerState } from "@marxy/shared/workerApi";
 
 export function emptyState(): WorkerState {
   return { version: 1, nextAuctionId: 1, updatedAt: null, lotTypes: {}, auctions: {}, log: [] };

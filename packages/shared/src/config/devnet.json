@@ -4,9 +4,16 @@
   "admin": "AmpNzrk2vGjNxZ1wpuRS2UAtsu9tpRBfpfHjyt9Z6bZ",
   "treasury": "CG6AM5RM8cKNwP3CmYk6zErSJERpctZx9sVWPTyZeg2b",
   "configPda": "7vHpBsxW7X5n3UCFHDSEohRBmn4xRjurTCrC3wBMLRgG",
-  "usdcMint": "DuE6oMh2MG1xfCYBCP3982dJPa2fENvaukjErAtZHCD3",
+  "usdcMint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
   "usdcTokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
   "lotMints": {
+    "sol": {
+      "mint": "So11111111111111111111111111111111111111112",
+      "name": "SOL",
+      "symbol": "SOL",
+      "decimals": 9,
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    },
     "testBtc": {
       "mint": "92euDB9ZLMxLBpQZ3mkGGcrp6LoLKAxpkVafhQ87e7Th",
       "name": "Test BTC",

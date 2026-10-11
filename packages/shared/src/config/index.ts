@@ -1,7 +1,14 @@
 // Addresses written by `npm run devnet:setup` (src/config/devnet.json).
 import devnet from "./devnet.json";
 
-export type LotTokenKey = "testBtc" | "testSol";
+/** Lot tokens: native SOL (wrapped), plus the demo-era test mints for old auctions. */
+export type LotTokenKey = "sol" | "testBtc" | "testSol";
+
+/** Circle's USDC on Solana devnet (get some at https://faucet.circle.com). */
+export const CIRCLE_DEVNET_USDC = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+
+/** Wrapped SOL: lots in native SOL use this mint. */
+export const NATIVE_SOL_MINT = "So11111111111111111111111111111111111111112";
 
 export interface LotTokenConfig {
   mint: string;

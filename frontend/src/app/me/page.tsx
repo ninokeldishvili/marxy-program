@@ -5,7 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
-import { WithdrawButton } from "@/components/AuctionPanels";
+import { UnwrapSolButton, WithdrawButton } from "@/components/AuctionPanels";
 import { useConnectModal } from "@/components/ConnectModal";
 import { Button, Card, LotImage, useLot } from "@/components/ui";
 import { useChainClock } from "@/hooks/useChainClock";
@@ -82,6 +82,7 @@ export default function MyAuctions() {
       <h1 className="text-4xl font-semibold">
         My <span className="text-glow text-accent">auctions</span>
       </h1>
+      <UnwrapSolButton />
       {rows === null && <p className="text-muted">Loading…</p>}
       {rows?.length === 0 && (
         <p className="text-muted">

@@ -109,7 +109,7 @@ export function friendlyError(err: unknown): FriendlyError {
   }
   if (/insufficient (funds|lamports)|0x1\b|insufficient funds for rent/i.test(text)) {
     return {
-      message: "Not enough devnet SOL or test USDC for this transaction.",
+      message: "Not enough devnet SOL or USDC for this transaction.",
       networkHint: false,
     };
   }

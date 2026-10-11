@@ -9,10 +9,19 @@ import { useBalances } from "@/hooks/useBalances";
 import { useChainClock } from "@/hooks/useChainClock";
 import { useProgram } from "@/hooks/useProgram";
 import { useSendTx } from "@/hooks/useSendTx";
-import { formatDate, formatUsdc, percent } from "@marxy/shared/format";
+import { formatDate, formatSol, formatUsdc, percent } from "@marxy/shared/format";
 import { markParticipantClosed } from "@marxy/shared/freshness";
 import type { BidEvent } from "@marxy/shared/history";
-import { ata, buyCreditsIxs, placeBidIx, refundDue, settleIx, withdrawIxs } from "@marxy/shared/instructions";
+import {
+  ata,
+  buyCreditsIxs,
+  isNativeSol,
+  placeBidIx,
+  refundDue,
+  settleIx,
+  unwrapSolIx,
+  withdrawIxs,
+} from "@marxy/shared/instructions";
 import type { StageInfo } from "@marxy/shared/stage";
 import type { AuctionView, ParticipantView } from "@marxy/shared/types";
 import { useConnectModal } from "./ConnectModal";
@@ -110,7 +119,7 @@ export function BuyPanel({ auction, participant, stage, reload }: PanelProps) {
           </Button>
           {tooMany && <p className="text-sm text-danger sm:col-span-2">That&apos;s over your cap: at most {room.toString()} more.</p>}
           {cantAfford && !tooMany && (
-            <p className="text-sm text-warn sm:col-span-2">Not enough test USDC: use “Get 100 test USDC” in the header.</p>
+            <p className="text-sm text-warn sm:col-span-2">Not enough USDC: get devnet USDC at faucet.circle.com (choose Solana Devnet).</p>
           )}
         </div>
       )}
@@ -158,6 +167,25 @@ export function WithdrawButton({ auction, participant, reload, label }: Omit<Pan
   return (
     <Button variant={refund > 0n ? "primary" : "ghost"} onClick={withdraw} disabled={busy}>
       {text}
+    </Button>
+  );
+}
+
+// ------------------------------------------------------------------ unwrap
+
+/**
+ * SOL lots are paid out as wrapped SOL (an SPL token). Shown while the wallet
+ * holds any: closing the wSOL account turns it back into plain SOL.
+ */
+export function UnwrapSolButton() {
+  const { publicKey } = useWallet();
+  const { wsol } = useBalances();
+  const { send, busy } = useSendTx();
+  if (!publicKey || !wsol || wsol <= 0n) return null;
+  const owner = publicKey;
+  return (
+    <Button onClick={() => send("Unwrap SOL", async () => [unwrapSolIx(owner)])} disabled={busy}>
+      Unwrap {formatSol(Number(wsol))} to SOL
     </Button>
   );
 }
@@ -329,6 +357,12 @@ export function WonBanner({ auction, participant, reload, settleSignature }: Omi
           Auction account ↗
         </a>
       </div>
+      {you && isNativeSol(auction.lotMint) && (
+        <div className="mt-6 space-y-2">
+          <UnwrapSolButton />
+          <p className="text-xs text-muted">Your prize arrives as wrapped SOL; unwrap it to use it as plain SOL.</p>
+        </div>
+      )}
       {participant && (
         <div className="mt-6 space-y-2">
           <WithdrawButton auction={auction} participant={participant} reload={reload} />

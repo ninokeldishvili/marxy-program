@@ -3,10 +3,14 @@
 import { BN } from "@anchor-lang/core";
 import {
   createAssociatedTokenAccountIdempotentInstruction,
+  createCloseAccountInstruction,
   createMintToInstruction,
+  createSyncNativeInstruction,
   getAssociatedTokenAddressSync,
+  NATIVE_MINT,
+  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import { PublicKey, type TransactionInstruction } from "@solana/web3.js";
+import { PublicKey, SystemProgram, type TransactionInstruction } from "@solana/web3.js";
 
 import { auctionPda, configPda, participantPda, type MarxyProgram } from "./program";
 import { DEFAULT_PUBKEY, type AuctionView, type ParticipantView } from "./types";
@@ -187,11 +191,16 @@ export async function postponeIx(
     .instruction();
 }
 
+export const isNativeSol = (mint: string | PublicKey) => pk(mint).equals(NATIVE_MINT);
+
 /**
- * Mock purchase + deposit: mint the missing part of the lot to the admin
- * (the admin is the test mint's authority), then `fund_lot`, in one transaction.
+ * Funds the lot in one transaction: tops the admin's lot account up to the lot
+ * amount, then `fund_lot` moves it into the auction's vault.
+ * - Native SOL lots: wraps real SOL from the admin (transfer into the admin's
+ *   wSOL account + sync).
+ * - Demo-era test mints: mints the missing part (the admin is their authority).
  */
-export async function mockFundLotIxs(
+export async function fundLotIxs(
   program: MarxyProgram,
   a: { auction: AuctionView; admin: PublicKey; lotTokenProgram: PublicKey; adminHolds: bigint },
 ): Promise<TransactionInstruction[]> {
@@ -202,7 +211,12 @@ export async function mockFundLotIxs(
     createAssociatedTokenAccountIdempotentInstruction(a.admin, adminLot, a.admin, lotMint, a.lotTokenProgram),
   ];
   const missing = a.auction.lotAmount - a.adminHolds;
-  if (missing > 0n) {
+  if (missing > 0n && isNativeSol(lotMint)) {
+    ixs.push(
+      SystemProgram.transfer({ fromPubkey: a.admin, toPubkey: adminLot, lamports: missing }),
+      createSyncNativeInstruction(adminLot, a.lotTokenProgram),
+    );
+  } else if (missing > 0n) {
     ixs.push(createMintToInstruction(lotMint, adminLot, a.admin, missing, [], a.lotTokenProgram));
   }
   ixs.push(
@@ -230,4 +244,10 @@ export async function initializeConfigIx(
     .initializeConfig(a.minMarginBps, new BN(a.getReadySecs))
     .accountsPartial({ admin: a.admin, config: configPda(), treasury: a.treasury, usdcMint: a.usdcMint })
     .instruction();
+}
+
+/** Unwraps all of `owner`'s wrapped SOL: closing the wSOL account returns its lamports as SOL. */
+export function unwrapSolIx(owner: PublicKey): TransactionInstruction {
+  const wsol = ata(owner, NATIVE_MINT, TOKEN_PROGRAM_ID);
+  return createCloseAccountInstruction(wsol, owner, owner, [], TOKEN_PROGRAM_ID);
 }
