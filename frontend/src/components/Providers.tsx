@@ -12,8 +12,10 @@ import { ToastProvider } from "./Toasts";
 export function Providers({ children }: { children: ReactNode }) {
   // Phantom is featured; other Wallet Standard wallets are detected automatically.
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
+  // No automatic retries on 429: web3.js would retry each rate-limited call up to 5 times,
+  // turning one refused request into a burst. Callers already poll and keep their last value.
   return (
-    <ConnectionProvider endpoint={RPC_URL} config={{ commitment: "confirmed" }}>
+    <ConnectionProvider endpoint={RPC_URL} config={{ commitment: "confirmed", disableRetryOnRateLimit: true }}>
       <WalletProvider wallets={wallets} autoConnect>
         <ToastProvider>
           <ConnectModalProvider>
