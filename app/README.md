@@ -71,7 +71,7 @@ npm run dev       # terminal 1: http://localhost:3000
 npm run worker    # terminal 2: the platform's automation
 ```
 
-The worker ticks every 5 s. For each lot type in `worker/catalog.json` it keeps the configured number of live auctions running.
+The worker ticks every 5 s. For each lot type in `worker/catalog.json` it keeps `openAuctions` auctions open for sales, so players always have one to join. An auction stops counting at sales close, whatever happens next (get ready, battle, or waiting to refund), and a new one is listed.
 
 **Pricing:**
 - **Lot cost:** the Jupiter price of the real asset (mainnet mint) × amount, rounded up to the next dollar. If Jupiter fails, the catalog's fallback price.

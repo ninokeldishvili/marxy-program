@@ -10,8 +10,8 @@ export interface LotType {
   amount: string;
   /** Image path under /public. */
   image: string;
-  /** How many live auctions of this type to keep. */
-  liveAuctions: number;
+  /** How many auctions of this type to keep open for sales at all times. */
+  openAuctions: number;
   /** Sales length in minutes (defaults to DEMO_SALES_MINUTES). */
   salesMinutes?: number;
   /** Let the demo bots buy and bid in this lot's auctions (default true). */

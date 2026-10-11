@@ -1,7 +1,7 @@
 /**
  * The platform's automation: `npm run worker` (from app/). Signs with the admin
  * keypair and, every 5 s:
- *   - keeps the configured number of live auctions per lot type (catalog.json),
+ *   - keeps the configured number of auctions open for sales per lot type (catalog.json),
  *   - at sales close: mock-funds (minimum met), postpones once (>= 70% sold) or settles into refunds,
  *   - settles as soon as the countdown ends or a refund path opens,
  *   - learns each lot type's margin / ladder step after every auction,
@@ -288,16 +288,19 @@ async function tick() {
     }
   }
 
-  // 3. Admin commands, then keep the configured number of live auctions per
-  //    lot type. This runs after learning, so new auctions use the latest tuning.
+  // 3. Admin commands, then keep the configured number of auctions open for
+  //    sales per lot type, so players always have one to join. Auctions past
+  //    sales close (get ready, battle, or waiting to refund) don't count. This
+  //    runs after learning, so new auctions use the latest tuning.
   await processCommands(now, auctions);
   for (const lot of catalog) {
-    // An auction we created but can't see yet (lagging RPC node) still counts as live.
-    const live = Object.values(state.auctions).filter((r) => {
-      const status = byId.get(r.id)?.status;
-      return r.lotType === lot.key && (status === undefined || status === "active");
+    // An auction we created but can't see yet (lagging RPC node) counts as open.
+    const open = Object.values(state.auctions).filter((r) => {
+      if (r.lotType !== lot.key) return false;
+      const a = byId.get(r.id);
+      return a === undefined || (a.status === "active" && now < a.salesClose);
     }).length;
-    if (live < lot.liveAuctions) {
+    if (open < lot.openAuctions) {
       await createAuction(lot, now, auctions).catch((e) => log(`create ${lot.name} failed`, { error: errorText(e) }));
       auctions = await platform.auctions();
       byId = new Map(auctions.map((a) => [Number(a.id), a]));
