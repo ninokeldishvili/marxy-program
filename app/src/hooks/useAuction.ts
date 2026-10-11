@@ -2,7 +2,7 @@
 
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { toAuctionView, toParticipantView } from "@/lib/convert";
 import { fresherAuction, fresherParticipant } from "@/lib/freshness";
@@ -10,10 +10,14 @@ import { fetchHistory, toBidEvent, type BidEvent } from "@/lib/history";
 import { auctionPda, fetchAuction, fetchParticipant, participantPda } from "@/lib/program";
 import type { AuctionView, ParticipantView } from "@/lib/types";
 import { usePolling } from "./usePolling";
+import { fetchServerAuctions } from "./useAuctions";
 import { useProgram } from "./useProgram";
 
 /** Websocket updates are primary; polling only catches what they miss. */
 const FALLBACK_POLL_MS = 15_000;
+/** Reads that must all miss before the page says the auction doesn't exist. */
+const NOT_FOUND_AFTER = 4;
+const NOT_FOUND_RETRY_MS = 1_500;
 
 const EVENTS = [
   "bidPlaced",
@@ -48,6 +52,7 @@ export function useAuction(id: bigint): LiveAuction {
   const [settleSignature, setSettleSignature] = useState<string>();
   const addressStr = auctionPda(id).toBase58();
   const [version, setVersion] = useState(0);
+  const misses = useRef(0);
   // After a change (own transaction or program event): read now and twice more
   // shortly after, in case the first read lands on a lagging RPC node.
   const reload = useCallback(() => {
@@ -62,12 +67,19 @@ export function useAuction(id: bigint): LiveAuction {
   usePolling(
     async (isCancelled) => {
       try {
-        const a = await fetchAuction(program, id);
+        // A lagging RPC node may not have a new auction yet: fall back to the
+        // server's list, which keeps every auction it has seen.
+        let a = await fetchAuction(program, id);
+        if (!a) a = (await fetchServerAuctions().catch(() => [])).find((x) => x.id === id) ?? null;
+        misses.current = a ? 0 : misses.current + 1;
+        const notFound = !a && misses.current >= NOT_FOUND_AFTER;
+        // Keep "Loading" and retry soon instead of saying it doesn't exist.
+        if (!a && !notFound) setTimeout(() => setVersion((v) => v + 1), NOT_FOUND_RETRY_MS);
         const p = publicKey ? await fetchParticipant(program, auctionPda(id), publicKey) : null;
         const pAddress = publicKey ? participantPda(auctionPda(id), publicKey).toBase58() : "";
         if (!isCancelled()) {
           // A lagging RPC node can return an older copy (or none): never go backwards.
-          setAuction((prev) => (a ? fresherAuction(prev, a) : (prev ?? a)));
+          setAuction((prev) => (a ? fresherAuction(prev, a) : (prev ?? (notFound ? null : undefined))));
           setParticipant((prev) => (publicKey ? fresherParticipant(prev, p, pAddress) : null));
         }
       } catch {

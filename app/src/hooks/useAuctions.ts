@@ -9,6 +9,14 @@ import { usePolling } from "./usePolling";
 
 const POLL_MS = 5_000;
 
+/** GET /api/auctions: every auction the server has seen, freshest copies. */
+export async function fetchServerAuctions(): Promise<AuctionView[]> {
+  const res = await fetch("/api/auctions", { cache: "no-store" });
+  const body = (await res.json()) as { auctions?: AuctionJson[]; error?: string };
+  if (!res.ok || !body.auctions) throw new Error(body.error ?? `HTTP ${res.status}`);
+  return body.auctions.map(auctionFromJson);
+}
+
 /**
  * Every auction, from GET /api/auctions (one shared RPC read for all visitors),
  * polled every 5 s while the tab is visible. Lagging reads can't hide or roll
@@ -21,10 +29,7 @@ export function useAuctions(): { auctions: AuctionView[] | null; error: string |
   usePolling(
     async (isCancelled) => {
       try {
-        const res = await fetch("/api/auctions", { cache: "no-store" });
-        const body = (await res.json()) as { auctions?: AuctionJson[]; error?: string };
-        if (!res.ok || !body.auctions) throw new Error(body.error ?? `HTTP ${res.status}`);
-        const all = body.auctions.map(auctionFromJson);
+        const all = await fetchServerAuctions();
         if (!isCancelled()) {
           setAuctions((prev) => mergeAuctions(prev, all));
           setError(null);
